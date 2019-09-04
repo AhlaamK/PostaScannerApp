@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eb7a02"
+    android:keepScreenOn="true">
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:id="@+id/btnbck"
+        android:layout_gravity="left|top" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WC"
+        android:id="@+id/buttonWC"
+        android:background="@drawable/btnbackground"
+        android:layout_gravity="right|top" />
+
+    <ProgressBar
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar1"
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="52dp"
+        android:visibility="invisible"/>
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select All"
+        android:id="@+id/buttonselect"
+        android:layout_marginStart="55dp"
+        />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deselect All"
+        android:id="@+id/buttondeselect"
+        android:layout_marginStart="140dp"
+        />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="clear Hold"
+        android:id="@+id/buttoncancel"
+        android:layout_marginStart="240dp"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total No. of Wbills scanned:"
+        android:id="@+id/textView6"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="75dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textStyle="bold"
+        android:id="@+id/textcount"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="75dp" />
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollView2"
+        android:layout_gravity="left|top"
+        android:layout_marginTop="110dp">
+
+              <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left|top">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AWB No"
+                        android:id="@+id/textView13"
+                        android:padding="5dp"
+                        android:textColor="#8A0808"
+                        android:layout_marginStart="50dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Route Name"
+                        android:id="@+id/textView14"
+                        android:padding="5dp"
+                        android:textColor="#8A0808"
+                        android:layout_marginStart="40dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Consign Name"
+                        android:id="@+id/textView15"
+                        android:padding="5dp"
+                        android:textColor="#8A0808"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Amount"
+                        android:id="@+id/textView16"
+                        android:padding="18dp"
+                        android:textColor="#8A0808"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phone"
+                        android:id="@+id/textView17"
+                        android:padding="3dp"
+                        android:textColor="#8A0808"
+                        android:layout_marginStart="10dp"/>
+
+                </TableRow>
+
+                  <ScrollView
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/scrollView2" >
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/resulttable1"/>
+
+
+                </ScrollView>
+              </TableLayout>
+           </HorizontalScrollView>
+
+
+
+</FrameLayout>

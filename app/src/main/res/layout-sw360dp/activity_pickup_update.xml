@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eb7a02"
+    android:keepScreenOn="true"
+    android:focusableInTouchMode="true"
+    android:id="@+id/frame_container">
+
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:id="@+id/btnbck"
+        android:layout_gravity="left|top" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="65dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="5dp"
+        android:text="Pickup"
+        android:id="@+id/buttonpickup"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/btnbackground"
+        android:layout_gravity="right|top" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PickupNo"
+        android:textColor="#FF0000"
+        android:textStyle="bold"
+        android:id="@+id/textpickup"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="55dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Account Name  "
+        android:textColor="#0404B4"
+        android:textStyle="bold"
+        android:id="@+id/textaccname"
+        android:layout_marginLeft="118dp"
+        android:layout_marginTop="55dp"
+        />
+
+    <Spinner
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/servicespinner"
+        android:layout_marginTop="90dp"
+        android:background="@drawable/spinnerbg"
+        android:layout_gravity="left|top" />
+    <Spinner
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/paytypespinner"
+        android:background="@drawable/spinnerbg"
+        android:layout_marginTop="90dp"
+        android:layout_marginLeft="240dp"/>
+
+
+    <EditText
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:id="@+id/amountet"
+        android:background="@drawable/edittext"
+        android:ems="10"
+        android:layout_marginTop="90dp"
+        android:layout_marginLeft="140dp"
+        android:focusableInTouchMode="true"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        android:text="0.000"/>
+
+    <requestFocus />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total PickUp:"
+        android:textStyle="bold"
+        android:id="@+id/textView6"
+        android:layout_marginTop="137dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#FF0040"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:id="@+id/countText"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="137dp"
+        />
+<CheckBox
+    android:layout_width="wrap_content"
+    android:layout_height="20dp"
+    android:layout_marginTop="135dp"
+    android:text="MPS"
+    android:layout_marginLeft="140dp"
+    android:id="@+id/cbmps"/>
+    <ProgressBar
+        android:layout_width="52dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="155dp"
+        android:layout_marginLeft="85dp"
+        android:id="@+id/progrespickp"/>
+    <Button
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="154dp"
+        android:layout_gravity="left"
+        android:text="ClearAll"
+        android:id="@+id/clearbtn"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginTop="170dp"
+        android:text="Customer Reference AWB Scan"
+        android:layout_marginLeft="140dp"
+        android:id="@+id/cbReference"/>
+    <!--<NumberPicker
+        android:layout_width="50dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="135dp"
+        android:layout_marginLeft="300dp"
+        android:id="@+id/numberpicker"
+       ></NumberPicker>-->
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollView4"
+        android:layout_gravity="left|top"
+        android:layout_marginTop="190dp">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="left|top">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#8A0808"
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/textView1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Airway Bill"
+                    android:textColor="#8A0808"
+                    android:padding="5dp"
+                    android:layout_marginLeft="75dp"
+                    android:id="@+id/textView2" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pay Type"
+                    android:textColor="#8A0808"
+                    android:layout_marginLeft="30dp"
+                    android:padding="5dp"
+                    android:id="@+id/textView3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Amount"
+                    android:textColor="#8A0808"
+                    android:layout_marginLeft="25dp"
+                    android:padding="5dp"
+                    android:id="@+id/textView4" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Service"
+                    android:id="@+id/textView5"
+                    android:layout_marginLeft="60dp"
+                    android:padding="5dp"
+                    android:textColor="#8A0808"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MPS AWB."
+                    android:id="@+id/texttagval"
+                    android:layout_marginLeft="110dp"
+                    android:padding="5dp"
+                    android:textColor="#8A0808"/>
+            </TableRow>
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/scrollView3" >
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tlTable"/>
+            </ScrollView>
+        </TableLayout>
+    </HorizontalScrollView>
+
+
+    <Spinner
+        android:layout_width="133dp"
+        android:layout_height="40dp"
+        android:id="@+id/remarkspinner"
+        android:background="@drawable/spinnerbg"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="80dp"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:text="Finish"
+        android:id="@+id/btnfinish"
+        android:layout_marginRight="70dp"
+        android:layout_gravity="right|top" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:id="@+id/progressBarpckp"
+        android:layout_marginTop="120dp"
+        android:layout_marginLeft="340dp"
+        android:visibility="invisible"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="135dp"
+        android:layout_marginLeft="210dp"
+        android:orientation="horizontal"
+        android:id="@+id/tagcounter">
+        <TextView
+            android:layout_width="145dp"
+            android:layout_height="20dp"
+            android:background="#ffffff"
+            android:textColor="#000000"
+            android:text=""
+            android:id="@+id/masterawbtxt"/>
+
+      <!--  <Button
+            android:id="@+id/decrease"
+            android:layout_width="50dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="2dp"
+            android:onClick="decreaseInteger"
+            android:text="-" />
+
+        <TextView
+            android:id="@+id/integer_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="30sp"
+            android:layout_marginTop="5dp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/increase"
+            android:layout_width="50dp"
+            android:layout_height="45dp"
+            android:onClick="increaseInteger"
+            android:text="+" />-->
+    </LinearLayout>
+
+</FrameLayout>

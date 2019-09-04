@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eb7a02">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pickup Details"
+        android:textStyle="bold"
+        android:id="@+id/textView1"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:text="Select All"
+        android:id="@+id/buttonselect"
+        android:layout_marginTop="38dp"
+        android:layout_gravity="left|top" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:text="Accept"
+        android:id="@+id/buttonaccept"
+        android:layout_marginTop="38dp"
+        android:layout_marginLeft="85dp"
+        />
+
+   <!-- <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:text="Reject"
+        android:id="@+id/buttonreject"
+        android:layout_marginTop="38dp"
+        android:layout_marginLeft="160dp"/>-->
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:text="Close"
+        android:id="@+id/buttonclose"
+        android:layout_marginTop="38dp"
+        android:layout_marginLeft="160dp"/>
+
+
+    <TextView
+        android:id="@+id/textcount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="50dp"
+        android:text=""
+        android:textStyle="bold" />
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="85dp">
+    <TableLayout
+        android:id="@+id/tl1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TableRow
+            android:id="@+id/tabrow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:padding="10dp"
+                android:text="Pickup No."
+                android:textAlignment="center"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#0040FF"
+                android:layout_marginLeft="15dp"/>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:padding="10dp"
+                android:text="Account Name"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#0040FF"
+                android:layout_marginLeft="50dp" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:padding="10dp"
+                android:text="Area"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#0040FF"
+                android:layout_marginLeft="40dp"/>
+        </TableRow>
+
+
+        <ScrollView
+    android:id="@+id/scrollView1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="0dp"
+    android:layout_marginLeft="5dp"
+    android:scrollbars="horizontal" >
+
+    <TableLayout
+        android:id="@+id/table2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="5dp"
+        android:orientation="horizontal" >
+    </TableLayout>
+    </ScrollView>
+        </TableLayout>
+    </HorizontalScrollView>
+</FrameLayout>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eb7a02">
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="70dp"
+        android:layout_height="35dp"
+        android:text="Back"
+        android:id="@+id/btnbck"
+        android:layout_gravity="left|top" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pickup No:"
+        android:id="@+id/textView"
+        android:layout_marginTop="45dp"
+        android:layout_marginLeft="25dp"
+        android:layout_gravity="left" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shipper Name:"
+        android:id="@+id/textshipper"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="25dp"
+        android:layout_gravity="left" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Consignee:"
+        android:id="@+id/textView3"
+        android:layout_marginTop="115dp"
+        android:layout_marginLeft="25dp"
+        android:layout_gravity="left" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delivery Address:"
+        android:id="@+id/textView5"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="25dp"
+        android:layout_gravity="left" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delivery City:"
+        android:id="@+id/textView7"
+        android:layout_marginTop="185dp"
+        android:layout_marginLeft="25dp"
+        android:layout_gravity="left" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textpickupno"
+        android:layout_marginTop="45dp"
+        android:layout_marginLeft="185dp"/>
+
+
+
+
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text=""
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:id="@+id/textconsignee"
+    android:layout_marginTop="115dp"
+    android:layout_marginLeft="185dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textdelvaddr"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="185dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textdelvarcty"
+        android:layout_marginTop="185dp"
+        android:layout_marginLeft="185dp"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textshippername"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="185dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delivery Contact No:"
+        android:id="@+id/textView8"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="25dp"
+        android:layout_gravity="left" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textdelvphone"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="185dp"/>
+
+</FrameLayout>

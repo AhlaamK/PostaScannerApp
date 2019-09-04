@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eb7a02">
+
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:id="@+id/btnbck"
+        android:layout_gravity="left|top" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Transfer"
+        android:id="@+id/buttontransfer"
+        android:layout_gravity="right|top" />
+
+    <Spinner
+        android:layout_width="260dp"
+        android:layout_height="45dp"
+        android:id="@+id/spinnercourier"
+        android:background="@drawable/spinnerbg"
+        android:layout_gravity="center_horizontal|top" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total Pickups:"
+        android:layout_marginTop="60dp"
+        android:id="@+id/textView41"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/textcount"
+        android:textStyle="bold"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="90dp"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select All"
+        android:id="@+id/btnselect"
+        android:layout_marginTop="80dp"
+        />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deselect All"
+        android:id="@+id/btndeselect"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="90dp"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar1"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="350dp"
+        android:visibility="invisible"/>
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollView"
+        android:layout_gravity="left|top"
+        android:layout_marginTop="150dp">
+
+
+
+
+        <TableLayout
+            android:id="@+id/tl1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <TableRow
+                android:id="@+id/tabrow1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:padding="5dp"
+                    android:text="Pickup No."
+                    android:layout_marginLeft="10dp"
+                    android:textAlignment="center"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#8A0808" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:padding="5dp"
+                    android:layout_marginLeft="45dp"
+                    android:textAlignment="center"
+                    android:text="Pay Type"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#8A0808" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:padding="5dp"
+                    android:textAlignment="center"
+                    android:text="Amount"
+                    android:layout_marginLeft="50dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#8A0808" />
+                <TextView
+                    android:id="@+id/textView5"
+                    android:padding="5dp"
+                    android:layout_marginLeft="80dp"
+                    android:textAlignment="center"
+                    android:text="Service"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#8A0808" />
+
+            </TableRow>
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/scrollView"
+                >
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tlTable"/>
+            </ScrollView>
+
+
+        </TableLayout>
+
+    </HorizontalScrollView>
+</FrameLayout>
+
+
+
+

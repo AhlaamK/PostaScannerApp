@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eb7a02"
+    android:keepScreenOn="true">
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="Accept"
+        android:id="@+id/buttontransfer"
+        android:layout_gravity="right|top" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:id="@+id/btnbck"
+        android:layout_gravity="left|top" />
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar1"
+        android:layout_gravity="left|top"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+      android:visibility="invisible" />
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollView3"
+        android:layout_gravity="left|top"
+        android:layout_marginTop="110dp">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="left|top">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="AWB No"
+                    android:id="@+id/textView13"
+                    android:padding="5dp"
+                    android:textColor="#8A0808"
+                    android:layout_marginLeft="50dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Route Name"
+                    android:id="@+id/textView14"
+                    android:padding="5dp"
+                    android:textColor="#8A0808"
+                    android:layout_marginLeft="25dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Consign Name"
+                    android:id="@+id/textView15"
+                    android:padding="5dp"
+                    android:textColor="#8A0808"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Amount"
+                    android:id="@+id/textView16"
+                    android:padding="5dp"
+                    android:textColor="#8A0808"/>
+            </TableRow>
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/scrollView3" >
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/resulttable1"/>
+            </ScrollView>
+        </TableLayout>
+    </HorizontalScrollView>
+
+
+</FrameLayout>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ed7c02" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="450dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:adjustViewBounds="true"
+        android:maxHeight="120dp"
+        android:maxWidth="500dp"
+        android:src="@drawable/headr" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="57dp"
+        android:layout_marginTop="220dp"
+        android:text="Username"
+        android:textColor="#FFFFFF"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="57dp"
+        android:layout_marginTop="300dp"
+        android:text="Password"
+        android:textColor="#FFFFFF"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/paswrdet"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="300dp"
+        android:layout_alignLeft="@+id/unameet"
+        android:background="@drawable/edittext"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/unameet"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="220dp"
+        android:background="@drawable/edittext"
+        android:ems="10"
+        android:singleLine="true" >
+    </EditText>
+
+    <ImageView
+        android:id="@+id/submit"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="380dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/loginpic" />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="435dp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/versionTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:text="" />
+
+    <Button
+        android:text="Clear Data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clrdatabtn"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="2dp"
+        android:visibility="visible"/>
+
+</FrameLayout>

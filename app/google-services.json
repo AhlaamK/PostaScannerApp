@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "595268862621",
+    "firebase_url": "https://postascanner-cf20e.firebaseio.com",
+    "project_id": "postascanner-cf20e",
+    "storage_bucket": "postascanner-cf20e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595268862621:android:da7a4aa9464261f2",
+        "android_client_info": {
+          "package_name": "com.postaplus.postascannerapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-cHy03Pp5B4p-rihLnl5UhL4dLYq5cq8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "595268862621-nev05ncfnddrm717toma2g4bavu3diic.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

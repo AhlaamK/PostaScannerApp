@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1c181c" >
+
+    <TextView
+        android:id="@+id/unametxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="21dp"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:layout_gravity="right|center_vertical" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/logoposta"
+        android:layout_gravity="left|center_vertical" />
+
+    <ImageView
+        android:id="@+id/imageViewPushicon"
+        android:layout_width="42dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="140dp"
+        android:src="@drawable/ic_pushnotify"
+       />
+    <TextView
+        android:id="@+id/textViewPushicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text=""
+        android:textStyle="bold"
+        android:layout_marginLeft="155dp"
+        android:textColor="#FF0000"
+        />
+
+</FrameLayout>

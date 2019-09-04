@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eb7a02"
+    android:keepScreenOn="true">
+
+
+
+       <!-- <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:id="@+id/btnbck"
+            android:layout_gravity="left|top" />-->
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imagedelv"
+        android:src="@drawable/del"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="8dp"
+        android:visibility="visible"
+        android:layout_gravity="left|top" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imageack"
+        android:src="@drawable/ackdelvy"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="8dp"
+        android:visibility="visible"
+        android:layout_gravity="left|top" />
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imagertn"
+        android:src="@drawable/return1"
+        android:layout_marginTop="95dp"
+        android:layout_marginLeft="8dp"
+        android:visibility="visible"
+        android:layout_gravity="left|top" />
+    <!--<ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imagedelv1"
+        android:background="@drawable/checked"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="8dp"
+        android:visibility="invisible"
+        android:layout_gravity="left|top" />-->
+   <!-- <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imageack1"
+        android:background="@drawable/checked"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="8dp"
+        android:visibility="invisible"
+        android:layout_gravity="left|top" />-->
+   <!-- <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imagertn1"
+        android:background="@drawable/checked"
+        android:layout_marginTop="95dp"
+        android:layout_marginLeft="8dp"
+        android:visibility="invisible"
+        android:layout_gravity="left|top" />
+
+-->
+
+    <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear"
+            android:id="@+id/buttonclear"
+            android:layout_gravity="right|top" />
+
+    <Spinner
+            android:layout_width="236dp"
+            android:layout_height="44dp"
+            android:id="@+id/eventspinner"
+            android:background="@drawable/spinnerbg"
+            android:layout_marginLeft="60dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView1"
+            android:src="@drawable/camera"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="60dp"
+            android:visibility="visible"
+            android:layout_gravity="left|top" />
+
+    <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView2"
+            android:src="@drawable/camera"
+            android:visibility="visible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="103dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView7"
+            android:src="@drawable/postlogoapp"
+            android:visibility="invisible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="103dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView3"
+            android:src="@drawable/camera"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="146dp"
+            android:visibility="visible"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView8"
+            android:src="@drawable/postlogoapp"
+            android:visibility="invisible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="146dp"
+            android:layout_gravity="left|top" />
+
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView4"
+            android:src="@drawable/camera"
+            android:visibility="visible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="189dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView9"
+            android:src="@drawable/postlogoapp"
+            android:visibility="invisible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="189dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView5"
+            android:src="@drawable/camera"
+            android:visibility="visible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="232dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView10"
+            android:src="@drawable/postlogoapp"
+            android:visibility="invisible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="232dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView6"
+            android:visibility="visible"
+            android:src="@drawable/camera"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="275dp"
+            android:layout_gravity="left|top" />
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView11"
+            android:src="@drawable/postlogoapp"
+            android:visibility="invisible"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="275dp"
+            android:layout_gravity="left|top" />
+
+        <ProgressBar
+            android:layout_width="37dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar1"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="right|top"
+            android:visibility="invisible" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:id="@+id/buttonevent"
+            android:layout_marginTop="111dp"
+            android:background="@drawable/btnbackground"
+            android:layout_gravity="center_horizontal|top" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SHPTCNT:"
+        android:textStyle="bold"
+        android:id="@+id/shpmentcount"
+        android:layout_marginTop="148dp"
+        android:layout_gravity="left|top"
+        android:layout_marginLeft="2dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total COD:"
+            android:textStyle="bold"
+            android:id="@+id/codcount"
+            android:layout_marginTop="175dp"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="2dp"/>
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/signimageView"
+            android:layout_marginTop="105dp"
+            android:layout_marginLeft="90dp"
+            android:layout_gravity="left|top" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/textreciver"
+            android:layout_gravity="left|top"
+            android:layout_marginTop="112dp"
+            android:layout_marginLeft="225dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/textcount"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="75dp"
+            android:layout_marginTop="148dp" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Paid Online"
+            android:id="@+id/CODcheckBox"
+            android:layout_gravity="left|top"
+            android:layout_marginTop="170dp"
+            android:layout_marginLeft="130dp"
+            android:textColor="#0000ff"/>
+
+    <CheckBox
+        android:text="AMT Collected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/amntCltd"
+        android:layout_gravity="left|top"
+        android:layout_marginTop="170dp"
+        android:layout_marginLeft="245dp"
+        android:textColor="#0000ff"/>
+
+
+       <!-- <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="7"
+            android:background="@drawable/edittext"
+            android:id="@+id/CODeditText"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginLeft="75dp"
+            android:layout_marginTop="165dp"
+            android:hint="Enter COD"
+            android:textColorHint="#8A0808" />-->
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/horizontalScrollView"
+            android:layout_gravity="left|top"
+            android:layout_marginTop="218dp">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left|top">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="      "
+                        android:id="@+id/textView" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:layout_marginLeft="50dp"
+                        android:text="Way Bill"
+                        android:id="@+id/textView8"
+                        android:textColor="#8A0808" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:layout_marginLeft="45dp"
+                        android:text="Consignee"
+                        android:id="@+id/textView9"
+                        android:textColor="#8A0808" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:layout_marginLeft="25dp"
+                        android:text="COD Amount"
+                        android:id="@+id/textView12"
+                        android:textColor="#8A0808" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_marginLeft="45dp"
+                        android:text="Phone"
+                        android:id="@+id/textView10"
+                        android:textColor="#8A0808" />
+                </TableRow>
+
+                <ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/scrollView2">
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/resulttable1" />
+                </ScrollView>
+            </TableLayout>
+
+        </HorizontalScrollView>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_gravity="left|top"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/postlogoapp"
+        android:visibility="invisible" />
+
+
+</FrameLayout>
