@@ -121,6 +121,7 @@ Thread ThrKdc;
 	    
 	    _resources = getResources();
 
+	    if(barcodeReader!=null)
         barcodeReader.addBarcodeListener(_activity);
 
 
@@ -180,6 +181,7 @@ Thread ThrKdc;
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("HoneywellFlag", "0");
         editor.commit();*/
+      if (barcodeReader!=null)
       barcodeReader.removeBarcodeListener(_activity);
        // moveTaskToBack(false);
        // tabpos=1;

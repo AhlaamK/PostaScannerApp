@@ -10,7 +10,16 @@ import webservice.JsonFuncClasses.Routes;
  * Created by ahlaam.kazi on 10/16/2017.
  */
 
+
 public class GET_ROUTESResponse {
     @JsonProperty("d")
     public List<Routes> ROUTES;
+    @JsonProperty("Status")
+    public String status;
+
+
+    public String errorMessage;
+    public String timeGenerated;
+
+
 }

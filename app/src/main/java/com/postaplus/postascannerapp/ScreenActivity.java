@@ -39,7 +39,7 @@ public class ScreenActivity extends Activity {
 	private static int SPLASH_TIME_OUT = 2800;
 	ImageView logoapp;
 	boolean netstatus, servicestatus;
-	public static String url = "";
+	public static String url = "http://132.145.29.167:1000/OpsCourierScannerService/OpsGCScanSrv.svc";
 	//public static String ipaddress = null;
 	/**
 	 * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -109,6 +109,8 @@ public class ScreenActivity extends Activity {
             //NEW LIVE SERVICE URL
 				//ipaddress="http://postascan.postaplus.com/ServiceV2_0/OpsGCScanSrv.svc";
 				ipaddress="http://postascan.postaplus.com/ServiceV3_0/OpsGCScanSrv.svc";
+				ipaddress="http://132.145.29.167:1000/OpsCourierScannerService/OpsGCScanSrv.svc";
+
 				//  NEW TEST LINK
 		//ipaddress="http://172.53.1.34/OpsCourierScannerService/OpsGCScanSrv.svc";
 

@@ -33,6 +33,7 @@ import com.onesignal.OneSignal;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import DatabaseHandlers.DBFCS.TBLogin;
 import DatabaseHandlers.DBFunctions;
@@ -65,7 +66,7 @@ public class LoginActivity extends MasterActivity {
     String route, odovalue;
 
     static boolean errored = false;
-    ImageView b;
+    Button sumbitBtn;
     //TextView statusTV;
     EditText userNameET, passWordET;
     TextView versionDisp;
@@ -125,7 +126,7 @@ public class LoginActivity extends MasterActivity {
         passWordET.setText("TEST99");*/
 
         //Button to trigger web service invocation
-        b = (ImageView) findViewById(R.id.submit);
+        sumbitBtn = findViewById(R.id.submit_btn);
         clrbtn = (Button) findViewById(R.id.clrdatabtn);
         //Display progress bar until web service invocation completes
         webservicePG = (ProgressBar) findViewById(R.id.progressBar1);
@@ -141,6 +142,16 @@ public class LoginActivity extends MasterActivity {
         TelephonyManager telephonyManager =
                 (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         System.out.println("serila:" + telephonyManager.getDeviceId());
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -170,39 +181,37 @@ public class LoginActivity extends MasterActivity {
         });
 
 
-        //Login Button Click Listener
-        b.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                //Check if text controls are not empty
-                if (userNameET.getText().length() != 0 && userNameET.getText().toString() != "") {
-                    if (passWordET.getText().length() != 0 && passWordET.getText().toString() != "") {
-                        Username = userNameET.getText().toString();
-                        Password = passWordET.getText().toString();
-
-                        System.out.println("username on logn"+Username);
-
-
-                        //Create instance for AsyncCallWS
-                        AsyncCallWS task = new AsyncCallWS();
-                        //Call execute
-                        task.execute();
-
-
-                    }
-                    //If Password text control is empty
-                    else {
-                        Toast.makeText(getBaseContext(), "Please enter Password",
-                                Toast.LENGTH_LONG).show();
-                    }
-                    //If Username text control is empty
-                } else {
-                    Toast.makeText(getBaseContext(), "Please enter Username",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
     }
+    public void onLoginButtonClick(View v) {
+        //Check if text controls are not empty
+        if (userNameET.getText().length() != 0 && !userNameET.getText().toString().equals("")) {
+            if (passWordET.getText().length() != 0 && !passWordET.getText().toString().equals("")) {
+                Username = userNameET.getText().toString();
+                Password = passWordET.getText().toString();
+
+                System.out.println("username on logn"+Username);
+
+
+                //Create instance for AsyncCallWS
+                AsyncCallWS task = new AsyncCallWS();
+                //Call execute
+                task.execute();
+
+
+            }
+            //If Password text control is empty
+            else {
+                Toast.makeText(getBaseContext(), "Please enter Password",
+                        Toast.LENGTH_LONG).show();
+            }
+            //If Username text control is empty
+        } else {
+            Toast.makeText(getBaseContext(), "Please enter Username",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+
 
     //To clear cache data method
     public void clearcashData(Context context) {
@@ -339,7 +348,7 @@ public class LoginActivity extends MasterActivity {
         protected String doInBackground(Void... arg0) {
 
 
-            //getroutes();
+//            getroutes();
             getevent();
             getservice();
             getpaytype();
@@ -461,6 +470,7 @@ public class LoginActivity extends MasterActivity {
                 e.printStackTrace();
             }
             finally {
+                if (db != null)
                 db.close();
             }
         }
@@ -1737,7 +1747,9 @@ public class LoginActivity extends MasterActivity {
   public boolean onTouchEvent(MotionEvent event) {
       InputMethodManager imm = (InputMethodManager)getSystemService(Context.
               INPUT_METHOD_SERVICE);
-      imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+      if (imm != null) {
+          imm.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
+      }
       return true;
   }
     @Override

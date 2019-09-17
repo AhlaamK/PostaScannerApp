@@ -161,6 +161,7 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 		//KDC Full Commands
 	    _activity = this;
 
+	    if (barcodeReader!=null)
 		barcodeReader.addBarcodeListener(_activity);
 		if (barcodeReader != null) {
 			try {

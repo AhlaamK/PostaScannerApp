@@ -1,5 +1,6 @@
 package com.postaplus.postascannerapp;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -59,127 +62,127 @@ import koamtac.kdc.sdk.KDCReader;
 import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
 
 public class OdometerActivity extends MasterActivity
-implements BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener {
-	String contents="",contents1="";
+		implements BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
+	String contents = "", contents1 = "";
 	File imagefile1;
-	ImageView odoimage,menuimg;
-	Button sub,click,scan;
+	ImageView odoimage, menuimg;
+	Button sub, click, scan;
 	EditText odonumber;
-	boolean syncstatus,mstatus;
-	Bitmap photo; 
-	String route,routen,drivercode,odoread,barcodevalue,time_id,rootstatus;
+	boolean syncstatus, mstatus;
+	Bitmap photo;
+	String route, routen, drivercode, odoread, barcodevalue, time_id, rootstatus;
 	static boolean errored;
-	String odo_status="";
-	String status,type,serialid,lati,longti,area;
+	String odo_status = "";
+	String status, type, serialid, lati, longti, area;
 	GPSTracker gps;
-	double latitude,longitude;
-	TextView username,result;
+	double latitude, longitude;
+	TextView username, result;
 	SharedPreferences pref;
 	SQLiteDatabase db1 = null;
 	DatabaseHandler db;
-	Uri uriSavedImage=null;
+	Uri uriSavedImage = null;
 	public int SCANNER_REQUEST_CODE = 123;
 	TableRow tr;
-	LayoutParams lp ;
+	LayoutParams lp;
 	Thread ThrKdc;
 	Bitmap bitmap1;
-	Bitmap bitmap2=null;
+	Bitmap bitmap2 = null;
 	//KDC Parameters
-		//
-		public static String WaybillFromScanner = "";
-		public static String KDCScannerCallFrom = "";
-		//public static View WCrootView;
-		Context mContext;
-		Resources _resources;
-		BluetoothDevice _btDevice = null;
-		static final byte[] TYPE_BT_OOB = "application/vnd.bluetooth.ep.oob".getBytes();
-		Button _btnScan = null;
+	//
+	public static String WaybillFromScanner = "";
+	public static String KDCScannerCallFrom = "";
+	//public static View WCrootView;
+	Context mContext;
+	Resources _resources;
+	BluetoothDevice _btDevice = null;
+	static final byte[] TYPE_BT_OOB = "application/vnd.bluetooth.ep.oob".getBytes();
+	Button _btnScan = null;
 
-		//BluetoothDevice _btDevice;
-		OdometerActivity _activity;
-		KDCData ScannerData;
-		KDCReader _kdcReader;
-		public String chkdata="";
-		public String waybill;
-		View rootView;
-		public OdometerActivity MYActivity;
+	//BluetoothDevice _btDevice;
+	OdometerActivity _activity;
+	KDCData ScannerData;
+	KDCReader _kdcReader;
+	public String chkdata = "";
+	public String waybill;
+	View rootView;
+	public OdometerActivity MYActivity;
 
-		public void ScannerExecutions(){
-			drivercode=username.getText().toString();
-			route= MYActivity.getIntent().getExtras().getString("routecode");
-			routen= MYActivity.getIntent().getExtras().getString("routename");
-			//waybill=OdometerActivity.WaybillFromScanner;
-			//Initializations
-			
-			if (route == null||getIntent()==null)route= getIntent().getExtras().getString("routecode");
-		}
-		
+	public void ScannerExecutions() {
+		drivercode = username.getText().toString();
+		route = MYActivity.getIntent().getExtras().getString("routecode");
+		routen = MYActivity.getIntent().getExtras().getString("routename");
+		//waybill=OdometerActivity.WaybillFromScanner;
+		//Initializations
+
+		if (route == null || getIntent() == null)
+			route = getIntent().getExtras().getString("routecode");
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_odometer);
-		 mContext=this;
+		mContext = this;
 		ActionBar localActionBar = getActionBar();
 		localActionBar.setCustomView(R.layout.wc_actionbar);
 		localActionBar.setDisplayShowTitleEnabled(false);
 		localActionBar.setDisplayShowCustomEnabled(true);
 		localActionBar.setDisplayUseLogoEnabled(false
-				);
+		);
 		localActionBar.setDisplayShowHomeEnabled(false);
 		localActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#1c181c")));
 		System.out.println("Odometer Activity Page");
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
 		//KDC Full Commands
-	    _activity = this;
-	    
-	    _resources = getResources();
+		_activity = this;
+
+		_resources = getResources();
 
 		barcodeReader.addBarcodeListener(_activity);
 
 		pref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-		username=(TextView) findViewById(R.id.unametxt);
+		username = (TextView) findViewById(R.id.unametxt);
 		username.setText(pref.getString("uname", ""));
-		drivercode=username.getText().toString();
+		drivercode = username.getText().toString();
 
-		route= getIntent().getExtras().getString("routecode");
-		routen= getIntent().getExtras().getString("routename");
+		route = getIntent().getExtras().getString("routecode");
+		routen = getIntent().getExtras().getString("routename");
 
-		type= getIntent().getExtras().getString("typeodo");
-		
-		
-		odoimage=(ImageView)findViewById(R.id.imageodo);
-		sub=(Button)findViewById(R.id.proceed);
-		odonumber=(EditText)findViewById(R.id.odometertxt);
-		click=(Button)findViewById(R.id.button1);
-		menuimg=(ImageView)findViewById(R.id.imageicon);
-	//	scan=(Button)findViewById(R.id.btnscan);
-		result=(TextView)findViewById(R.id.textbarcode);
-		
+		type = getIntent().getExtras().getString("typeodo");
+
+
+		odoimage = (ImageView) findViewById(R.id.imageodo);
+		sub = (Button) findViewById(R.id.proceed);
+		odonumber = (EditText) findViewById(R.id.odometertxt);
+		click = (Button) findViewById(R.id.button1);
+		menuimg = (ImageView) findViewById(R.id.imageicon);
+		//	scan=(Button)findViewById(R.id.btnscan);
+		result = (TextView) findViewById(R.id.textbarcode);
+
 		imagefile1 = new File(Environment.getExternalStorageDirectory(), "Postaplus/Fuel&Odoimage");
 		imagefile1.mkdirs();
 
 		//save odometer value to login database
-		db=new DatabaseHandler(getBaseContext());
+		db = new DatabaseHandler(getBaseContext());
 		//update loginstatus to ZERO when logout
-		 db1 =db.getWritableDatabase();
-		
+		db1 = db.getWritableDatabase();
+
 		//button to take the picture of odometer
 		click.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-				
+
 				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-				odoimage.setImageResource(R.drawable.odo); 	
+				odoimage.setImageResource(R.drawable.odo);
 				//imgcountarr[6]=1;
 				SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-				time_id=date11.format(new Date());
-				uriSavedImage=Uri.fromFile(new File(imagefile1,  time_id+"ODO.PNG"));
-				
-				
-				
+				time_id = date11.format(new Date());
+				uriSavedImage = Uri.fromFile(new File(imagefile1, time_id + "ODO.PNG"));
+
+
 				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, uriSavedImage);
 				startActivityForResult(intent, 0);
 
@@ -196,121 +199,109 @@ implements BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener {
 				//tx.setText(num.getText().toString());
 				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
 
-				if(null!=odoimage.getDrawable()&&odonumber.getText().length()!=0&&(result.getText().length()!=0 || contents != null))
-				{
-					
-					odoread=odonumber.getText().toString();
+				if (null != odoimage.getDrawable() && odonumber.getText().length() != 0 && (result.getText().length() != 0 || contents != null)) {
 
-					
-					
+					odoread = odonumber.getText().toString();
+
+
 					//convert bitmap to bytearray
 				/*	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();  
 					photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
 					byte[] byteArray = byteArrayOutputStream.toByteArray();*/
-				
-					barcodevalue=result.getText().toString();
+
+					barcodevalue = result.getText().toString();
 					//call the webservice for saving the value 
-					
-					if(type.contains("START"))
-					{
+
+					if (type.contains("START")) {
 						System.out.println("START");
-						
+
 						//if the type is start save the start value and go to start delivery page
-					//	status=WebService.insertodometer(drivercode,odoread,barcodevalue,"START",METHOD_NAME21);
-						status= webservice.WebService.SET_DRIVERMETER(drivercode,odoread,barcodevalue,"START");
-						
-					if(!errored)
-					{
-					//if(status){
-						db1.execSQL("UPDATE logindata SET Odometervalue='"+odoread+"'WHERE Username='"+drivercode+"'" );
-						db1.execSQL("UPDATE logindata SET OdometerimgSyncstatus=0 WHERE Username='"+drivercode+"'" );
-						db1.execSQL("UPDATE logindata SET Odometerid='"+time_id+"' WHERE Username='"+drivercode+"'" );
-						db1.execSQL("UPDATE logindata SET OdometerFileno='"+status+"' WHERE Username='"+drivercode+"'");
-						Intent in1 = new Intent(OdometerActivity.this,StartDeliveryActivity.class);
-						in1.putExtra("routecode",route);
-						in1.putExtra("routename",routen);
-						startActivity(in1);
-					
-					//}
-					
+						//	status=WebService.insertodometer(drivercode,odoread,barcodevalue,"START",METHOD_NAME21);
+						status = webservice.WebService.SET_DRIVERMETER(drivercode, odoread, barcodevalue, "START");
 
-					}
-					else
-					{
-						Toast.makeText(MYActivity.getBaseContext(),"Connection Error,Please try after some time", 
-								Toast.LENGTH_LONG).show();
-					}
-					}
-						else if(type.contains("END"))
-						{
-							System.out.println("END");
-							//if the type is end save the end value and route close
-					//	status=WebService.insertodometer(drivercode,odoread,barcodevalue,"END",METHOD_NAME21);
-							status= webservice.WebService.SET_DRIVERMETER(drivercode,odoread,barcodevalue,"END");
-					
-						
-					if(!errored)
-					{
-					//if(status){
-						db1.execSQL("UPDATE logindata SET EndOdometervalue='"+odoread+"'WHERE Username='"+drivercode+"'" );
-						db1.execSQL("UPDATE logindata SET OdometerimgSyncstatus=0 WHERE Username='"+drivercode+"'" );
-						db1.execSQL("UPDATE logindata SET Odometerid='"+time_id+"' WHERE Username='"+drivercode+"'" );
-						db1.execSQL("UPDATE logindata SET OdometerFileno='"+status+"' WHERE Username='"+drivercode+"'");
-						
-						
-						SQLiteDatabase db1 =db.getReadableDatabase();
+						if (!errored) {
+							//if(status){
+							db1.execSQL("UPDATE logindata SET Odometervalue='" + odoread + "'WHERE Username='" + drivercode + "'");
+							db1.execSQL("UPDATE logindata SET OdometerimgSyncstatus=0 WHERE Username='" + drivercode + "'");
+							db1.execSQL("UPDATE logindata SET Odometerid='" + time_id + "' WHERE Username='" + drivercode + "'");
+							db1.execSQL("UPDATE logindata SET OdometerFileno='" + status + "' WHERE Username='" + drivercode + "'");
+							Intent in1 = new Intent(OdometerActivity.this, StartDeliveryActivity.class);
+							in1.putExtra("routecode", route);
+							in1.putExtra("routename", routen);
+							startActivity(in1);
 
-						Cursor rbc = db1.rawQuery("SELECT * FROM logindata WHERE OdometerimgSyncstatus=0 AND Username='"+drivercode+"'", null);
+							//}
 
-						//System.out.println("stage1");
-						int c=rbc.getCount();
-						String odoid=null;
-						String odofileno=null;
-						//String[] dcode1=new String[c];
-						
-						
-						
-						rbc.moveToFirst();
-						//	System.out.println("stage2");
-						if(c>0){
-							//	System.out.println("stage3");
-						
-								odoid=rbc.getString(rbc.getColumnIndex("Odometerid"));						
-								odofileno=rbc.getString(rbc.getColumnIndex("OdometerFileno"));				
-								
+
+						} else {
+							Toast.makeText(MYActivity.getBaseContext(), "Connection Error,Please try after some time",
+									Toast.LENGTH_LONG).show();
+						}
+					} else if (type.contains("END")) {
+						System.out.println("END");
+						//if the type is end save the end value and route close
+						//	status=WebService.insertodometer(drivercode,odoread,barcodevalue,"END",METHOD_NAME21);
+						status = webservice.WebService.SET_DRIVERMETER(drivercode, odoread, barcodevalue, "END");
+
+
+						if (!errored) {
+							//if(status){
+							db1.execSQL("UPDATE logindata SET EndOdometervalue='" + odoread + "'WHERE Username='" + drivercode + "'");
+							db1.execSQL("UPDATE logindata SET OdometerimgSyncstatus=0 WHERE Username='" + drivercode + "'");
+							db1.execSQL("UPDATE logindata SET Odometerid='" + time_id + "' WHERE Username='" + drivercode + "'");
+							db1.execSQL("UPDATE logindata SET OdometerFileno='" + status + "' WHERE Username='" + drivercode + "'");
+
+
+							SQLiteDatabase db1 = db.getReadableDatabase();
+
+							Cursor rbc = db1.rawQuery("SELECT * FROM logindata WHERE OdometerimgSyncstatus=0 AND Username='" + drivercode + "'", null);
+
+							//System.out.println("stage1");
+							int c = rbc.getCount();
+							String odoid = null;
+							String odofileno = null;
+							//String[] dcode1=new String[c];
+
+
+							rbc.moveToFirst();
+							//	System.out.println("stage2");
+							if (c > 0) {
+								//	System.out.println("stage3");
+
+								odoid = rbc.getString(rbc.getColumnIndex("Odometerid"));
+								odofileno = rbc.getString(rbc.getColumnIndex("OdometerFileno"));
+
 
 								//System.out.println("i:"+odoid);
 								//System.out.println(odofileno);				
-													
-								
+
+
 								byte[] byteArray1 = null;
 								byte[] byteArray2 = null;
-								
+
 								File sdCardRoot = Environment.getExternalStorageDirectory();
 								File yourDir = new File(sdCardRoot, "Postaplus/Fuel&Odoimage");
-								for (File f : yourDir.listFiles()) 
-								{
+								for (File f : yourDir.listFiles()) {
 									if (f.isFile())
-										if(f.getName().contains(odoid))
-										{
+										if (f.getName().contains(odoid)) {
 											System.out.println("odoimage");
-											
+
 											ByteArrayOutputStream baos = new ByteArrayOutputStream();
 											FileInputStream fis;
-											
+
 											try {
-												fis = new FileInputStream(new File(yourDir+"/"+f.getName()));
+												fis = new FileInputStream(new File(yourDir + "/" + f.getName()));
 												byte[] buf = new byte[1024];
 												int n;
 												while (-1 != (n = fis.read(buf)))
-												    baos.write(buf, 0, n);
+													baos.write(buf, 0, n);
 
 												//byteArray1 = baos.toByteArray();
-												BitmapFactory.Options options=new BitmapFactory.Options();
-												options.inSampleSize =23;
-												bitmap1 = BitmapFactory.decodeFile(f.getAbsoluteFile().toString(),options);
-												System.out.println("bitmaps odoactv kb in sync is :"+bitmap1.getByteCount()/1024);
-											
+												BitmapFactory.Options options = new BitmapFactory.Options();
+												options.inSampleSize = 23;
+												bitmap1 = BitmapFactory.decodeFile(f.getAbsoluteFile().toString(), options);
+												System.out.println("bitmaps odoactv kb in sync is :" + bitmap1.getByteCount() / 1024);
+
 											} catch (FileNotFoundException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
@@ -319,40 +310,42 @@ implements BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener {
 												e.printStackTrace();
 											}
 										}
-										 
-									
+
+
 								}
-							System.out.println("Called syncstatus from odometer activity");
-										//	syncstatus=WebService.syncfuelimage(odofileno,byteArray1,"odo",byteArray2,"END",METHOD_NAME38);
-											syncstatus= webservice.WebService.SET_ODO_FUEL_IMAGE(odofileno,bitmap1,"odo",bitmap2,"END");
-										
-									
-										
+								System.out.println("Called syncstatus from odometer activity");
+								//	syncstatus=WebService.syncfuelimage(odofileno,byteArray1,"odo",byteArray2,"END",METHOD_NAME38);
+								syncstatus = webservice.WebService.SET_ODO_FUEL_IMAGE(odofileno, bitmap1, "odo", bitmap2, "END");
 
-								
-								
-								if(!errored)
-								{
-									if(syncstatus)
-									{
-										db1.execSQL("UPDATE logindata SET OdometerimgSyncstatus=1 WHERE Username='"+drivercode+"'" );
-										
-									//	rootstatus=WebService.routeclose(drivercode,route,METHOD_NAME19);
-										rootstatus= webservice.WebService.SET_COURIERROUTECLOSE(drivercode,route);
 
-										if(!errored)
-										{
+								if (!errored) {
+									if (syncstatus) {
+										db1.execSQL("UPDATE logindata SET OdometerimgSyncstatus=1 WHERE Username='" + drivercode + "'");
+
+										//	rootstatus=WebService.routeclose(drivercode,route,METHOD_NAME19);
+										rootstatus = webservice.WebService.SET_COURIERROUTECLOSE(drivercode, route);
+
+										if (!errored) {
 											//update loginstatus to ZERO when logout
 											//SQLiteDatabase db1 =db.getWritableDatabase();
-											if(rootstatus.equals("TRUE"))
-											{
-												db1.execSQL("UPDATE logindata SET Loginstatus=0,Routecode="+null+",Runsheetcode="+null+",Odometervalue="+null+" WHERE Username='"+drivercode+"'");
+											if (rootstatus.equals("TRUE")) {
+												db1.execSQL("UPDATE logindata SET Loginstatus=0,Routecode=" + null + ",Runsheetcode=" + null + ",Odometervalue=" + null + " WHERE Username='" + drivercode + "'");
 
 												Toast.makeText(getApplicationContext(), "Route closed", Toast.LENGTH_SHORT).show();
 
-												TelephonyManager telephonyManager  =  
-														( TelephonyManager )getSystemService( Context.TELEPHONY_SERVICE );
-												serialid= telephonyManager.getDeviceId();
+												TelephonyManager telephonyManager =
+														(TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+												if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+													// TODO: Consider calling
+													//    ActivityCompat#requestPermissions
+													// here to request the missing permissions, and then overriding
+													//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+													//                                          int[] grantResults)
+													// to handle the case where the user grants the permission. See the documentation
+													// for ActivityCompat#requestPermissions for more details.
+													return;
+												}
+												serialid = telephonyManager.getDeviceId();
 
 												gps = new GPSTracker(mContext,OdometerActivity.this);
 

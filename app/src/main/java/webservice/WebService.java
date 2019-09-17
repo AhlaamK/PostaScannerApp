@@ -38,6 +38,7 @@ import webservice.JsonFuncClasses.JsonRequests.SET_WAYBILLACK_IMG_Request;
 import webservice.JsonFuncClasses.JsonResponses.GET_HOLDWAYBILLS_PICKUP_Response;
 import webservice.JsonFuncClasses.JsonResponses.GET_PICKUP_WAYBILLS_DTResponse;
 import webservice.JsonFuncClasses.JsonResponses.GET_SCAN_WAYBILL_DTResponse;
+import webservice.JsonFuncClasses.JsonResponses.GET_Temp;
 import webservice.JsonFuncClasses.StringResponse;
 
 import static com.postaplus.postascannerapp.ScreenActivity.url;
@@ -45,7 +46,7 @@ import static com.postaplus.postascannerapp.ScreenActivity.url;
 public class WebService {
 
     // CHECK FUNCTIONS
-    static String url1 = "http://172.53.1.34/OpsCourierScannerService/OpsGCScanSrv.svc/";
+    static String url1 = "http://132.145.29.167:1000/OpsCourierScannerService/OpsGCScanSrv.svc/";
 
     public static String CHECK_WAYBILL_COD_STATUS(String Waybill){
         String JsonParam="";
@@ -83,7 +84,7 @@ public class WebService {
 
     public static Events[] GET_EVENTS() {
 
-        String JsonParameters = "GET_EVENTS";
+        String JsonParameters = "GET_EVENTS?DRIVERCODE=null";
 
         List<webservice.JsonFuncClasses.Events> ResponseData = JsonService.JsonListEvents(JsonParameters);
         System.out.println("ResponseData is geteve" + ResponseData);
@@ -1178,18 +1179,19 @@ public class WebService {
 
 
         JsonParam +="GET_SERVICE_STATUS?DRIVERCODE="+drivercode;
-        Object ResponseData = JsonService.jsonreq(JsonParam,StringResponse.class);
+        StringResponse responseJson = (StringResponse) JsonService.jsonreq(JsonParam,StringResponse.class);
+//        GET_Temp responseData = (GET_Temp) JsonService.jsonreq(JsonParam, GET_Temp.class);
 
-        if(ResponseData==null){
+
+        if(responseJson==null){
             return  Boolean.valueOf(null);
         }else
         Log.e("getservstsreq", JsonParam);
        // Log.e("getservstsRespObject", ResponseData.toString());
-        StringResponse ResponseJson = (StringResponse)ResponseData;
 
-        Log.e("getservstsResponse", ResponseJson.getd().toString());
+        Log.e("getservstsResponse", responseJson.toString());
 
-        return  Boolean.valueOf(ResponseJson.getd());
+        return  Boolean.valueOf(responseJson.getd());
 
   /*   //   return1 true;
         String ResultData = SoapService.soapResult(XMLData);

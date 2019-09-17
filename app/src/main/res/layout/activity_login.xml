@@ -60,14 +60,19 @@
         android:singleLine="true" >
     </EditText>
 
-    <ImageView
-        android:id="@+id/submit"
+    <Button
+        android:id="@+id/submit_btn"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:layout_marginLeft="150dp"
         android:layout_marginTop="380dp"
-        android:adjustViewBounds="true"
-        android:src="@drawable/loginpic" />
+        android:layout_gravity="center_horizontal"
+        android:background="#000000"
+        android:onClick="onLoginButtonClick"
+
+        android:text="Login"
+        android:textColor="#ffffff"
+
+        />
 
     <ProgressBar
         android:id="@+id/progressBar1"
