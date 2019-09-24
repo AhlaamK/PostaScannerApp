@@ -411,7 +411,7 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 					//	if(runsheet.RTNO.equals("NA")&&runsheet.ACKNO.equals("NA")&&runsheet.RSTNO.equals("NA"))
 					System.out.println("rstnumbr are:" + rstnumbr);
 					//	if (rstnumbr != null) {
-					if (rstnumbr.equals("NA") && acknumbr.equals("NA") && retrno.equals("NA")) {
+					if (rstnumbr!=null && acknumbr!=null && retrno!=null &&  rstnumbr.equals("NA") && acknumbr.equals("NA") && retrno.equals("NA")) {
 						Intent int1 = new Intent(HomeActivity.this, DeliveryActivity.class);
 
 						int1.putExtra("routecode", rte);
@@ -2100,6 +2100,7 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 
 					TelephonyManager telephonyManager  =
 							( TelephonyManager )getSystemService( Context.TELEPHONY_SERVICE );
+					assert telephonyManager != null;
 					serialid= telephonyManager.getDeviceId();
 
 					gps = new GPSTracker(mContext,HomeActivity.this);
