@@ -70,10 +70,10 @@ public class JsonService {
     //  public static String url = "http://168.187.136.18/OpsCourierScannerService/OpsGCScanSrv.svc/";
 
     // Stag service
- //  public static String url = "http://172.53.1.34/OpsCourierScannerServiceStag/OpsGCScanSrv.svc/";
+    //  public static String url = "http://172.53.1.34/OpsCourierScannerServiceStag/OpsGCScanSrv.svc/";
 
     // LIVE NEW SERVICE
-   // public static  String url ="http://postascan.postaplus.com/ServiceV2_0/OpsGCScanSrv.svc/";
+    // public static  String url ="http://postascan.postaplus.com/ServiceV2_0/OpsGCScanSrv.svc/";
 
     public static Object jsonreq(String jsonparams, Class responseclasstype) {
         System.out.println("JsonService called");
@@ -90,8 +90,8 @@ public class JsonService {
             //Create connection
             StringBuilder text = new StringBuilder();
 // Test URL
-           // System.out.println("url  jsonservc "+url);
-             String url1 = url + jsonparams;
+            // System.out.println("url  jsonservc "+url);
+            String url1 = url + jsonparams;
             Log.e("url1 is", url1);
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -206,6 +206,7 @@ public class JsonService {
             }
         }//return ResponseJson;
     }
+
     public static ResponseEntity<?> jsonpostreq(String MethodName, Map MethodArgs, Class responseclasstype) {
         System.out.println("JsonServicepost called");
         // Message result=null;
@@ -214,9 +215,9 @@ public class JsonService {
 
             //RestTemplate restTemplate = new RestTemplate(factory);
 
-           RestTemplate restTemplate = new RestTemplate();
+            RestTemplate restTemplate = new RestTemplate();
             String url1 = url + MethodName;
-            Log.e("POST REQUEST CALLED",url1);
+            Log.e("POST REQUEST CALLED", url1);
 
             //HttpHeaders headers = new HttpHeaders();
             //headers.setContentType(MediaType.APPLICATION_JSON);
@@ -225,12 +226,12 @@ public class JsonService {
 
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
-            HttpEntity<Map<String,String>> request = new HttpEntity<Map<String,String>>(MethodArgs);
-            System.out.println("request sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
-            ResponseEntity<?> response = restTemplate.postForEntity( url1, request , responseclasstype);
+            HttpEntity<Map<String, String>> request = new HttpEntity<Map<String, String>>(MethodArgs);
+            System.out.println("request sync : " + request.getBody() + "\n" + " - heardesr: " + request.getHeaders());
+            ResponseEntity<?> response = restTemplate.postForEntity(url1, request, responseclasstype);
 
 
-            System.out.println("response sync :"+response.toString()+" - resp0: "+response.getBody());
+            System.out.println("response sync :" + response.toString() + " - resp0: " + response.getBody());
             return response;
         } catch (Exception e) {
 
@@ -239,6 +240,7 @@ public class JsonService {
 
         }
     }
+
     public static ResponseEntity<?> jsonpostArr(String MethodName, SET_PICKUPDETAILS_Request requestobj, Class responseclasstype) {
         System.out.println("JsonServicepost called");
         // Message result=null;
@@ -252,7 +254,7 @@ public class JsonService {
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 
-            ResponseEntity<?> response = restTemplate.postForEntity( url1,requestobj, responseclasstype);
+            ResponseEntity<?> response = restTemplate.postForEntity(url1, requestobj, responseclasstype);
 
             Log.e("Response Entity :", response.toString());
 
@@ -264,6 +266,7 @@ public class JsonService {
 
         }
     }
+
     public static ResponseEntity<?> jsonpostreqImg(String MethodName, SET_WAYBILLACK_IMG_Request requestobj, Class responseclasstype) {
         System.out.println("JsonServicepost called");
         // Message result=null;
@@ -274,29 +277,28 @@ public class JsonService {
 
             String url1 = url + MethodName;
 
-            Log.e("POST REQUEST CALLED",url1);
+            Log.e("POST REQUEST CALLED", url1);
          /*   SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
             factory.setBufferRequestBody(false);
 
             RestTemplate restTemplate = new RestTemplate(factory);
 */
             //HttpHeaders headers = new HttpHeaders();
-        //  headers.setContentType(MediaType.IMAGE_JPEG);
-           restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            //  headers.setContentType(MediaType.IMAGE_JPEG);
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
             restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
             restTemplate.getMessageConverters().add(new ResourceHttpMessageConverter());
 
 
-
-           //HttpEntity<?> request = new HttpEntity<>(requestobj);
+            //HttpEntity<?> request = new HttpEntity<>(requestobj);
             //System.out.println("request img sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
             //ResponseEntity<?> response = restTemplate.postForEntity( url1, request , responseclasstype);
-           // ResponseEntity<?> response  =restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-            ResponseEntity<?> response = restTemplate.postForEntity( url1,requestobj, responseclasstype);
-          //  ResponseEntity<?> response = restTemplate.exchange( url1,HttpMethod.POST, request, responseclasstype);
+            // ResponseEntity<?> response  =restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+            ResponseEntity<?> response = restTemplate.postForEntity(url1, requestobj, responseclasstype);
+            //  ResponseEntity<?> response = restTemplate.exchange( url1,HttpMethod.POST, request, responseclasstype);
             Log.e("Response Entity :", response.toString());
-            System.out.println("response imgsync :"+response.toString()+" - resp0: "+response.getBody());
+            System.out.println("response imgsync :" + response.toString() + " - resp0: " + response.getBody());
             return response;
         } catch (Exception e) {
 
@@ -305,6 +307,7 @@ public class JsonService {
 
         }
     }
+
     public static ResponseEntity<?> jsonpostreqodoImg(String MethodName, SET_ODO_FUEL_IMAGE_Request requestobj, Class responseclasstype) {
         System.out.println("JsonServicepost called");
         // Message result=null;
@@ -315,17 +318,17 @@ public class JsonService {
 
             String url1 = url + MethodName;
 
-            Log.e("POST REQUEST CALLED",url1);
+            Log.e("POST REQUEST CALLED", url1);
 
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
             restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
             restTemplate.getMessageConverters().add(new ResourceHttpMessageConverter());
 
-            ResponseEntity<?> response = restTemplate.postForEntity( url1,requestobj, responseclasstype);
+            ResponseEntity<?> response = restTemplate.postForEntity(url1, requestobj, responseclasstype);
 
             Log.e("Response Entity :", response.toString());
-            System.out.println("response imgsync :"+response.toString()+" - resp0: "+response.getBody());
+            System.out.println("response imgsync :" + response.toString() + " - resp0: " + response.getBody());
             return response;
         } catch (Exception e) {
 
@@ -334,12 +337,13 @@ public class JsonService {
 
         }
     }
+
     public static List<Events> JsonListEvents(String jsonparams) {
-        Events[] ArrayEvents=null;
-        List<Events> ResponseEvents=null;
+        Events[] ArrayEvents = null;
+        List<Events> ResponseEvents = null;
         System.out.println("JsonService called");
         try {
-            final String url1 = url+ jsonparams;
+            final String url1 = url + jsonparams;
             Log.e("url2 is", url1);
 
             JSONArray Events = null;
@@ -348,39 +352,40 @@ public class JsonService {
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
             ObjectMapper mapper = new ObjectMapper();
-           mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+            mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
             mapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
             mapper.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
-           mapper.enable(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY);
+            mapper.enable(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY);
             Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
             // ResponseJson=String.valueOf(restTemplate.getForObject(url1,LogStatus.class));
             ResponseEvents = restTemplate.getForObject(url1, GET_EVENTSResponse.class).EVENTS;
             Log.e("ResponseEntity is", ResponseEvents.toString());
 
-           // Events[] response  = restTemplate.getForObject(url1, Events[].class);
+            // Events[] response  = restTemplate.getForObject(url1, Events[].class);
             //Log.e("ResponseEntity is", responseEntity.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(ResponseEvents.size()));
-           // webservice.JsonFuncClasses.Events[] ArrayEvents = new Events[ResponseEvents.size()];
+            // webservice.JsonFuncClasses.Events[] ArrayEvents = new Events[ResponseEvents.size()];
 
             //Log.e("ArrayEvents:",ArrayEvents.toString());
-if (ResponseEvents != null){
-    return ResponseEvents;
-}else{
+            if (ResponseEvents != null) {
+                return ResponseEvents;
+            } else {
 
-    return null;
-}
+                return null;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (ResponseEvents != null){
+        if (ResponseEvents != null) {
             return ResponseEvents;
-        }else return  null;
+        } else return null;
     }
+
     public static List<Service> JsonListServc(String jsonparams) {
-        Service[] ArrayServ=null;
-        List<Service> ResponseServ=null;
+        Service[] ArrayServ = null;
+        List<Service> ResponseServ = null;
         System.out.println("JsonService called");
         try {
             final String url1 = url + jsonparams;
@@ -394,7 +399,7 @@ if (ResponseEvents != null){
             mapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
             mapper.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
             mapper.enable(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY);
-         //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
+            //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
             ResponseServ = restTemplate.getForObject(url1, GET_SERVICEResponse.class).SERVICE;
@@ -412,9 +417,10 @@ if (ResponseEvents != null){
 
 
     }
+
     public static List<PayType> JsonListPayTyp(String jsonparams) {
-        PayType[] ArrayPaytyp=null;
-        List<PayType> ResponsePaytyp=null;
+        PayType[] ArrayPaytyp = null;
+        List<PayType> ResponsePaytyp = null;
         System.out.println("JsonService called");
         try {
             final String url1 = url + jsonparams;
@@ -445,9 +451,10 @@ if (ResponseEvents != null){
         }
 
     }
+
     public static List<Remarks> JsonListRemarks(String jsonparams) {
 
-        List<Remarks> ResponseRemark=null;
+        List<Remarks> ResponseRemark = null;
         System.out.println("JsonService called");
         try {
             final String url1 = url + jsonparams;
@@ -464,7 +471,7 @@ if (ResponseEvents != null){
             //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-            ResponseRemark = restTemplate.getForObject(url1,GET_PICKUP_REMARKResponse.class).REMARKS;
+            ResponseRemark = restTemplate.getForObject(url1, GET_PICKUP_REMARKResponse.class).REMARKS;
             Log.e("ResponseEntity is remak", ResponseRemark.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(ResponseRemark.size()));
 
@@ -478,9 +485,10 @@ if (ResponseEvents != null){
         }
 
     }
+
     public static List<Routes> JsonListRoutes(String jsonparams) {
 
-        List<Routes> ResponseRoutes=null;
+        List<Routes> ResponseRoutes = null;
         System.out.println("JsonService called");
         try {
             final String url1 = url + jsonparams;
@@ -497,7 +505,7 @@ if (ResponseEvents != null){
             //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-            ResponseRoutes = restTemplate.getForObject(url1,GET_ROUTESResponse.class).ROUTES;
+            ResponseRoutes = restTemplate.getForObject(url1, GET_ROUTESResponse.class).ROUTES;
             Log.e("ResponseEntity routes", ResponseRoutes.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(ResponseRoutes.size()));
 
@@ -509,10 +517,11 @@ if (ResponseEvents != null){
             // return null;
             return ResponseRoutes;
         }
-}
+    }
+
     public static List<RstDetail> JsonListRstdetal(String jsonparams) {
 
-        List<RstDetail> ResponseRstdet=null;
+        List<RstDetail> ResponseRstdet = null;
         System.out.println("JsonService called");
         try {
             final String url1 = url + jsonparams;
@@ -529,7 +538,7 @@ if (ResponseEvents != null){
             //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-            ResponseRstdet = restTemplate.getForObject(url1,GET_RSTDETAILResponse.class).RSTDETAIL;
+            ResponseRstdet = restTemplate.getForObject(url1, GET_RSTDETAILResponse.class).RSTDETAIL;
             Log.e("ResponseEntity rstdet", ResponseRstdet.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(ResponseRstdet.size()));
 
@@ -542,12 +551,13 @@ if (ResponseEvents != null){
             return ResponseRstdet;
         }
     }
+
     public static List<Couriers> JsonListCourier(String jsonparams) {
 
-        List<Couriers> ResponseCourier=null;
+        List<Couriers> ResponseCourier = null;
         System.out.println("JsonService called");
         try {
-            final String url1 = url+ jsonparams;
+            final String url1 = url + jsonparams;
             Log.e("url2 is", url1);
 
             RestTemplate restTemplate = new RestTemplate();
@@ -561,7 +571,7 @@ if (ResponseEvents != null){
             //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-            ResponseCourier = restTemplate.getForObject(url1,GET_COURIERSResponse.class).COURIERS;
+            ResponseCourier = restTemplate.getForObject(url1, GET_COURIERSResponse.class).COURIERS;
             Log.e("ResponseEntity routes", ResponseCourier.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(ResponseCourier.size()));
 
@@ -574,9 +584,10 @@ if (ResponseEvents != null){
             return ResponseCourier;
         }
     }
+
     public static List<HoldWayBills> JsonListHoldwaybil(String jsonparams) {
 
-        List<HoldWayBills> Responseholdwaybil=null;
+        List<HoldWayBills> Responseholdwaybil = null;
         System.out.println("JsonService called");
         try {
             final String url1 = url + jsonparams;
@@ -593,10 +604,10 @@ if (ResponseEvents != null){
             //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-            Responseholdwaybil = restTemplate.getForObject(url1,GET_HOLDWAYBILLSResponse.class).HOLDWAYBILLS;
-            System.out.println("Responseholdwaybil is"+Responseholdwaybil);
+            Responseholdwaybil = restTemplate.getForObject(url1, GET_HOLDWAYBILLSResponse.class).HOLDWAYBILLS;
+            System.out.println("Responseholdwaybil is" + Responseholdwaybil);
 
-           //Log.e("ResponseEntitySize: ", String.valueOf(Responseholdwaybil.size()));
+            //Log.e("ResponseEntitySize: ", String.valueOf(Responseholdwaybil.size()));
 
             return Responseholdwaybil;
         } catch (Exception e) {
@@ -605,9 +616,10 @@ if (ResponseEvents != null){
 
         return Responseholdwaybil;
     }
+
     public static List<PickUp> JsonListPickup(String jsonparams) {
 
-        List<PickUp> Responsepickup=null;
+        List<PickUp> Responsepickup = null;
         System.out.println("JsonService called");
         try {
             final String url1 = url + jsonparams;
@@ -624,7 +636,7 @@ if (ResponseEvents != null){
             //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-            Responsepickup = restTemplate.getForObject(url1,GET_PICKUPResponse.class).PICKUP;
+            Responsepickup = restTemplate.getForObject(url1, GET_PICKUPResponse.class).PICKUP;
             Log.e("ResponseEntity pickp", Responsepickup.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(Responsepickup.size()));
 
@@ -637,12 +649,13 @@ if (ResponseEvents != null){
             return Responsepickup;
         }
     }
+
     public static List<PickUpDt> JsonListPckpDt(String jsonparams) {
 
-        List<PickUpDt> Resppckupdt=null;
+        List<PickUpDt> Resppckupdt = null;
         System.out.println("JsonService called");
         try {
-            final String url1 = url+ jsonparams;
+            final String url1 = url + jsonparams;
             Log.e("url2 is", url1);
 
             RestTemplate restTemplate = new RestTemplate();
@@ -656,7 +669,7 @@ if (ResponseEvents != null){
             //   Log.e("ResponseEntity is", mapper.getDeserializationConfig().toString());
             mapper.setVisibilityChecker(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-            Resppckupdt = restTemplate.getForObject(url1,GET_PICKUP_DTResponse.class).PICKupDT;
+            Resppckupdt = restTemplate.getForObject(url1, GET_PICKUP_DTResponse.class).PICKupDT;
             Log.e("ResponseEntity pckpudt", Resppckupdt.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(Resppckupdt.size()));
 
@@ -669,29 +682,30 @@ if (ResponseEvents != null){
             return Resppckupdt;
         }
     }
-    public static List<PickUpWaybillsDT> JsonListPckpwayDt(String MethodName,Map map,Class responseclasstype) {
 
-        List<PickUpWaybillsDT> Resppckupwaydt=null;
-        ResponseEntity<GET_PICKUP_WAYBILLS_DTResponse> response=null;
+    public static List<PickUpWaybillsDT> JsonListPckpwayDt(String MethodName, Map map, Class responseclasstype) {
+
+        List<PickUpWaybillsDT> Resppckupwaydt = null;
+        ResponseEntity<GET_PICKUP_WAYBILLS_DTResponse> response = null;
         System.out.println("JsonService called");
         try {
-            final String url1 = url+ MethodName;
+            final String url1 = url + MethodName;
             Log.e("url2 is", url1);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
             Log.e("req pckpudt", map.toString());
-           // Resppckupwaydt = restTemplate.getForObject(url1,GET_PICKUP_WAYBILLS_DTResponse.class).PICKUPWAYBLLDT;
-           // HttpEntity<String> request = new HttpEntity<String>(map);
-          // System.out.println("request sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
-            HttpEntity<Map<String,String>> request = new HttpEntity<Map<String,String>>(map);
-            System.out.println("request sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
-             response = restTemplate.postForEntity( url1, request , GET_PICKUP_WAYBILLS_DTResponse.class);
-          //  ResponseEntity<PickUpWaybillsDT> response = restTemplate.postForEntity( url1, request ,PickUpWaybillsDT.class);
+            // Resppckupwaydt = restTemplate.getForObject(url1,GET_PICKUP_WAYBILLS_DTResponse.class).PICKUPWAYBLLDT;
+            // HttpEntity<String> request = new HttpEntity<String>(map);
+            // System.out.println("request sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
+            HttpEntity<Map<String, String>> request = new HttpEntity<Map<String, String>>(map);
+            System.out.println("request sync : " + request.getBody() + "\n" + " - heardesr: " + request.getHeaders());
+            response = restTemplate.postForEntity(url1, request, GET_PICKUP_WAYBILLS_DTResponse.class);
+            //  ResponseEntity<PickUpWaybillsDT> response = restTemplate.postForEntity( url1, request ,PickUpWaybillsDT.class);
 
             //ResponseEntity<?> response = restTemplate.postForEntity( url1,req,GET_PICKUP_WAYBILLS_DTResponse.class);
-            System.out.println("response ispckp: "+response);
+            System.out.println("response ispckp: " + response);
             Log.e("ResponseEntity pckpudt", response.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(response));
 
@@ -701,13 +715,14 @@ if (ResponseEvents != null){
         }
         return response.getBody().PICKUPWAYBLLDT;
     }
+
     public static List<ScanWaybillDt> JsonListScanwayDt(String MethodName, Map map, Class responseclasstype) {
 
-        List<ScanWaybillDt> Resppckupwaydt=null;
-        ResponseEntity<GET_SCAN_WAYBILL_DTResponse> response=null;
+        List<ScanWaybillDt> Resppckupwaydt = null;
+        ResponseEntity<GET_SCAN_WAYBILL_DTResponse> response = null;
         System.out.println("JsonService scanwaydet called");
         try {
-            final String url1 = url+ MethodName;
+            final String url1 = url + MethodName;
             Log.e("url2 is", url1);
 
             RestTemplate restTemplate = new RestTemplate();
@@ -715,13 +730,12 @@ if (ResponseEvents != null){
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
             Log.e("req scanwaydt", map.toString());
 
-            HttpEntity<Map<String,String>> request = new HttpEntity<Map<String,String>>(map);
-            System.out.println("request sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
-            response = restTemplate.postForEntity( url1, request , GET_SCAN_WAYBILL_DTResponse.class);
+            HttpEntity<Map<String, String>> request = new HttpEntity<Map<String, String>>(map);
+            System.out.println("request sync : " + request.getBody() + "\n" + " - heardesr: " + request.getHeaders());
+            response = restTemplate.postForEntity(url1, request, GET_SCAN_WAYBILL_DTResponse.class);
 
 
-
-            System.out.println("response ispckp: "+response);
+            System.out.println("response ispckp: " + response);
             Log.e("ResponseEntity pckpudt", response.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(response));
 
@@ -731,11 +745,12 @@ if (ResponseEvents != null){
         }
         return response.getBody().SCANWAYBLLDT;
     }
+
     public static List<PickupHoldwaybills> JsonListPickupholdwaybill(String MethodName, Map map, Class responseclasstype) {
-        ResponseEntity<GET_HOLDWAYBILLS_PICKUP_Response> response=null;
+        ResponseEntity<GET_HOLDWAYBILLS_PICKUP_Response> response = null;
         System.out.println("JsonService pickp called");
         try {
-            final String url1 = url+ MethodName;
+            final String url1 = url + MethodName;
             Log.e("url2 is", url1);
 
             RestTemplate restTemplate = new RestTemplate();
@@ -743,11 +758,11 @@ if (ResponseEvents != null){
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
             Log.e("req scanwaydt", map.toString());
 
-            HttpEntity<Map<String,String>> request = new HttpEntity<Map<String,String>>(map);
-            System.out.println("request sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
-            response = restTemplate.postForEntity( url1, request , GET_HOLDWAYBILLS_PICKUP_Response.class);
+            HttpEntity<Map<String, String>> request = new HttpEntity<Map<String, String>>(map);
+            System.out.println("request sync : " + request.getBody() + "\n" + " - heardesr: " + request.getHeaders());
+            response = restTemplate.postForEntity(url1, request, GET_HOLDWAYBILLS_PICKUP_Response.class);
 
-            System.out.println("response ispckp: "+response);
+            System.out.println("response ispckp: " + response);
             Log.e("ResponseEntity holpck", response.toString());
             Log.e("ResponseEntitySize: ", String.valueOf(response));
 
@@ -774,28 +789,29 @@ if (ResponseEvents != null){
 
             okhttp3.RequestBody body = RequestBody.create(JSON, json.toString());
             okhttp3.Request request = new okhttp3.Request.Builder()
-                    .url(url+ MethodName)
+                    .url(url + MethodName)
                     .post(body)
                     .build();
 
             okhttp3.Response response = client.newCall(request).execute();
-            System.out.println("requestjson is:"+request+"body"+body);
+            System.out.println("requestjson is:" + request + "body" + body);
             String networkResp = response.body().string();
             if (!networkResp.isEmpty()) {
                 jsonObjectResp = parseJSONStringToJSONObject(networkResp);
-                System.out.println("jsonObjectResp net is:"+jsonObjectResp);
+                System.out.println("jsonObjectResp net is:" + jsonObjectResp);
             }
         } catch (Exception ex) {
             String err = String.format("{\"result\":\"false\",\"error\":\"%s\"}", ex.getMessage());
             ex.printStackTrace();
             //  jsonObjectResp = parseJSONStringToJSONObject(null);
-            jsonObjectResp=null;
+            jsonObjectResp = null;
         }
-        Log.e("jsonObjectResp/",String.valueOf(jsonObjectResp));
+        Log.e("jsonObjectResp/", String.valueOf(jsonObjectResp));
 
 
         return jsonObjectResp;
     }
+
     private static JSONObject parseJSONStringToJSONObject(final String strr) {
 
         JSONObject response = null;
@@ -812,7 +828,7 @@ if (ResponseEvents != null){
 
             }
         }
-        Log.e("parse response" ,String.valueOf(response));
+        Log.e("parse response", String.valueOf(response));
         return response;
     }
 
