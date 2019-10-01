@@ -128,7 +128,7 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 	OpenRst runsheet;
 	boolean Connected;
 
-	public static String retrno, rstnumbr, acknumbr;
+	public static String retrno, rstnumbr, acknumbr,openrstERR;
 
 	int oc1 = 0, oc = 0, fc = 0, c = 0, c1 = 0, c2 = 0, c3 = 0, c4 = 0;
 /*	@Override
@@ -345,15 +345,15 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 
 				//mPb.setVisibility(View.VISIBLE);
 				try {
-					//check if any open runsheet or not
+                    //check if any open runsheet or not
 
-					// runsheet=WebService.checkrunsheet(drivercode,METHOD_NAME9);
-					if(isNetworkConnected()){
-						Connected = WebService.GET_SERVICE_STATUS(null);
+                    // runsheet=WebService.checkrunsheet(drivercode,METHOD_NAME9);
+                    if (isNetworkConnected()) {
+                        Connected = WebService.GET_SERVICE_STATUS(null);
 
-							GetOPENRRST();
+                        GetOPENRRST();
 
-					}/*else {
+                    }/*else {
 
 						if (rstnumbr != null) {
 							if (rstnumbr.equals("NA") && acknumbr.equals("NA") && retrno.equals("NA")) {
@@ -377,55 +377,45 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 							}
 						}
 					}*/
-					// AK boolean Connected = WebService.GET_SERVICE_STATUS(null);
+                    // AK boolean Connected = WebService.GET_SERVICE_STATUS(null);
 
-					// boolean Connected=false;
-					// boolean Connected= false;
-					System.out.println("Drivercode value in homeactivity is");
-					System.out.println(drivercode);
-					System.out.println("METHOD_NAME9 value in homeactivity is");
-					System.out.println(METHOD_NAME9);
+                    // boolean Connected=false;
+                    // boolean Connected= false;
+                    System.out.println("Drivercode value in homeactivity is");
+                    System.out.println(drivercode);
+                    System.out.println("METHOD_NAME9 value in homeactivity is");
+                    System.out.println(METHOD_NAME9);
 
 
-					//	if (Connected) {
-					//AK
-					//mPb.setVisibility(View.VISIBLE);
+                    //	if (Connected) {
+                    //AK
+                    //mPb.setVisibility(View.VISIBLE);
 
-     /*db=new DatabaseHandler(getBaseContext());
-     sqldb = db.getReadableDatabase();
-     Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata " , null);
-     int DeliveryDataCount = c1.getCount();*/
-     /*c1.moveToFirst();
-     for(int i=0;i <c1.getCount();i++){
 
-      Log.e("Home","waybill : " + c1.getString(c1.getColumnIndex("Waybill")));
-      Log.e("Home","status : " + c1.getString(c1.getColumnIndex("WC_Status")));
-      Log.e("Home","awbidentifier : " + c1.getString(c1.getColumnIndex("AWBIdentifier")));
-     c1.moveToNext();
-     }*/
-     /*c1.close();
-     db.close();*/
 
-					//runsheet= WebService. GET_OPENRST(drivercode);
-					//if no open runsheet go to delivery page else go to odometer page
-					//	if(runsheet.RTNO.equals("NA")&&runsheet.ACKNO.equals("NA")&&runsheet.RSTNO.equals("NA"))
-					System.out.println("rstnumbr are:" + rstnumbr);
-					//	if (rstnumbr != null) {
-					if (rstnumbr!=null && acknumbr!=null && retrno!=null &&  rstnumbr.equals("NA") && acknumbr.equals("NA") && retrno.equals("NA")) {
-						Intent int1 = new Intent(HomeActivity.this, DeliveryActivity.class);
+                    //runsheet= WebService. GET_OPENRST(drivercode);
+                    //if no open runsheet go to delivery page else go to odometer page
+                    //	if(runsheet.RTNO.equals("NA")&&runsheet.ACKNO.equals("NA")&&runsheet.RSTNO.equals("NA"))
+                    System.out.println("rstnumbr are:" + rstnumbr);
+                    //	if (rstnumbr != null) {
+                   // if (openrstERR.contains("No RunSheet Found")) {
 
-						int1.putExtra("routecode", rte);
-						int1.putExtra("routename", rte1);
-						sqldb = db.getWritableDatabase();
-						//System.out.println("runsheet.RSTNO"+runsheet.RSTNO);
-						sqldb.execSQL("UPDATE logindata SET Runsheetcode='" + rstnumbr + "' WHERE Username='" + drivercode + "'");;
-						//startActivity(new Intent(int1));
-						// new code
-						HomeActivity.this.startActivity(new Intent(int1));
-						return;
-					}
-					//}
-					else {
+                        	if (rstnumbr!=null && acknumbr!=null && retrno!=null &&  rstnumbr.equals("NA") && acknumbr.equals("NA") && retrno.equals("NA")) {
+                        Intent int1 = new Intent(HomeActivity.this, DeliveryActivity.class);
+
+                        int1.putExtra("routecode", rte);
+                        int1.putExtra("routename", rte1);
+                        sqldb = db.getWritableDatabase();
+                        //System.out.println("runsheet.RSTNO"+runsheet.RSTNO);
+                        sqldb.execSQL("UPDATE logindata SET Runsheetcode='" + rstnumbr + "' WHERE Username='" + drivercode + "'");
+                        ;
+                        //startActivity(new Intent(int1));
+                        // new code
+                        HomeActivity.this.startActivity(new Intent(int1));
+                        return;
+
+                    //}
+                }else {
 
       /*if(runsheet.equals("Invalid ID")){
        Toast.makeText(getApplicationContext(), "Invalid Driver Code, Try again!", Toast.LENGTH_LONG).show();
@@ -664,6 +654,15 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 							//	int oc1 = 0, oc = 0, fc = 0, c = 0, c1 = 0, c2 = 0, c3 = 0, c4 = 0;
 							//sync_channelstatus=WebService.setsyncchannelstatus(drivercode,MasterActivity.METHOD_NAME40);
 							sync_channelstatus = WebService.SET_SYNCH_CHANNEL(drivercode);
+
+
+							if (sync_channelstatus == null) {
+
+								Toast.makeText(HomeActivity.this, "Please Try again!",
+										Toast.LENGTH_LONG).show();
+								return;
+							}
+
 							//mPb.setVisibility(View.VISIBLE);
 							/*System.out.println("Value of drivercode in sync of home activity");
 							System.out.println(drivercode);*/
@@ -1360,6 +1359,13 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 						rr1.moveToNext();
 						//holdstatus=WebService.settranshold(drivercode,trancourier[i],wbill1[i],METHOD_NAME25);
 						holdstatus = WebService.SET_TRANS_HOLD(drivercode, trancourier[i], wbill1[i]);
+
+						if (holdstatus == null) {
+
+							Toast.makeText(HomeActivity.this, "Please Try again!",
+									Toast.LENGTH_LONG).show();
+							return;
+						}
 						if (holdstatus.contains("TRANSFER")) {
 							db1 = db.getWritableDatabase();
 							db1.execSQL("UPDATE Holdwaybilldata SET TransferStatus=1 WHERE Waybill='" + wbill1[i] + "'");
@@ -2206,7 +2212,12 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 
 		try {
 			routesresponse = WebService.GET_ROUTES(drivercode);
+			if (routesresponse == null) {
 
+				Toast.makeText(HomeActivity.this, "Please Try again!",
+						Toast.LENGTH_LONG).show();
+				return;
+			}
 			for (Routes routesOb : routesresponse) {
 				sqldb = db.getReadableDatabase();
 				Cursor rou = sqldb.rawQuery("SELECT * FROM routedata WHERE ROUTECODE='" + routesOb.RouteCode + "'", null);
@@ -2349,7 +2360,14 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 
 		try {
 
-			pickupremarksResponse = WebService.GET_PICKUP_REMARK();
+			pickupremarksResponse = WebService.GET_PICKUP_REMARK(drivercode);
+
+			if (pickupremarksResponse == null) {
+
+				Toast.makeText(HomeActivity.this, "Please Try again!",
+						Toast.LENGTH_LONG).show();
+				return;
+			}
 			db = new DatabaseHandler(getBaseContext());
 			//  sqldb = db.getWritableDatabase();
 
@@ -2840,6 +2858,12 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 		try {
 
 			courierResponse = WebService.GET_COURIERS(drivercode);
+			if (courierResponse == null) {
+
+				Toast.makeText(HomeActivity.this, "Please Try again!",
+						Toast.LENGTH_LONG).show();
+				return;
+			}
 			db = new DatabaseHandler(getBaseContext());
 			for (Couriers corObv : courierResponse) {
 				sqldb = db.getReadableDatabase();
@@ -3026,6 +3050,12 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 		try
 		{
 			serviceResponse = WebService.GET_SERVICE();
+			if (serviceResponse == null) {
+
+				Toast.makeText(HomeActivity.this, "Please Try again!",
+						Toast.LENGTH_LONG).show();
+				return;
+			}
 			db = new DatabaseHandler(getBaseContext());
 			for (Service serObv : serviceResponse) {
 				//System.out.println("Get service is working" + serObv.SERVICEID);
@@ -3166,6 +3196,7 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 			retrno = runsheet.RTNO;
 			rstnumbr = runsheet.RSTNO;
 			acknumbr = runsheet.ACKNO;
+            openrstERR = runsheet.ERRMSG;
 
 		}
 
@@ -3507,6 +3538,7 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 			}
 			//	syncstatus=WebService.syncfuelimage(fid,byteArray1,"fuel",byteArray2,"START",METHOD_NAME38);
 			syncstatus = WebService.SET_ODO_FUEL_IMAGE(fid, bitmap1, "fuel", bitmap2, "START");
+
 			if (syncstatus) {
 				db1 = db.getWritableDatabase();
 				db1.execSQL("UPDATE Fueldatatable SET ImageSyncstatus=1 WHERE DRIVERCODE='" + drivercode + "'");
@@ -3862,6 +3894,13 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 				rr1.moveToNext();
 				//holdstatus=WebService.settranshold(drivercode,trancourier[i],wbill1[i],METHOD_NAME25);
 				holdstatus = WebService.SET_TRANS_HOLD(drivercode, trancourier[i], wbill1[i]);
+
+				if (holdstatus == null) {
+
+					Toast.makeText(HomeActivity.this, "Please Try again!",
+							Toast.LENGTH_LONG).show();
+					return;
+				}
 				if (holdstatus.contains("TRANSFER")) {
 					db1 = db.getWritableDatabase();
 					db1.execSQL("UPDATE Holdwaybilldata SET TransferStatus=1 WHERE Waybill='" + wbill1[i] + "'");
@@ -4034,10 +4073,12 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 					}
 					//pick_status = WebService.SET_PICKUPDETAILS(drivercode, setpkpdtRequest);
 					pick_status = WebService.SET_PICKUPDETAILS(drivercode, setpkpdtRequest[0].PICKUPNO);
-					if (pick_status.equals("TRUE")) {
-						db1 = db.getWritableDatabase();
-						db1.execSQL("UPDATE pickuphead SET TransferStatus=2 WHERE Pickup_No='" + setpkpdtRequest[i].PICKUPNO + "'");
+					if(pick_status != null) {
+						if (pick_status.equals("TRUE")) {
+							db1 = db.getWritableDatabase();
+							db1.execSQL("UPDATE pickuphead SET TransferStatus=2 WHERE Pickup_No='" + setpkpdtRequest[i].PICKUPNO + "'");
 
+						}
 					}
 				}
 				rr121.moveToNext();

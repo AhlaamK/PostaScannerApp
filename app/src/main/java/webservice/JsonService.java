@@ -638,7 +638,7 @@ public class JsonService {
 
             Responsepickup = restTemplate.getForObject(url1, GET_PICKUPResponse.class).PICKUP;
             Log.e("ResponseEntity pickp", Responsepickup.toString());
-            Log.e("ResponseEntitySize: ", String.valueOf(Responsepickup.size()));
+       //     Log.e("ResponseEntitySize: ", String.valueOf(Responsepickup.size()));
 
             return Responsepickup;
         } catch (Exception e) {

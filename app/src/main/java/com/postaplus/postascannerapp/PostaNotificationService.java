@@ -108,27 +108,7 @@ public class PostaNotificationService extends Service {
 		//	startForeground(NOTIFICATION, mBuilder);
 		return START_STICKY;
 	}
-  /*  private void _startService()
-    {      
-        timer.scheduleAtFixedRate(
 
-                new TimerTask() {
-
-                    public void run() {
-
-                        doServiceWork();
-
-                    }
-                },1000,UPDATE_INTERVAL);
-		*//*timer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				doServiceWork();
-			}
-		}, 0, 5000);*//*
-
-        Log.i(getClass().getSimpleName(), "FileScannerService Timer started....");
-    }*/
 
 	private void doServiceWork() {
 
@@ -167,44 +147,25 @@ public class PostaNotificationService extends Service {
 				} else {
 					Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
 				}
-				//	 for(int i=0;i<count;i++){
-				// if(pickupno!=null){
-				// System.out.print("reci:"+pickupno);
-				// }
-				// }
+
 
 			} else {
 
 				netstatus = isNetworkConnected();
 				if (netstatus) {
 					new monitortask().execute();
-					//servicestatus=isConnected();
-					/*if(servicestatus)
-					{
 
-						new monitortask().execute();
-					}
-					else
-					{
-
-						Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_LONG).show();
-					}*/
 				} else {
 					Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
 				}
-				//	 for(int i=0;i<count;i++){
-				// if(pickupno!=null){
-				// System.out.print("reci:"+pickupno);
-				// }
-				// }
+
 
 			}
 
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			//Log.e("PostaNotification:", e.getMessage().toString());
-			// Toast.makeText(getApplicationContext(), "Connection ERROR", Toast.LENGTH_LONG).show();
+
 		}
 
 	}
@@ -217,15 +178,7 @@ public class PostaNotificationService extends Service {
 
 			if (netInfo != null && netInfo.isConnected()) {
 				//Network is available but check if we can get access from the network.
-			/*	URL url = new URL(MasterActivity.URL);
-				HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
-				urlc.setRequestProperty("Connection", "close");
-				urlc.setConnectTimeout(2000); // Timeout 2 seconds.
-				urlc.connect();*/
 
-				//Successful response.
-				//Log.d("NO INTERNET", "NO INTERNET");
-				//return1 urlc.getResponseCode() == 200;
 				Boolean Connect = WebService.GET_SERVICE_STATUS(null);
 				System.out.println("Connect result in postanotification service" + Connect);
 				if (Connect) return true;
@@ -255,8 +208,7 @@ public class PostaNotificationService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		//handler.removeCallbacks(runnableCode);
-		//   _shutdownService();
+
 
 
 	}
@@ -276,6 +228,13 @@ public class PostaNotificationService extends Service {
 
 			try {
 				pickupResponse = WebService.GET_PICKUP(uname);
+
+				if (pickupResponse == null) {
+
+					Toast.makeText(PostaNotificationService.this, "Please Try again!",
+							Toast.LENGTH_LONG).show();
+					return;
+				}
 				//   if(pickupResponse!=null)  PickupCount=pickupResponse.length;
 				PickupCount = 0;
 				db = new DatabaseHandler(getBaseContext());

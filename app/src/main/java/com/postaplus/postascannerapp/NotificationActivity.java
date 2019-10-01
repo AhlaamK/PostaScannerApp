@@ -34,7 +34,8 @@ public class NotificationActivity extends MasterActivity {
 	//SoapObject response;
 	TextView username,rnametxt,cnametxt,counttxt;
 	Button selectall,accept,reject,close;
-	CheckBox ch;	
+	CheckBox ch;
+	CheckBox chboxpickup;
 	boolean acceptstatus;
 	String rcode,rname;
 	
@@ -88,23 +89,33 @@ public class NotificationActivity extends MasterActivity {
 					v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
 					db = new DatabaseHandler(getBaseContext());
 					sqldb = db.getWritableDatabase();
-					for (int i = 0; i < resulttab.getChildCount(); i++) {
-						ch = (CheckBox) ((TableRow) resulttab.getChildAt(i)).getChildAt(0);
-						if (ch.isChecked() == true) {
+					String[] PickupNO = new String[resulttab.getChildCount()];
+					for (int j = 0; j < resulttab.getChildCount(); j++) {
+						ch = (CheckBox) ((TableRow) resulttab.getChildAt(j)).getChildAt(0);
+					//	ch = (CheckBox) ((TableRow) resulttab.getChildAt(i)).getChildAt(i);
+						if (ch.isChecked()) {
 							if (ch.isChecked()) {
-								pickupno1[i] = ch.getText().toString();
+								PickupNO[j] = ch.getText().toString();
 
 
 								//acceptstatus=WebService.setnotpickup(uname,pickupno1[i],date,METHOD_NAME23);
-								acceptstatus = webservice.WebService.SET_PICKUP_RECVD(uname, pickupno1[i], date);
+							//	acceptstatus = webservice.WebService.SET_PICKUP_RECVD(uname, pickupno1[i], date);
+								acceptstatus = webservice.WebService.SET_PICKUP_RECVD(uname, PickupNO[j], date);
+
 							}
 
 							if (!errored) {
 								if (acceptstatus) {
-									sqldb.execSQL("UPDATE pickuphead SET Status='A' WHERE Pickup_No='" + pickupno1[i] + "'");
-									sqldb.execSQL("UPDATE pickuphead SET TransferStatus=1 WHERE Pickup_No='" + pickupno1[i] + "'");
-									sqldb.execSQL("UPDATE pickuphead SET Accept_Date_Time='" + date + "' WHERE Pickup_No='" + pickupno1[i] + "'");
+									sqldb.execSQL("UPDATE pickuphead SET Status='A' WHERE Pickup_No='" + PickupNO[j] + "'");
+									sqldb.execSQL("UPDATE pickuphead SET TransferStatus=1 WHERE Pickup_No='" + PickupNO[j] + "'");
+									sqldb.execSQL("UPDATE pickuphead SET Accept_Date_Time='" + date + "' WHERE Pickup_No='" + PickupNO[j] + "'");
 
+
+
+								/*	sqldb.execSQL("UPDATE pickuphead SET Status='A' WHERE Pickup_No='" + pickupno1[j] + "'");
+									sqldb.execSQL("UPDATE pickuphead SET TransferStatus=1 WHERE Pickup_No='" + pickupno1[j] + "'");
+									sqldb.execSQL("UPDATE pickuphead SET Accept_Date_Time='" + date + "' WHERE Pickup_No='" + pickupno1[j] + "'");
+*/
 								}
 							} else {
 								Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_LONG).show();
@@ -267,7 +278,8 @@ public class NotificationActivity extends MasterActivity {
 					//tr.addView(ch);
 					tr.addView(ch);
 					tr.addView(rnametxt);
-					tr.addView(cnametxt);	
+					tr.addView(cnametxt);
+					tr.setId(i);
 					
 					
 				

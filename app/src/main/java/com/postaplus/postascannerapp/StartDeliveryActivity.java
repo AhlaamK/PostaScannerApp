@@ -3782,36 +3782,36 @@ public class StartDeliveryActivity extends MasterActivity
 
         @Override
         protected String doInBackground(Void... params) {
-          /*  db = new DatabaseHandler(getBaseContext());
-            //open localdatabase in a read mode
-            sqldb = db.getReadableDatabase();
-            //select all values in the table and check count
+              /*  db = new DatabaseHandler(getBaseContext());
+                //open localdatabase in a read mode
+                sqldb = db.getReadableDatabase();
+                //select all values in the table and check count
 
-            Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "'  ", null);
-            //AND AWBIdentifier = '"+ FlagDeliveryMode  +"'
-            flag = 0;
-            if (c1.getCount() > 0) {
-                c1.moveToFirst();
-                wbill = c1.getString(c1.getColumnIndex("Waybill"));
-                cons = c1.getString(c1.getColumnIndex("Consignee"));
-                phonedb = c1.getString(c1.getColumnIndex("Telephone"));
-                area = c1.getString(c1.getColumnIndex("Area"));
-                company = c1.getString(c1.getColumnIndex("Company"));
-                civilid = c1.getString(c1.getColumnIndex("CivilID"));
-                stopdeliver = c1.getInt(c1.getColumnIndex("StopDelivery"));
-                Log.e("StartDelivery","AWBIDENTIFIER : "+c1.getInt(c1.getColumnIndex("AWBIdentifier")));
-                Log.e("StartDelivery","Amount : " +c1.getString(c1.getColumnIndex("Amount")));
+                Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "'  ", null);
+                //AND AWBIdentifier = '"+ FlagDeliveryMode  +"'
+                flag = 0;
+                if (c1.getCount() > 0) {
+                    c1.moveToFirst();
+                    wbill = c1.getString(c1.getColumnIndex("Waybill"));
+                    cons = c1.getString(c1.getColumnIndex("Consignee"));
+                    phonedb = c1.getString(c1.getColumnIndex("Telephone"));
+                    area = c1.getString(c1.getColumnIndex("Area"));
+                    company = c1.getString(c1.getColumnIndex("Company"));
+                    civilid = c1.getString(c1.getColumnIndex("CivilID"));
+                    stopdeliver = c1.getInt(c1.getColumnIndex("StopDelivery"));
+                    Log.e("StartDelivery","AWBIDENTIFIER : "+c1.getInt(c1.getColumnIndex("AWBIdentifier")));
+                    Log.e("StartDelivery","Amount : " +c1.getString(c1.getColumnIndex("Amount")));
 
-            } else {
-                //c2.moveToFirst();\
-                //	System.out.println("Scanned Wbill not in delivery");
+                } else {
+                    //c2.moveToFirst();\
+                    //	System.out.println("Scanned Wbill not in delivery");
 
-                flag = 1;
+                    flag = 1;
 
-            }
-            c1.close();
+                }
+                c1.close();
 
-            db.close();*/
+                db.close();*/
             System.out.println("waybill data 1 in start delivery activity" + wbilldata1);
             System.out.println("flag delivery mode in start delivery activity" + FlagDeliveryMode);
             return "";
@@ -3917,6 +3917,13 @@ public class StartDeliveryActivity extends MasterActivity
 */
                     if (isNetworkConnected()) {
                         String CODResponse = WebService.CHECK_WAYBILL_COD_STATUS(wbillarr[i]);
+
+                        if (CODResponse == null) {
+
+                            Toast.makeText(StartDeliveryActivity.this, "Please Try again!",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         System.out.println("CODResponse" + CODResponse);
                         CODamnt=CODResponse;
                         System.out.println("CODamnt" + CODamnt);
@@ -4789,6 +4796,13 @@ public class StartDeliveryActivity extends MasterActivity
 
                     if (isNetworkConnected()) {
                         String CODResponse = WebService.CHECK_WAYBILL_COD_STATUS(wbillarr[i]);
+
+                        if (CODResponse == null) {
+
+                            Toast.makeText(StartDeliveryActivity.this, "Please Try again!",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         System.out.println("CODResponse" + CODResponse);
                         CODamnt=CODResponse;
                         System.out.println("CODamnt" + CODamnt);

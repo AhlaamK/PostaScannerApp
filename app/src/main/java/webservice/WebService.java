@@ -53,14 +53,15 @@ public class WebService {
         JsonParam +="GET_WAYBILL_COD_STATUS?WAYBILL="+Waybill;
 
         Object ResponseData = JsonService.jsonreq(JsonParam,StringResponse.class);
+        if(ResponseData != null) {
 
-        Log.e("getwaycode", JsonParam);
-        Log.e("getwaycodeRespObject", ResponseData.toString());
-        StringResponse ResponseJson = (StringResponse)ResponseData;
+            Log.e("getwaycode", JsonParam);
+            Log.e("getwaycodeRespObject", ResponseData.toString());
+            StringResponse ResponseJson = (StringResponse) ResponseData;
 
-        Log.e("getwaycodeResponse", ResponseJson.getd().toString());
-        return ResponseJson.getd();
-
+            Log.e("getwaycodeResponse", ResponseJson.getd().toString());
+            return ResponseJson.getd();
+        }else return null;
     }
 
     public static boolean invokeLoginWS(String userName, String passWord, String serialID, String version) {
@@ -117,38 +118,39 @@ public class WebService {
 
         JsonParam +="GET_PICKUP?DRIVERCODE="+drivercode;
         List<webservice.JsonFuncClasses.PickUp> ResponseData = JsonService.JsonListPickup(JsonParam);
-        System.out.println("ResponseData is gepickup:"+ResponseData.size());
+        if(ResponseData != null) {
+            System.out.println("ResponseData is gepickup:" + ResponseData.size());
 
-        PickUp[] Arraypickup = new PickUp[ResponseData.size()];
-        int i = 0;
-        for (webservice.JsonFuncClasses.PickUp rec:ResponseData
-                ) {
+            PickUp[] Arraypickup = new PickUp[ResponseData.size()];
+            int i = 0;
+            for (webservice.JsonFuncClasses.PickUp rec : ResponseData
+                    ) {
 
-            Arraypickup[i] = new PickUp();
-            Arraypickup[i].ACC_NAME = rec.ACC_NAME;
-            Arraypickup[i].CONSIGNEE_NAME = rec.CONSIGNEE_NAME;
-            Arraypickup[i].CONTACT_PERSON = rec.CONTACT_PERSON;
-            Arraypickup[i].DEL_ADD = rec.DEL_ADD;
-            Arraypickup[i].DEL_CITY = rec.DEL_CITY;
-            Arraypickup[i].DEL_PHONE= rec.DEL_PHONE;
-            Arraypickup[i].ERR = rec.ERR;
-            Arraypickup[i].IDENTIFIER = rec.IDENTIFIER;
-            Arraypickup[i].PICK_ADD = rec.PICK_ADD;
-            Arraypickup[i].PICK_AREA = rec.PICK_AREA;
-            Arraypickup[i].PICK_NO=rec.PICK_NO;
-            Arraypickup[i].PICK_PHONE = rec.PICK_PHONE;
-            Arraypickup[i].PICK_TIME = rec.PICK_TIME;
-            Arraypickup[i].SerialNo = rec.SerialNo;
-
-
-            i+=1;
-
-        }
-        Log.e("Datapicup:/suc ", String.valueOf(Arraypickup));
-        System.out.println("Arraypickup size:"+Arraypickup.length);
-        return Arraypickup;
+                Arraypickup[i] = new PickUp();
+                Arraypickup[i].ACC_NAME = rec.ACC_NAME;
+                Arraypickup[i].CONSIGNEE_NAME = rec.CONSIGNEE_NAME;
+                Arraypickup[i].CONTACT_PERSON = rec.CONTACT_PERSON;
+                Arraypickup[i].DEL_ADD = rec.DEL_ADD;
+                Arraypickup[i].DEL_CITY = rec.DEL_CITY;
+                Arraypickup[i].DEL_PHONE = rec.DEL_PHONE;
+                Arraypickup[i].ERR = rec.ERR;
+                Arraypickup[i].IDENTIFIER = rec.IDENTIFIER;
+                Arraypickup[i].PICK_ADD = rec.PICK_ADD;
+                Arraypickup[i].PICK_AREA = rec.PICK_AREA;
+                Arraypickup[i].PICK_NO = rec.PICK_NO;
+                Arraypickup[i].PICK_PHONE = rec.PICK_PHONE;
+                Arraypickup[i].PICK_TIME = rec.PICK_TIME;
+                Arraypickup[i].SerialNo = rec.SerialNo;
 
 
+                i += 1;
+
+            }
+            Log.e("Datapicup:/suc ", String.valueOf(Arraypickup));
+            System.out.println("Arraypickup size:" + Arraypickup.length);
+            return Arraypickup;
+
+        }else return null;
     }
 
     public static String GET_COURIERROUTE(String drivercode) {
@@ -171,22 +173,25 @@ public class WebService {
 
         JsonParam +="GET_COURIERS?DRIVERCODE="+drivercode;
         List<webservice.JsonFuncClasses.Couriers> ResponseData = JsonService.JsonListCourier(JsonParam);
-        System.out.println("ResponseData is getcourir:"+ResponseData);
+        if (ResponseData != null) {
 
-        Couriers[] ArrayCourier = new Couriers[ResponseData.size()];
-        int i = 0;
-        for (webservice.JsonFuncClasses.Couriers rec:ResponseData
-                ) {
 
-            ArrayCourier[i] = new Couriers();
-            ArrayCourier[i].Driver_Code = rec.Driver_Code;
-            ArrayCourier[i].Driver_Name = rec.Driver_Name;
-            i+=1;
-           // Log.e("DataCourier:/suc ", rec.Driver_Code + "-" + rec.Driver_Name);
-        }
-        System.out.println("ResponseData is courierize"+ResponseData.size());
-        return ArrayCourier;
+            System.out.println("ResponseData is getcourir:" + ResponseData);
 
+            Couriers[] ArrayCourier = new Couriers[ResponseData.size()];
+            int i = 0;
+            for (webservice.JsonFuncClasses.Couriers rec : ResponseData
+                    ) {
+
+                ArrayCourier[i] = new Couriers();
+                ArrayCourier[i].Driver_Code = rec.Driver_Code;
+                ArrayCourier[i].Driver_Name = rec.Driver_Name;
+                i += 1;
+                // Log.e("DataCourier:/suc ", rec.Driver_Code + "-" + rec.Driver_Name);
+            }
+            System.out.println("ResponseData is courierize" + ResponseData.size());
+            return ArrayCourier;
+        }return null;
     }
 
     public static HoldWayBills[] GET_HOLDWAYBILLS(String drivercode) {
@@ -309,6 +314,7 @@ public class WebService {
 
         JsonParam +="GET_ROUTES?DRIVERCODE="+drivercode;
         List<webservice.JsonFuncClasses.Routes> ResponseData = JsonService.JsonListRoutes(JsonParam);
+        if(ResponseData != null){
         System.out.println("ResponseData is getrouttes:"+ResponseData);
 
         Routes[] ArrayRoutes = new Routes[ResponseData.size()];
@@ -324,6 +330,8 @@ public class WebService {
         }
        // System.out.println("ResponseData is routeize"+ResponseData.size());
         return ArrayRoutes;
+    }else return null;
+
     }
 
     public static RstDetail[] GET_RSTDETAIL(String drivercode) {
@@ -375,22 +383,23 @@ public class WebService {
         String JsonParameters = "GET_SERVICE";
 
         List<webservice.JsonFuncClasses.Service> ResponseData = JsonService.JsonListServc(JsonParameters);
-        System.out.println("ResponseData is getserv"+ResponseData.size());
+        if(ResponseData != null) {
+            System.out.println("ResponseData is getserv" + ResponseData.size());
 
-        Service[] ArrayServ = new Service[ResponseData.size()];
-        int i = 0;
-        for (webservice.JsonFuncClasses.Service rec:ResponseData
-                ) {
+            Service[] ArrayServ = new Service[ResponseData.size()];
+            int i = 0;
+            for (webservice.JsonFuncClasses.Service rec : ResponseData
+                    ) {
 
-            ArrayServ[i] = new Service();
-            ArrayServ[i].SERVICEID = rec.SERVICEID;
-            ArrayServ[i].SERVICETYPE = rec.SERVICETYPE;
-            i+=1;
-           // Log.e("Data serv:/suc ", rec.SERVICEID + "-" + rec.SERVICETYPE);
-        }
-        System.out.println("ResponseData is servsize"+ResponseData.size());
-        return ArrayServ;
-
+                ArrayServ[i] = new Service();
+                ArrayServ[i].SERVICEID = rec.SERVICEID;
+                ArrayServ[i].SERVICETYPE = rec.SERVICETYPE;
+                i += 1;
+                // Log.e("Data serv:/suc ", rec.SERVICEID + "-" + rec.SERVICETYPE);
+            }
+            System.out.println("ResponseData is servsize" + ResponseData.size());
+            return ArrayServ;
+        }else return null;
     }
 
     public static String SET_ACCEPTHOLD(String drivercode, String datetime) {
@@ -656,16 +665,16 @@ public class WebService {
         JsonParam +="SET_PICKUP_RECVD?DRIVERCODE="+drivercode+"&PICKUPNO="+pickupno+"&RECVDTIME="+recvdtime;
 
         Object ResponseData = JsonService.jsonreq(JsonParam,StringResponse.class);
+if(ResponseData!= null) {
+    Log.e("setpckrecv", JsonParam);
+    Log.e("setpckrecvRespobjt", ResponseData.toString());
+    StringResponse ResponseJson = (StringResponse) ResponseData;
 
-        Log.e("setpckrecv", JsonParam);
-        Log.e("setpckrecvRespobjt", ResponseData.toString());
-        StringResponse ResponseJson = (StringResponse)ResponseData;
-
-        Log.e("setpckrecvRESP/succ", ResponseJson.getd().toString());
+    Log.e("setpckrecvRESP/succ", ResponseJson.getd().toString());
       /*  if(ResponseJson.getd().equals("true")) return  true;
         else return false;*/
-        return Boolean.valueOf(ResponseJson.getd());
-
+    return Boolean.valueOf(ResponseJson.getd());
+}else return Boolean.valueOf(null);
     }
 
    /* public static String SET_PICKUPDETAILS(String drivercode, setPickUpDt PkpReqData[]){
@@ -711,10 +720,13 @@ public class WebService {
         map.put("DRIVERCODE",drivercode);
 
         ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreq("SET_SYNCH_CHANNEL",map,StringResponse.class);
-        System.out.println("ResponsePostReq is:"+ResponsePostReq);
-        StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
+        if(ResponsePostReq != null){
+            System.out.println("ResponsePostReq is:"+ResponsePostReq);
+            StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
 
-        return ActResp.getd();
+            return ActResp.getd();
+        }else return null;
+
     }
 
     public static String SET_TRANS_CONFIRM(String drivercode){
@@ -856,36 +868,39 @@ public class WebService {
         JsonParams +="CHECK_HOLDVALIDWAYBILL?DRIVERCODE="+drivercode+"&WAYBILL="+waybill+"&ROUTEID="+routeid+"&TRANSDRVR="+transdrvr;
 
         Object ResponseData = JsonService.jsonreq(JsonParams, webservice.JsonFuncClasses.CheckHoldvalidwaybill.class);
+        if (ResponseData != null) {
 
-        Log.e("holdwaybillres", JsonParams);
-        Log.e("holdwaybilRespObject", ResponseData.toString());
-        webservice.JsonFuncClasses.CheckHoldvalidwaybill ResponseJson = (webservice.JsonFuncClasses.CheckHoldvalidwaybill)ResponseData;
 
-        Log.e("holdwaybillResponse", ResponseJson.getd().toString());
+            Log.e("holdwaybillres", JsonParams);
+            Log.e("holdwaybilRespObject", ResponseData.toString());
+            webservice.JsonFuncClasses.CheckHoldvalidwaybill ResponseJson = (webservice.JsonFuncClasses.CheckHoldvalidwaybill) ResponseData;
 
-        CheckHoldvalidwaybill ResponseClass = new CheckHoldvalidwaybill();
+            Log.e("holdwaybillResponse", ResponseJson.getd().toString());
 
-        ResponseClass.WayBill = ResponseJson.getd().WayBill;
-        ResponseClass.RouteName = ResponseJson.getd().RouteName;
-        ResponseClass.ConsignName = ResponseJson.getd().ConsignName;
-        ResponseClass.PhoneNo = ResponseJson.getd().PhoneNo;
-        ResponseClass.Area = ResponseJson.getd().Area;
-        ResponseClass.Company = ResponseJson.getd().Company;
-        ResponseClass.CivilId = ResponseJson.getd().CivilId;
-        ResponseClass.Serial = ResponseJson.getd().Serial;
-        ResponseClass.CardType = ResponseJson.getd().CardType;
-        ResponseClass.DelDate = ResponseJson.getd().DelDate;
-        ResponseClass.DelTime = ResponseJson.getd().DelTime;
-        ResponseClass.Amount = ResponseJson.getd().Amount;
-        ResponseClass.ErrMsg = ResponseJson.getd().ErrMsg;
-        ResponseClass.Attempt = ResponseJson.getd().Attempt;
-        ResponseClass.Address = ResponseJson.getd().Address;
-        ResponseClass.ShipperName = ResponseJson.getd().ShipperName;
-        ResponseClass.AWBIdentifier = ResponseJson.getd().AWBIdentifier;
-        ResponseClass.Last_Status=ResponseJson.getd().Last_Status;
+            CheckHoldvalidwaybill ResponseClass = new CheckHoldvalidwaybill();
 
-        Log.e("Gethldwabres/END", "Success");
-        return ResponseClass;
+            ResponseClass.WayBill = ResponseJson.getd().WayBill;
+            ResponseClass.RouteName = ResponseJson.getd().RouteName;
+            ResponseClass.ConsignName = ResponseJson.getd().ConsignName;
+            ResponseClass.PhoneNo = ResponseJson.getd().PhoneNo;
+            ResponseClass.Area = ResponseJson.getd().Area;
+            ResponseClass.Company = ResponseJson.getd().Company;
+            ResponseClass.CivilId = ResponseJson.getd().CivilId;
+            ResponseClass.Serial = ResponseJson.getd().Serial;
+            ResponseClass.CardType = ResponseJson.getd().CardType;
+            ResponseClass.DelDate = ResponseJson.getd().DelDate;
+            ResponseClass.DelTime = ResponseJson.getd().DelTime;
+            ResponseClass.Amount = ResponseJson.getd().Amount;
+            ResponseClass.ErrMsg = ResponseJson.getd().ErrMsg;
+            ResponseClass.Attempt = ResponseJson.getd().Attempt;
+            ResponseClass.Address = ResponseJson.getd().Address;
+            ResponseClass.ShipperName = ResponseJson.getd().ShipperName;
+            ResponseClass.AWBIdentifier = ResponseJson.getd().AWBIdentifier;
+            ResponseClass.Last_Status = ResponseJson.getd().Last_Status;
+
+            Log.e("Gethldwabres/END", "Success");
+            return ResponseClass;
+        }else return null;
     }
 
     public static String CHECK_VHCLBARCODE( String drivercode, String barcode){
@@ -910,6 +925,7 @@ public class WebService {
 
         Object ResponseData = JsonService.jsonreq(JsonParam,StringResponse.class);
 
+
         Log.e("clrsyncreq", JsonParam);
         Log.e("clrsyncRespObject", ResponseData.toString());
         StringResponse ResponseJson = (StringResponse)ResponseData;
@@ -931,35 +947,38 @@ public class WebService {
 
 
         Object ResponseData = JsonService.jsonreq(JsonParams, webservice.JsonFuncClasses.CheckValidWaybill.class);
+        if(ResponseData != null) {
 
-        Log.e("waybillres", JsonParams);
-        Log.e("waybilRespObject", ResponseData.toString());
-        webservice.JsonFuncClasses.CheckValidWaybill ResponseJson = (webservice.JsonFuncClasses.CheckValidWaybill)ResponseData;
+            Log.e("waybillres", JsonParams);
+            Log.e("waybilRespObject", ResponseData.toString());
+            webservice.JsonFuncClasses.CheckValidWaybill ResponseJson = (webservice.JsonFuncClasses.CheckValidWaybill) ResponseData;
 
-        Log.e("waybillResponse", ResponseJson.getd().toString());
-        
-        CheckValidWaybill ResponseClass = new CheckValidWaybill();
+            Log.e("waybillResponse", ResponseJson.getd().toString());
 
-        ResponseClass.WayBill = ResponseJson.getd().WayBill;
-        ResponseClass.RouteName = ResponseJson.getd().RouteName;
-        ResponseClass.ConsignName = ResponseJson.getd().ConsignName;
-        ResponseClass.PhoneNo = ResponseJson.getd().PhoneNo;
-        ResponseClass.Area = ResponseJson.getd().Area;
-        ResponseClass.Company = ResponseJson.getd().Company;
-        ResponseClass.CivilId = ResponseJson.getd().CivilId;
-        ResponseClass.Serial = ResponseJson.getd().Serial;
-        ResponseClass.CardType = ResponseJson.getd().CardType;
-        ResponseClass.DelDate = ResponseJson.getd().DelDate;
-        ResponseClass.DelTime = ResponseJson.getd().DelTime;
-        ResponseClass.Amount = ResponseJson.getd().Amount;
-        ResponseClass.ErrMsg = ResponseJson.getd().ErrMsg;
-        ResponseClass.Attempt = ResponseJson.getd().Attempt;
-        ResponseClass.Address = ResponseJson.getd().Address;
-        ResponseClass.ShipperName = ResponseJson.getd().ShipperName;
-        ResponseClass.WAYBILLIdentifier = ResponseJson.getd().AWBIdentifier;
+            CheckValidWaybill ResponseClass = new CheckValidWaybill();
 
-        Log.e("GetEvents/END", "Success");
-        return ResponseClass;
+            ResponseClass.WayBill = ResponseJson.getd().WayBill;
+            ResponseClass.RouteName = ResponseJson.getd().RouteName;
+            ResponseClass.ConsignName = ResponseJson.getd().ConsignName;
+            ResponseClass.PhoneNo = ResponseJson.getd().PhoneNo;
+            ResponseClass.Area = ResponseJson.getd().Area;
+            ResponseClass.Company = ResponseJson.getd().Company;
+            ResponseClass.CivilId = ResponseJson.getd().CivilId;
+            ResponseClass.Serial = ResponseJson.getd().Serial;
+            ResponseClass.CardType = ResponseJson.getd().CardType;
+            ResponseClass.DelDate = ResponseJson.getd().DelDate;
+            ResponseClass.DelTime = ResponseJson.getd().DelTime;
+            ResponseClass.Amount = ResponseJson.getd().Amount;
+            ResponseClass.ErrMsg = ResponseJson.getd().ErrMsg;
+            ResponseClass.Attempt = ResponseJson.getd().Attempt;
+            ResponseClass.Address = ResponseJson.getd().Address;
+            ResponseClass.ShipperName = ResponseJson.getd().ShipperName;
+            ResponseClass.WAYBILLIdentifier = ResponseJson.getd().AWBIdentifier;
+
+            Log.e("GetEvents/END", "Success");
+            return ResponseClass;
+
+        }else return null;
     }
       /// Need to check waybillbackimg wen aplication runs
   /*  public static Boolean SET_WAYBILLACK_IMG( String waybill ,String rstno ,String eventid,byte[] bytearray ,String drivercode, String imgtyp ){
@@ -1051,36 +1070,38 @@ public class WebService {
 
         JsonParams +="CHECK_TRANSWAYBILL?DRIVERCODE="+drivercode+"&WAYBILL="+waybill;
         Object ResponseData = JsonService.jsonreq(JsonParams, webservice.JsonFuncClasses.CheckTranswaybill.class);
+        if(ResponseData != null) {
 
-        Log.e("TRANSwaybillres", JsonParams);
-        Log.e("TRANSwaybilRespObject", ResponseData.toString());
-        webservice.JsonFuncClasses.CheckTranswaybill ResponseJson = (webservice.JsonFuncClasses.CheckTranswaybill)ResponseData;
+            Log.e("TRANSwaybillres", JsonParams);
+            Log.e("TRANSwaybilRespObject", ResponseData.toString());
+            webservice.JsonFuncClasses.CheckTranswaybill ResponseJson = (webservice.JsonFuncClasses.CheckTranswaybill) ResponseData;
 
-        Log.e("TRANSwaybillResponse", ResponseJson.getd().toString());
+            Log.e("TRANSwaybillResponse", ResponseJson.getd().toString());
 
-        CheckTranswaybill ResponseClass = new CheckTranswaybill();
+            CheckTranswaybill ResponseClass = new CheckTranswaybill();
 
-        ResponseClass.WayBill = ResponseJson.getd().WayBill;
-        ResponseClass.RouteName = ResponseJson.getd().RouteName;
-        ResponseClass.ConsignName = ResponseJson.getd().ConsignName;
-        ResponseClass.PhoneNo = ResponseJson.getd().PhoneNo;
-        ResponseClass.Area = ResponseJson.getd().Area;
-        ResponseClass.Company = ResponseJson.getd().Company;
-        ResponseClass.CivilId = ResponseJson.getd().CivilId;
-        ResponseClass.Serial = ResponseJson.getd().Serial;
-        ResponseClass.CardType = ResponseJson.getd().CardType;
-        ResponseClass.DelDate = ResponseJson.getd().DelDate;
-        ResponseClass.DelTime = ResponseJson.getd().DelTime;
-        ResponseClass.Amount = ResponseJson.getd().Amount;
-        ResponseClass.ErrMsg = ResponseJson.getd().ErrMsg;
-        ResponseClass.Attempt = ResponseJson.getd().Attempt;
-        ResponseClass.Address = ResponseJson.getd().Address;
-        ResponseClass.ShipperName = ResponseJson.getd().ShipperName;
-        ResponseClass.AWBIdentifier = ResponseJson.getd().AWBIdentifier;
-        ResponseClass.Last_Status = ResponseJson.getd().Last_Status;
+            ResponseClass.WayBill = ResponseJson.getd().WayBill;
+            ResponseClass.RouteName = ResponseJson.getd().RouteName;
+            ResponseClass.ConsignName = ResponseJson.getd().ConsignName;
+            ResponseClass.PhoneNo = ResponseJson.getd().PhoneNo;
+            ResponseClass.Area = ResponseJson.getd().Area;
+            ResponseClass.Company = ResponseJson.getd().Company;
+            ResponseClass.CivilId = ResponseJson.getd().CivilId;
+            ResponseClass.Serial = ResponseJson.getd().Serial;
+            ResponseClass.CardType = ResponseJson.getd().CardType;
+            ResponseClass.DelDate = ResponseJson.getd().DelDate;
+            ResponseClass.DelTime = ResponseJson.getd().DelTime;
+            ResponseClass.Amount = ResponseJson.getd().Amount;
+            ResponseClass.ErrMsg = ResponseJson.getd().ErrMsg;
+            ResponseClass.Attempt = ResponseJson.getd().Attempt;
+            ResponseClass.Address = ResponseJson.getd().Address;
+            ResponseClass.ShipperName = ResponseJson.getd().ShipperName;
+            ResponseClass.AWBIdentifier = ResponseJson.getd().AWBIdentifier;
+            ResponseClass.Last_Status = ResponseJson.getd().Last_Status;
 
-        Log.e("GetTRANSAWB/END", "Success");
-        return ResponseClass;
+            Log.e("GetTRANSAWB/END", "Success");
+            return ResponseClass;
+        }else return null;
     }
 
     public static ScanWaybillDt[] GET_SCAN_WAYBILL_DT(String drivercode) {
@@ -1143,30 +1164,30 @@ public class WebService {
        map.put("PICKUPNO",pickupno);
 
         List<webservice.JsonFuncClasses.PickUpWaybillsDT> ResponseData =  JsonService.JsonListPckpwayDt("GET_PICKUP_WAYBILLS_DT",map,GET_PICKUP_WAYBILLS_DTResponse.class);
+if(ResponseData != null) {
+    System.out.println("ResponseData resp pckp iis:" + ResponseData.size());
+    PickUpWaybillsDT[] Arraypckpwaydetal = new PickUpWaybillsDT[ResponseData.size()];
 
-        System.out.println("ResponseData resp pckp iis:"+ResponseData.size());
-      PickUpWaybillsDT[] Arraypckpwaydetal = new PickUpWaybillsDT[ResponseData.size()];
+    int i = 0;
 
-        int i = 0;
+    for (webservice.JsonFuncClasses.PickUpWaybillsDT rec : ResponseData
+            ) {
 
-        for (webservice.JsonFuncClasses.PickUpWaybillsDT rec:ResponseData
-                ) {
+        Arraypckpwaydetal[i] = new PickUpWaybillsDT();
+        Arraypckpwaydetal[i].AMOUNT = rec.AMOUNT;
+        Arraypckpwaydetal[i].PAYTYPE = rec.PAYTYPE;
+        Arraypckpwaydetal[i].PICKUPNO = rec.PICKUPNO;
+        Arraypckpwaydetal[i].SERVICE = rec.SERVICE;
+        Arraypckpwaydetal[i].WAYBILL = rec.WAYBILL;
 
-            Arraypckpwaydetal[i] = new PickUpWaybillsDT();
-            Arraypckpwaydetal[i].AMOUNT = rec.AMOUNT;
-            Arraypckpwaydetal[i].PAYTYPE = rec.PAYTYPE;
-            Arraypckpwaydetal[i].PICKUPNO = rec.PICKUPNO;
-            Arraypckpwaydetal[i].SERVICE = rec.SERVICE;
-            Arraypckpwaydetal[i].WAYBILL = rec.WAYBILL;
+        i += 1;
+        Log.e("Data waybill:/suc ", rec.WAYBILL);
+    }
+    Log.e("Datapckpwadet:/suc ", String.valueOf(Arraypckpwaydetal));
 
-            i+=1;
-            Log.e("Data waybill:/suc ",rec.WAYBILL);
-        }
-        Log.e("Datapckpwadet:/suc ", String.valueOf(Arraypckpwaydetal));
+    return Arraypckpwaydetal;
 
-        return Arraypckpwaydetal;
-
-
+}return null;
     }
 
     public static boolean GET_SERVICE_STATUS(String drivercode){
@@ -1206,52 +1227,56 @@ public class WebService {
         else return false;*/
     }
 
-    public static Remarks[] GET_PICKUP_REMARK() {
-        String JsonParameters = "GET_PICKUP_REMARK";
+    public static Remarks[] GET_PICKUP_REMARK(String drivercode) {
+        String JsonParameters = "GET_PICKUP_REMARK?DRIVERCODE="+drivercode;
 
         List<webservice.JsonFuncClasses.Remarks> ResponseData = JsonService.JsonListRemarks(JsonParameters);
-        System.out.println("ResponseData is getremark"+ResponseData);
+        if(ResponseData != null){
+            System.out.println("ResponseData is getremark"+ResponseData);
 
-        Remarks[] ArrayRemak = new Remarks[ResponseData.size()];
-        int i = 0;
-        for (webservice.JsonFuncClasses.Remarks rec:ResponseData
-                ) {
+            Remarks[] ArrayRemak = new Remarks[ResponseData.size()];
+            int i = 0;
+            for (webservice.JsonFuncClasses.Remarks rec:ResponseData
+                    ) {
 
-            ArrayRemak[i] = new Remarks();
-            ArrayRemak[i].REMARKCODE = rec.REMARKCODE;
-            ArrayRemak[i].REMARKDESC = rec.REMARKDESC;
-            i+=1;
-          //  Log.e("Data remk:/suc ", rec.REMARKCODE + "-" + rec.REMARKDESC);
-        }
-        System.out.println("ResponseData is getremark"+ArrayRemak.length);
-        return ArrayRemak;
+                ArrayRemak[i] = new Remarks();
+                ArrayRemak[i].REMARKCODE = rec.REMARKCODE;
+                ArrayRemak[i].REMARKDESC = rec.REMARKDESC;
+                i+=1;
+                //  Log.e("Data remk:/suc ", rec.REMARKCODE + "-" + rec.REMARKDESC);
+            }
+            System.out.println("ResponseData is getremark"+ArrayRemak.length);
+            return ArrayRemak;
+
+        }else return null;
 
     }
 
-    public static OpenRst SET_WC(String drcode ){
+    public static OpenRst SET_WC(String drcode ) {
 
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String, String> map = new HashMap<String, String>();
 
-        map.put("drivercode",drcode);
+        map.put("drivercode", drcode);
 
-        ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreq("SET_WC",map, webservice.JsonFuncClasses.OpenRst.class);
-        System.out.println("ResponsePostReq wc is:"+ResponsePostReq);
-     // OpenRst ActResp = (OpenRst) ResponsePostReq.getBody();
-        webservice.JsonFuncClasses.OpenRst ActResp = (webservice.JsonFuncClasses.OpenRst)ResponsePostReq.getBody();
+        ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreq("SET_WC", map, webservice.JsonFuncClasses.OpenRst.class);
+        if (ResponsePostReq != null) {
+            System.out.println("ResponsePostReq wc is:" + ResponsePostReq);
+            // OpenRst ActResp = (OpenRst) ResponsePostReq.getBody();
+            webservice.JsonFuncClasses.OpenRst ActResp = (webservice.JsonFuncClasses.OpenRst) ResponsePostReq.getBody();
 
-        OpenRst ResponseClass = new OpenRst();
-        ResponseClass.ACKNO= ActResp.getd().ACKNO;
-        ResponseClass.ERRMSG=ActResp.getd().ERRMSG;
-        ResponseClass.RSTNO=ActResp.getd().RSTNO;
-        ResponseClass.RTNO=ActResp.getd().RTNO;
-        System.out.println("ResponseClass wc is:"+ResponseClass+"ResponseClass rst"+ResponseClass.RSTNO);
+            OpenRst ResponseClass = new OpenRst();
+            ResponseClass.ACKNO = ActResp.getd().ACKNO;
+            ResponseClass.ERRMSG = ActResp.getd().ERRMSG;
+            ResponseClass.RSTNO = ActResp.getd().RSTNO;
+            ResponseClass.RTNO = ActResp.getd().RTNO;
+            System.out.println("ResponseClass wc is:" + ResponseClass + "ResponseClass rst" + ResponseClass.RSTNO);
       /*  OpenRst RunsheetCode=null;
         if(ResponseClass.ERRMSG!="False")
             RunsheetCode = GET_OPENRST(drcode);
         else RunsheetCode = null;
         System.out.println("RunsheetCode wc is:"+RunsheetCode);*/
 
-        return ResponseClass;
+            return ResponseClass;
 
 
        /* OpenRst RunsheetCode=null;
@@ -1271,8 +1296,8 @@ public class WebService {
         else RunsheetCode = null;
         Log.e("GetEvents/END", "Success");
         return RunsheetCode;*/
+        }else return null;
     }
-
     public static String SET_PICKUP_FINISH(String drivercode, String pickupno, String remarkcode, String datetime) {
 
 
@@ -1285,10 +1310,13 @@ public class WebService {
         map.put("DATENTIME",datetime);
 
         ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreq("SET_PICKUP_FINISH",map,StringResponse.class);
-        System.out.println("ResponsePostReq pickfin is:"+ResponsePostReq);
-        StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
+        if (ResponsePostReq != null) {
+            System.out.println("ResponsePostReq pickfin is:"+ResponsePostReq);
+            StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
 
-        return ActResp.getd();
+            return ActResp.getd();
+        }else return null;
+
 
     }
 
@@ -1372,15 +1400,19 @@ public class WebService {
 
         System.out.println("values to servc:"+id+"encoded1 :"+encoded1+"type"+type+"encoded2 is"+encoded2+"odotype:"+odotype);
       ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreqodoImg("SET_ODO_FUEL_IMAGE",requestobj,StringResponse.class);
-      System.out.println("ResponsePostReq is:"+ResponsePostReq);
-      StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
+
+      if(ResponsePostReq != null){
+          System.out.println("ResponsePostReq is:"+ResponsePostReq);
+          StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
 
 
 
-      Log.e("SETODOFUELIMG/succ", ActResp.getd());
+          Log.e("SETODOFUELIMG/succ", ActResp.getd());
       /*  if(ResponseJson.equals("true")) return true;
         else return false;*/
-      return Boolean.valueOf(ActResp.getd());
+          return Boolean.valueOf(ActResp.getd());
+      }else return null;
+
 
   }
 
@@ -1433,10 +1465,12 @@ public class WebService {
         map.put("PICKUPNO",pickupno);
 
         ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreq("SET_PICKUPDETAILS",map,StringResponse.class);
-        System.out.println("ResponsePostReq is:"+ResponsePostReq);
-        StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
+        if(ResponsePostReq != null) {
+            System.out.println("ResponsePostReq is:" + ResponsePostReq);
+            StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
 
-        return ActResp.getd();
+            return ActResp.getd();
+        }else return null;
     }
 
     public static String SET_DELETE_WAYBILL_PICKUP(String drivercode ,String pickupno,String waybill){
@@ -1467,34 +1501,34 @@ public class WebService {
 
 
         List<webservice.JsonFuncClasses.PickupHoldwaybills> ResponseData =  JsonService.JsonListPickupholdwaybill("GET_HOLDWAYBILLS_PICKUP",map,GET_HOLDWAYBILLS_PICKUP_Response.class);
+        if (ResponseData != null) {
+            System.out.println("ResponseData resp pckp iis:" + ResponseData.size());
+            PickupHoldwaybills[] Arraypckphldwaybl = new PickupHoldwaybills[ResponseData.size()];
 
-        System.out.println("ResponseData resp pckp iis:"+ResponseData.size());
-        PickupHoldwaybills[] Arraypckphldwaybl = new PickupHoldwaybills[ResponseData.size()];
+            int i = 0;
 
-        int i = 0;
+            for (webservice.JsonFuncClasses.PickupHoldwaybills rec : ResponseData
+                    ) {
 
-        for (webservice.JsonFuncClasses.PickupHoldwaybills rec:ResponseData
-                ) {
+                Arraypckphldwaybl[i] = new PickupHoldwaybills();
+                Arraypckphldwaybl[i].AMOUNT = rec.AMOUNT;
+                Arraypckphldwaybl[i].DATETIMESTR = rec.DATETIMESTR;
+                Arraypckphldwaybl[i].PAYTYPE = rec.PAYTYPE;
+                Arraypckphldwaybl[i].PICKUPNO = rec.PICKUPNO;
+                Arraypckphldwaybl[i].SERVICE = rec.SERVICE;
+                Arraypckphldwaybl[i].STATUS = rec.STATUS;
+                Arraypckphldwaybl[i].USERCODE = rec.USERCODE;
+                Arraypckphldwaybl[i].WAYBILL = rec.WAYBILL;
+                Arraypckphldwaybl[i].TAGMTS = rec.TAGMTS;
 
-            Arraypckphldwaybl[i] = new PickupHoldwaybills();
-            Arraypckphldwaybl[i].AMOUNT = rec.AMOUNT;
-            Arraypckphldwaybl[i].DATETIMESTR = rec.DATETIMESTR;
-            Arraypckphldwaybl[i].PAYTYPE = rec.PAYTYPE;
-            Arraypckphldwaybl[i].PICKUPNO = rec.PICKUPNO;
-            Arraypckphldwaybl[i].SERVICE = rec.SERVICE;
-            Arraypckphldwaybl[i].STATUS = rec.STATUS;
-            Arraypckphldwaybl[i].USERCODE = rec.USERCODE;
-            Arraypckphldwaybl[i].WAYBILL = rec.WAYBILL;
-            Arraypckphldwaybl[i].TAGMTS = rec.TAGMTS;
+                i += 1;
 
-            i+=1;
-
-            Log.e("DataErrMsg:/suc ",rec.WAYBILL);
-        }
-        Log.e("Datascnwadet:/suc ", String.valueOf(Arraypckphldwaybl));
-        System.out.println("ResponseData Arraypckphldwaybl pckp iis:"+Arraypckphldwaybl);
-        return Arraypckphldwaybl;
-
+                Log.e("DataErrMsg:/suc ", rec.WAYBILL);
+            }
+            Log.e("Datascnwadet:/suc ", String.valueOf(Arraypckphldwaybl));
+            System.out.println("ResponseData Arraypckphldwaybl pckp iis:" + Arraypckphldwaybl);
+            return Arraypckphldwaybl;
+        }else return null;
 
     }
 
@@ -1523,11 +1557,14 @@ public class WebService {
 
 
         ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreq("CUSTOMER_NOTIFY_TRACK",map,StringResponse.class);
-        System.out.println("ResponsePostReq cust notify track is:"+ResponsePostReq);
-        StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
+        if(ResponsePostReq != null){
+            System.out.println("ResponsePostReq cust notify track is:"+ResponsePostReq);
+            StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
 
 
-        return ActResp.getd();
+            return ActResp.getd();
+        }else return null;
+
     }
 
     public static JSONObject Check_ValidPickupReference(String drivercode, String reference , String usercode, String tagmps, String service, String pickupno, String paytype, String amount, String datetimestr ) {
@@ -1553,25 +1590,25 @@ public class WebService {
         JSONObject jsonchckreferResp = null;
         // JSONObject obj = new JSONObject(setdel);
         resp = JsonService.jsonnewpostreq(url,"Check_ValidPickupReference",jsonobj);
-        System.out.println("ResponsePostReq delis:"+resp);
+        if(resp!=null) {
+            System.out.println("ResponsePostReq delis:" + resp);
 
-        try {
-            JSONObject json = new JSONObject(String.valueOf(resp));
-            jsonchckreferResp=json.getJSONObject("d");
+            try {
+                JSONObject json = new JSONObject(String.valueOf(resp));
+                jsonchckreferResp = json.getJSONObject("d");
 
-            CheckValidReferenceWaybill ResponseClass = new CheckValidReferenceWaybill();
+                CheckValidReferenceWaybill ResponseClass = new CheckValidReferenceWaybill();
 
 
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (jsonchckreferResp != null) {
+                Log.e("String jsoncon", jsonchckreferResp.toString());
+            }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if(jsonchckreferResp!= null){
-            Log.e("String jsoncon", jsonchckreferResp.toString());
-        }
-
-        return  jsonchckreferResp;
-
+            return jsonchckreferResp;
+        }else return null;
     }
 
 }

@@ -23,7 +23,6 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -224,7 +223,7 @@ public class LoginActivity extends MasterActivity {
             for(String s : children){
                 if(!s.equals("lib")){
                     deleteDir(new File(appDir, s));
-                  //  Log.i("TAG", "data/user/0/com.postaplus.postascannerapp/" + s +" DELETED");
+                    //  Log.i("TAG", "data/user/0/com.postaplus.postascannerapp/" + s +" DELETED");
                     Log.i("TAG", "/data/user/0/com.postaplus.postascannerapp" + s +" DELETED");
                 }
             }
@@ -323,7 +322,7 @@ public class LoginActivity extends MasterActivity {
             //   db.close();
             Loader_from_server();
         }
-    //    db.close();
+        //    db.close();
 
         //	}
     }
@@ -354,7 +353,7 @@ public class LoginActivity extends MasterActivity {
             getpaytype();
             getpickupRemarks();
 
-         //   GetOPENRRST();
+            //   GetOPENRRST();
 
             //getcouriers();
             //getdeliverydetail();
@@ -385,14 +384,14 @@ public class LoginActivity extends MasterActivity {
                     }
                     courier.close();
                 }
-         //      sqldb.close();
+                //      sqldb.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
             finally {
                 db.close();
-              //    sqldb.close;
+                //    sqldb.close;
             }
 
         }
@@ -419,7 +418,7 @@ public class LoginActivity extends MasterActivity {
                     }
                     courier.close();
                 }
-              //      sqldb.close();
+                //      sqldb.close();
                 db.close();
 
             } catch (Exception e) {
@@ -459,7 +458,7 @@ public class LoginActivity extends MasterActivity {
 
 
                     }
-                       db.close();
+                    db.close();
                     //    sqldb.close();
 
 
@@ -471,7 +470,7 @@ public class LoginActivity extends MasterActivity {
             }
             finally {
                 if (db != null)
-                db.close();
+                    db.close();
             }
         }
 
@@ -480,7 +479,14 @@ public class LoginActivity extends MasterActivity {
 
             try {
 
-                pickupremarksResponse = WebService.GET_PICKUP_REMARK();
+                pickupremarksResponse = WebService.GET_PICKUP_REMARK(Username);
+
+                if (pickupremarksResponse == null) {
+
+                    Toast.makeText(LoginActivity.this, "Please Try again!",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
                 db = new DatabaseHandler(getBaseContext());
                 //  sqldb = db.getWritableDatabase();
 
@@ -539,7 +545,7 @@ public class LoginActivity extends MasterActivity {
             //		loginStatus = WebService.invokeLoginWS(Username,Password,serialid,AppVersion,METHOD_NAME29);
 
 
-           System.out.println("loginstatus sharedprefrences  is " + loginPreferences.getString("username", Username));
+            System.out.println("loginstatus sharedprefrences  is " + loginPreferences.getString("username", Username));
             if(!loginPreferences.getString("username", Username).contentEquals(Username))
             {
                 System.out.println("loginstatus sharedprefrences  is not matching"+Username);
@@ -673,7 +679,7 @@ public class LoginActivity extends MasterActivity {
                         intObj.putExtra("route", String.valueOf(route));
                         actNoty.setRouteName(LoginActivity.this,rname);
                         actNoty.setRouteCode(LoginActivity.this, route);
-                       //actNoty.setdrivercode(LoginActivity.this,Username);
+                        //actNoty.setdrivercode(LoginActivity.this,Username);
                         //Navigate to Home Screen
                         OneSignal.sendTag("username", Username);
                         startActivity(intObj);
@@ -708,7 +714,7 @@ public class LoginActivity extends MasterActivity {
                         }
 
                         db.close();
-                      //  sqldb.close();
+                        //  sqldb.close();
                         Intent intObj = new Intent(LoginActivity.this, RouteActivity.class);
                         //Navigate to Route Activity
                         startActivity(intObj);
@@ -716,9 +722,9 @@ public class LoginActivity extends MasterActivity {
                     }
                 } else {
 
-                        System.out.println("loginstatus after  is " + loginStatus);
-                        Toast.makeText(getBaseContext(), "Please check Username/ Password",
-                                Toast.LENGTH_LONG).show();
+                    System.out.println("loginstatus after  is " + loginStatus);
+                    Toast.makeText(getBaseContext(), "Please check Username/ Password",
+                            Toast.LENGTH_LONG).show();
 
                     return;
                 }
@@ -808,7 +814,7 @@ public class LoginActivity extends MasterActivity {
             getholdwaybilldetail();
 
 
-         //  GetOPENRRST();
+            //  GetOPENRRST();
 
             return "";
         }
@@ -818,6 +824,12 @@ public class LoginActivity extends MasterActivity {
             try {
 
                 courierResponse = WebService.GET_COURIERS(Username);
+                if (courierResponse == null) {
+
+                    Toast.makeText(LoginActivity.this, "Please Try again!",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
                 //  db = new DatabaseHandler(getBaseContext());
                 for (Couriers corObv : courierResponse) {
                     sqldb = db.getReadableDatabase();
@@ -836,14 +848,14 @@ public class LoginActivity extends MasterActivity {
                     courier.close();
                     sqldb.close();
                 }
-              //  db.close();
+                //  db.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
             finally {
                 db.close();
-              //  sqldb.close();
+                //  sqldb.close();
 
             }
 
@@ -1132,7 +1144,7 @@ public class LoginActivity extends MasterActivity {
                 e.printStackTrace();
             }finally {
                 db.close();
-         //       sqldb.close();
+                //       sqldb.close();
             }
 
 
@@ -1428,7 +1440,7 @@ public class LoginActivity extends MasterActivity {
             finally {
                 //        sqldb.close();
                 db.close();
-          //      sqldb.close();
+                //      sqldb.close();
                /* if (sqldb != null && sqldb.isOpen()) {
                     sqldb.close();
                    // db.close();
@@ -1443,61 +1455,61 @@ public class LoginActivity extends MasterActivity {
             db = new DatabaseHandler(getBaseContext());
             try {
                 pickupwblldtResponse = WebService.GET_PICKUP_WAYBILLS_DT(Username, pickno);
+                if(pickupwblldtResponse!= null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                    String date_time = sdf.format(new Date());
+                    for (PickUpWaybillsDT pkpwbldtObv : pickupwblldtResponse) {
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                String date_time = sdf.format(new Date());
-                for (PickUpWaybillsDT pkpwbldtObv : pickupwblldtResponse) {
+                        sqldb = db.getReadableDatabase();
+                        //select all values in the table and check count
+                        Cursor c1 = sqldb.rawQuery("SELECT * FROM pickupdetails WHERE Waybill_Number='" + pkpwbldtObv.WAYBILL + "'", null);
+                        int count1 = c1.getCount();
 
-                    sqldb = db.getReadableDatabase();
-                    //select all values in the table and check count
-                    Cursor c1 = sqldb.rawQuery("SELECT * FROM pickupdetails WHERE Waybill_Number='" + pkpwbldtObv.WAYBILL + "'", null);
-                    int count1 = c1.getCount();
+                        if (count1 > 0) {
 
-                    if (count1 > 0) {
+                            System.out.println("update");
 
-                        System.out.println("update");
+                            sqldb = db.getWritableDatabase();
 
+
+                            sqldb.execSQL("UPDATE pickupdetails SET Driver_Code='" + Username + "', Pickup_No='" + pkpwbldtObv.PICKUPNO
+                                    + "',Pickup_No='" + pkpwbldtObv.PICKUPNO + "',PayType='" + pkpwbldtObv.PAYTYPE + "',Amount='" + pkpwbldtObv.AMOUNT + "'," + "ServiceType='" + pkpwbldtObv.SERVICE + "'," + "Date_Time='"
+                                    + date_time + "' WHERE Waybill_Number='" + pkpwbldtObv.WAYBILL + "'");
+
+
+                        } else {
+                            c1.moveToLast();
+
+                            sqldb = db.getWritableDatabase();
+
+                            ContentValues values = new ContentValues();
+                            values.put("Driver_Code", Username);
+                            values.put("Pickup_No", pkpwbldtObv.PICKUPNO);
+                            values.put("Waybill_Number", pkpwbldtObv.WAYBILL);
+                            values.put("PayType", pkpwbldtObv.PAYTYPE);
+                            values.put("Amount", pkpwbldtObv.AMOUNT);
+                            values.put("ServiceType", pkpwbldtObv.SERVICE);
+                            values.put("Date_Time", date_time);
+
+
+                            sqldb.insertOrThrow("pickupdetails", null, values);
+
+                        }
                         sqldb = db.getWritableDatabase();
+                        sqldb.execSQL("UPDATE pickuphead SET Status='C' WHERE Pickup_No='" + pickno + "'");
+                        sqldb.execSQL("UPDATE pickuphead SET TransferStatus=2 WHERE Pickup_No='" + pickno + "'");
+                        c1.close();
 
-
-                        sqldb.execSQL("UPDATE pickupdetails SET Driver_Code='" + Username + "', Pickup_No='" + pkpwbldtObv.PICKUPNO
-                                + "',Pickup_No='" + pkpwbldtObv.PICKUPNO + "',PayType='" + pkpwbldtObv.PAYTYPE + "',Amount='" + pkpwbldtObv.AMOUNT + "'," + "ServiceType='" + pkpwbldtObv.SERVICE + "'," + "Date_Time='"
-                                + date_time + "' WHERE Waybill_Number='" + pkpwbldtObv.WAYBILL + "'");
-
-
-                    } else {
-                        c1.moveToLast();
-
-                        sqldb = db.getWritableDatabase();
-
-                        ContentValues values = new ContentValues();
-                        values.put("Driver_Code", Username);
-                        values.put("Pickup_No", pkpwbldtObv.PICKUPNO);
-                        values.put("Waybill_Number", pkpwbldtObv.WAYBILL);
-                        values.put("PayType", pkpwbldtObv.PAYTYPE);
-                        values.put("Amount", pkpwbldtObv.AMOUNT);
-                        values.put("ServiceType", pkpwbldtObv.SERVICE);
-                        values.put("Date_Time", date_time);
-
-
-                        sqldb.insertOrThrow("pickupdetails", null, values);
 
                     }
-                    sqldb = db.getWritableDatabase();
-                    sqldb.execSQL("UPDATE pickuphead SET Status='C' WHERE Pickup_No='" + pickno + "'");
-                    sqldb.execSQL("UPDATE pickuphead SET TransferStatus=2 WHERE Pickup_No='" + pickno + "'");
-                    c1.close();
-
-
-                }
-                db.close();
-            } catch (Exception e) {
+                    db.close();
+                } } catch (Exception e) {
                 Log.e("Get Pickup Wbll detail:", "Get Pickup Waybil detail in login activity is errored");
                 e.printStackTrace();
             }
             finally {
                 db.close();
-           //     sqldb.close();
+                //     sqldb.close();
             }
 
         }
@@ -1508,7 +1520,7 @@ public class LoginActivity extends MasterActivity {
                 if(holddwaybillResponse==null){
                     return;
                 }else
-                db = new DatabaseHandler(getBaseContext());
+                    db = new DatabaseHandler(getBaseContext());
                 sqldb = db.getWritableDatabase();
                 sqldb.execSQL("DELETE FROM Holdwaybilldata WHERE Drivercode <> '" + Username + "'");
                 sqldb = db.getReadableDatabase();
@@ -1564,7 +1576,7 @@ public class LoginActivity extends MasterActivity {
 
                 }
                 db.close();
-           //     sqldb.close();
+                //     sqldb.close();
             } catch (Exception e) {
                 Log.e("Get Hold Wbll detail:", "Get Hold Waybill in login activity is errored");
                 e.printStackTrace();
@@ -1742,24 +1754,24 @@ public class LoginActivity extends MasterActivity {
 
     }*/
 
-  // Hiding of soft keyboard when touched anywhere on screen
-  @Override
-  public boolean onTouchEvent(MotionEvent event) {
-      InputMethodManager imm = (InputMethodManager)getSystemService(Context.
-              INPUT_METHOD_SERVICE);
-      if (imm != null) {
-          imm.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
-      }
-      return true;
-  }
+    // Hiding of soft keyboard when touched anywhere on screen
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
+                INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
+        }
+        return true;
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-		Intent intent = new Intent(Intent.ACTION_MAIN);
-			intent.addCategory(Intent.CATEGORY_HOME);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(intent);
-           //System.exit(0);
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            //System.exit(0);
             return true;
 
         }
