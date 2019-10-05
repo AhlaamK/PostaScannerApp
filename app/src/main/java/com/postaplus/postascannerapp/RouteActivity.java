@@ -1,17 +1,14 @@
 package com.postaplus.postascannerapp;
 
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -31,56 +28,59 @@ import DatabaseHandlers.DBFCS.TBLogin;
 import DatabaseHandlers.DBFunctions;
 
 
-public class RouteActivity extends MasterActivity {
+public class RouteActivity extends MasterActivity  {
 
 	private Spinner myspinner;
 
 	TextView username;
-	Button ok, logout;
-	private String[] routename, routecode;
+	Button ok,logout;
+	private String[] routename,routecode;
 
-	String routestatus, drivercode, routec, routen, area;
+	String routestatus,drivercode,routec,routen,area;
 	boolean mstatus;
-	static boolean errored = false;
+	static boolean errored=false;
 	GPSTracker gps;
-	double latitude, longitude;
-	String lati, longti, serialid;
+	double latitude,longitude;
+	String lati,longti,serialid;
 	Context mContext;
 
 
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_route);
-		mContext = this;
+		mContext=this;
 
 		System.out.println("Route Activity Page");
-		username = (TextView) findViewById(R.id.unametxt);
-		ok = (Button) findViewById(R.id.buttonok);
-		myspinner = (Spinner) findViewById(R.id.listroute);
-		logout = (Button) findViewById(R.id.buttonlogout);
+		username=(TextView) findViewById(R.id.unametxt);
+		ok=(Button) findViewById(R.id.buttonok);
+		myspinner = (Spinner)findViewById(R.id.listroute);
+		logout=(Button)findViewById(R.id.buttonlogout);
 		/*set the loginuser using sharedpreferece*/
 		pref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 		username.setText(pref.getString("uname", ""));
 
-		drivercode = username.getText().toString();
+		drivercode=username.getText().toString();
 
 
-		db = new DatabaseHandler(getBaseContext());
+		db=new DatabaseHandler(getBaseContext());
 		//open localdatabase in a read mode
 		sqldb = db.getReadableDatabase();
 
 		//select all values from eventtable and populate it in the spinner
 		Cursor c1 = sqldb.rawQuery("SELECT ROUTECODE,ROUTENAME  FROM routedata", null);
-		int count = c1.getCount();
+		int count=c1.getCount();
 
-		Log.e("RouteActivity", "Route Count : " + count);
-		routename = new String[count];
-		routecode = new String[count];
+		Log.e("RouteActivity","Route Count : " + count);
+		routename=new String[count];
+		routecode=new String[count];
 
 		c1.moveToFirst();
-		if (count > 0) {
-			for (int i = 0; i < count; i++) {
+		if(count>0){
+			for(int i=0;i<count;i++)
+			{
 
 				routecode[i] = c1.getString(c1.getColumnIndex("ROUTECODE"));
 				routename[i] = c1.getString(c1.getColumnIndex("ROUTENAME"));
@@ -88,9 +88,9 @@ public class RouteActivity extends MasterActivity {
 				// System.out.println("i="+i+eventname[i]);
 				c1.moveToNext();
 			}
-		} else {
+		}else{
 			TBLogin ActiveUser = DBFunctions.GetLoggedUser(getBaseContext());
-			CommonMethods.getroutes(getBaseContext(), ActiveUser.USER_NAME);
+			CommonMethods.getroutes(getBaseContext(),ActiveUser.USER_NAME);
 		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_spinner_item, routename);
@@ -107,19 +107,9 @@ public class RouteActivity extends MasterActivity {
 			public void onClick(View v) {
 				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
 
-				TelephonyManager telephonyManager =
-						(TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-				if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-					// TODO: Consider calling
-					//    ActivityCompat#requestPermissions
-					// here to request the missing permissions, and then overriding
-					//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-					//                                          int[] grantResults)
-					// to handle the case where the user grants the permission. See the documentation
-					// for ActivityCompat#requestPermissions for more details.
-					return;
-				}
-				serialid = telephonyManager.getDeviceId();
+				TelephonyManager telephonyManager  =
+						( TelephonyManager )getSystemService( Context.TELEPHONY_SERVICE );
+				serialid= telephonyManager.getDeviceId();
 
 				gps = new GPSTracker(mContext,RouteActivity.this);
 

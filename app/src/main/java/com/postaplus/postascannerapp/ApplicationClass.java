@@ -61,8 +61,7 @@ public class ApplicationClass extends Application {
                        // textViewPushicon.setText(String.valueOf(pushWaybillCount));
 
                     }
-                })
-                .setNotificationOpenedHandler(result -> {
+                }).setNotificationOpenedHandler(result -> {
 
             Intent intent = new Intent(this, ScreenActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

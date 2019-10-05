@@ -12,5 +12,5 @@ import webservice.JsonFuncClasses.PickUp;
 
 public class GET_PICKUPResponse {
     @JsonProperty("d")
-    public List<PickUp> PICKUP ;
+    public List<PickUp> PICKUP;
 }

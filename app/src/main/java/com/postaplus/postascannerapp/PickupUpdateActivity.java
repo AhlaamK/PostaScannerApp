@@ -373,7 +373,6 @@ public class PickupUpdateActivity extends MasterActivity
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         servicespinner.setAdapter(adapter);
-        servicespinner.setSelection(2);
         servicespinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -539,31 +538,29 @@ public class PickupUpdateActivity extends MasterActivity
 
                         if (isNetworkConnected()) {
                             pickupfinishresponse = WebService.SET_PICKUP_FINISH(dvrcode, pickupno, label, date_time);
-                            if(pickupfinishresponse != null) {
-                                if (pickupfinishresponse.equals("TRUE")) {
-                                    db = new DatabaseHandler(getBaseContext());
-                                    //open localdatabase in a read mode
-                                    sqldb = db.getWritableDatabase();
+                            if (pickupfinishresponse.equals("TRUE")) {
+                                db = new DatabaseHandler(getBaseContext());
+                                //open localdatabase in a read mode
+                                sqldb = db.getWritableDatabase();
 
-                                    //Update pickuphead table and check count
-                                    sqldb.execSQL("UPDATE pickuphead SET Status='C',TransferStatus=1,CodeRemark='" + label + "',AttemptDatetime='" + date_time + "' WHERE Pickup_No='" + pickupno + "'");
+                                //Update pickuphead table and check count
+                                sqldb.execSQL("UPDATE pickuphead SET Status='C',TransferStatus=1,CodeRemark='" + label + "',AttemptDatetime='" + date_time + "' WHERE Pickup_No='" + pickupno + "'");
 
-                                    Toast.makeText(getApplicationContext(), "Submitted", Toast.LENGTH_SHORT).show();
-                                    db.close();
-                                    //back button code
-                                } else {
-                                    db = new DatabaseHandler(getBaseContext());
-                                    //open localdatabase in a read mode
-                                    sqldb = db.getWritableDatabase();
+                                Toast.makeText(getApplicationContext(), "Submitted", Toast.LENGTH_SHORT).show();
+                                db.close();
+                                //back button code
+                            } else {
+                                db = new DatabaseHandler(getBaseContext());
+                                //open localdatabase in a read mode
+                                sqldb = db.getWritableDatabase();
 
-                                    //Update pickuphead table and check count
-                                    sqldb.execSQL("UPDATE pickuphead SET Status='C',TransferStatus=0,CodeRemark='" + label + "',AttemptDatetime='" + date_time + "' WHERE Pickup_No='" + pickupno + "'");
+                                //Update pickuphead table and check count
+                                sqldb.execSQL("UPDATE pickuphead SET Status='C',TransferStatus=0,CodeRemark='" + label + "',AttemptDatetime='" + date_time + "' WHERE Pickup_No='" + pickupno + "'");
 
-                                    Toast.makeText(getApplicationContext(), "Submitted", Toast.LENGTH_SHORT).show();
-                                    pb.setVisibility(View.INVISIBLE);
-                                    db.close();
-                                    minteger = 0;
-                                }
+                                Toast.makeText(getApplicationContext(), "Submitted", Toast.LENGTH_SHORT).show();
+                                pb.setVisibility(View.INVISIBLE);
+                                db.close();
+                                minteger = 0;
                             }
                         } else {
                             db = new DatabaseHandler(getBaseContext());
@@ -830,12 +827,9 @@ public class PickupUpdateActivity extends MasterActivity
                         System.out.println("pickup pickupno update background finished" + pickupno);
                         //pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
                         pick_status = WebService.SET_PICKUPDETAILS(drivercode, pickupno);
-                        if(pick_status!= null){
-                            System.out.println("pickup status update on pickup background finished" + pick_status);
-                            //pick_status=newpickStatus;
-                            return pick_status;
-                        }else return null;
-
+                        System.out.println("pickup status update on pickup background finished" + pick_status);
+                        //pick_status=newpickStatus;
+                        return pick_status;
                     }
                 };
 
@@ -1035,11 +1029,9 @@ public class PickupUpdateActivity extends MasterActivity
 
             //pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
             pick_status = WebService.SET_PICKUPDETAILS(drivercode, pickupno);
-            if(pick_status!= null) {
-                System.out.println("pickup status update on pickup background finished" + pick_status);
+            System.out.println("pickup status update on pickup background finished" + pick_status);
 
-                return pick_status;
-            }else return null;
+            return pick_status;
         }
 
         @Override
@@ -1160,7 +1152,7 @@ public class PickupUpdateActivity extends MasterActivity
                                                                 if (delvryflag == true) {
                                                                     new UserNotifyTrack(Scanrwabill).execute();
                                                                 } else {
-                                                                    if (servicespinner.getSelectedItem().equals("NA")) {
+                                                                    if (servicespinner.getSelectedItemPosition() == 0) {
                                                                         Toast.makeText(getApplicationContext(), "Please Select Service Type", Toast.LENGTH_SHORT).show();
                                                                         return;
                                                                     } else if (amountedt.getText().toString().contains("0.000") && !payIde.contains("NA")) {
@@ -1282,14 +1274,14 @@ public class PickupUpdateActivity extends MasterActivity
         @Override
         public void onPostExecute(String res) {
             //response=null;
-         //   System.out.println("CheckVPWaybillResp pos: " + CheckVPWaybillResp.ErrMsg);
+            System.out.println("CheckVPWaybillResp pos: " + CheckVPWaybillResp.ErrMsg);
             if (CheckVPWaybillResp == null) {
                 Pb.setVisibility(View.INVISIBLE);
                 cbmps.setEnabled(true);
                 Toast.makeText(PickupUpdateActivity.this, "Please Try again!",
                         Toast.LENGTH_LONG).show();
                 return;
-            } else if (/*CheckVPWaybillResp.ErrMsg != ""||*/CheckVPWaybillResp.ErrMsg !=null) {
+            } else if (CheckVPWaybillResp.ErrMsg != "") {
                 cbmps.setEnabled(true);
                 masterawbtxt.setText("");
                 Toast.makeText(getApplicationContext(), CheckVPWaybillResp.ErrMsg,
@@ -2846,15 +2838,6 @@ public class PickupUpdateActivity extends MasterActivity
             //if(chckvalidpickupwaybilresp_chkwbl == null) return null;
             checkValidRefernceResp = WebService.Check_ValidPickupReference(drivercode, waybill, usercode = drivercode, Masterwabill, serviceIde, pickupno, payIde, amountedt.getText().toString(), date_time);
             System.out.println("checkValidRefernceResp are:" + checkValidRefernceResp);
-/*
-
-            if (checkValidRefernceResp == null) {
-
-                Toast.makeText(PickupUpdateActivity.this, "Please Try again!",
-                        Toast.LENGTH_LONG).show();
-                return null;
-            }
-*/
 
 
             // error1= checkValidRefernceResp.getString("ErrMsg");

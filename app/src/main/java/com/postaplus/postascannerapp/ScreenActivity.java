@@ -39,8 +39,7 @@ public class ScreenActivity extends Activity {
 	private static int SPLASH_TIME_OUT = 2800;
 	ImageView logoapp;
 	boolean netstatus, servicestatus;
-	//public static String url = "http://132.145.29.167:1000/OpsCourierScannerService/OpsGCScanSrv.svc";
-	public static String url="http://10.0.0.20:1000/Courier";
+	public static String url = "";
 	//public static String ipaddress = null;
 	/**
 	 * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -101,10 +100,7 @@ public class ScreenActivity extends Activity {
 				//ipaddress = "http://staging.postaplus.net:803/OpsCourierScannerService/OpsGCScanSrv.svc";
 
 				//new stag 19feb 2019
-		//	ipaddress = "http://staging.postaplus.net/OpsCourierScannerService/OpsGCScanSrv.svc";
-
-
-			ipaddress = "http://10.0.0.20:1000/Courier";
+			ipaddress = "http://staging.postaplus.net/OpsCourierScannerService/OpsGCScanSrv.svc";
 //
 			//qa
 			//	ipaddress = "http://staging.postaplus.net:804/OpsCourierScannerService/OpsGCScanSrv.svc";
@@ -112,9 +108,7 @@ public class ScreenActivity extends Activity {
 				//writer.append("http://172.53.1.34/OpsCourierScannerServiceStag/OpsGCScanSrv.svc/");
             //NEW LIVE SERVICE URL
 				//ipaddress="http://postascan.postaplus.com/ServiceV2_0/OpsGCScanSrv.svc";
-			//	ipaddress="http://postascan.postaplus.com/ServiceV3_0/OpsGCScanSrv.svc";
-			//	ipaddress="http://132.145.29.167:1000/OpsCourierScannerService/OpsGCScanSrv.svc";
-
+				ipaddress="http://postascan.postaplus.com/ServiceV3_0/OpsGCScanSrv.svc";
 				//  NEW TEST LINK
 		//ipaddress="http://172.53.1.34/OpsCourierScannerService/OpsGCScanSrv.svc";
 

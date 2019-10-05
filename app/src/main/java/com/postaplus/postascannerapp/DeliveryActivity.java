@@ -39,7 +39,7 @@ import koamtac.kdc.sdk.KDCReader;
 import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
 
 
-public class DeliveryActivity extends FragmentActivity implements
+public class  DeliveryActivity extends FragmentActivity implements
         BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener,
         ActionBar.TabListener {
 

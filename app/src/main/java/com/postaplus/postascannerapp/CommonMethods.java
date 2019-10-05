@@ -18,20 +18,18 @@ public class CommonMethods {
             //TBLogin ActiveLogin = DBFunctions.GetLoggedUser(mcontext);
 
             Routes[] routesresponse = WebService.GET_ROUTES(ActiveUser);
-            if(routesresponse != null) {
-                for (Routes routesOb : routesresponse) {
+            for (Routes routesOb : routesresponse) {
 
-                    TBRoutes RouteData = DBFunctions.GetRoutes(mcontext, routesOb.RouteCode);
-                    if (RouteData.ROUTE_CODE != null) {
-                        // Log.e("CommonMethd/GetRoute","Route: " +routesOb.RouteCode + " Updated!");
-                        DBFunctions.UpdateRoutes(mcontext, RouteData.ROUTE_CODE, RouteData.ROUTE_NAME);
-                    } else {
-                        //Log.e("CommonMethd/GetRoute","Route: " +routesOb.RouteCode + " Inserted!");
-                        DBFunctions.SetRoutes(mcontext, routesOb.RouteCode, routesOb.RouteName);
-                    }
+                TBRoutes RouteData = DBFunctions.GetRoutes(mcontext, routesOb.RouteCode);
+                if (RouteData.ROUTE_CODE != null) {
+                   // Log.e("CommonMethd/GetRoute","Route: " +routesOb.RouteCode + " Updated!");
+                    DBFunctions.UpdateRoutes(mcontext,RouteData.ROUTE_CODE,RouteData.ROUTE_NAME);
+                } else {
+                    //Log.e("CommonMethd/GetRoute","Route: " +routesOb.RouteCode + " Inserted!");
+                   DBFunctions.SetRoutes(mcontext,routesOb.RouteCode,routesOb.RouteName);
                 }
-                Log.e("CommonMethd", "GetRoute Success!");
             }
+            Log.e("CommonMethd","GetRoute Success!");
         } catch (Exception e) {
             Log.e("GetRoutes:", "Get Routes in commonmethods is errored");
             e.printStackTrace();
