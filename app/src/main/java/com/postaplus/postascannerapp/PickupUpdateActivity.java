@@ -44,7 +44,6 @@ import com.honeywell.aidc.BarcodeReader;
 import com.honeywell.aidc.ScannerUnavailableException;
 import com.honeywell.aidc.TriggerStateChangeEvent;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -56,6 +55,7 @@ import DatabaseHandlers.DBFCS.TBLogin;
 import DatabaseHandlers.DBFunctions;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCReader;
+import utils.Utils;
 import webservice.FuncClasses.CheckValidPickupWaybill;
 import webservice.FuncClasses.PickupHoldwaybills;
 import webservice.FuncClasses.setPickUpDt;
@@ -1007,16 +1007,6 @@ public class PickupUpdateActivity extends MasterActivity
         return ni != null;
     }
 
-    public static boolean Check_ValidWaybill(String s) {
-
-        if (s.length() == 10 || s.length() == 12) {
-            return StringUtils.isNumeric(s) == true;
-        } else if (s.length() == 18) {
-            return StringUtils.isAlphanumeric(s) == true;
-        }
-        return false;
-    }
-
     private class pickupTask extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
@@ -1133,7 +1123,7 @@ public class PickupUpdateActivity extends MasterActivity
                     }else if(!cbReference.isChecked()){
                         // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
 
-                        if (Check_ValidWaybill(event.getBarcodeData()) == true) {
+                        if (Utils.checkValidWaybill(event.getBarcodeData()) == true) {
 
                             System.out.println(" PickupUpdateactivity ID : ");
                             // System.out.println(R.id.WC_Frame);

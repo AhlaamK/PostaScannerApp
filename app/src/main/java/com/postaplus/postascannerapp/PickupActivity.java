@@ -26,12 +26,11 @@ import com.honeywell.aidc.BarcodeReadEvent;
 import com.honeywell.aidc.BarcodeReader;
 import com.honeywell.aidc.TriggerStateChangeEvent;
 
-import org.apache.commons.lang3.StringUtils;
-
 import TabsPagerAdapter.TabsPagerAdapter_Pickup;
 import koamtac.kdc.sdk.KDCConstants;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCReader;
+import utils.Utils;
 
 import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
 
@@ -374,7 +373,7 @@ Thread ThrKdc;
           ScannerData = pData;
           PickupActivity.WaybillFromScanner = ScannerData.GetData();
 
-          if (Check_ValidWaybill(pData.GetData()) == true) {
+          if (Utils.checkValidWaybill(pData.GetData()) == true) {
 
               // System.out.println(" - PTA Constant ID : ");
               // System.out.println(R.id.PTA_Frame);
@@ -454,24 +453,6 @@ Thread ThrKdc;
 
       }
  
- public static boolean Check_ValidWaybill (String s){
-		
-		if (s.length() == 10 || s.length() == 12)
-		{
-			if (StringUtils.isNumeric(s) == true)
-					return true;
-			else
-					return false;
-		}
-		else if (s.length() == 18)
-		{
-			if (StringUtils.isAlphanumeric(s) == true)
-				return true;
-			else
-				return false;
-		}
-		return false;
-	}
 
 
     @Override
@@ -487,7 +468,7 @@ Thread ThrKdc;
           //  ScannerData = barcodevent;
             PickupActivity.WaybillFromScanner = barcodevent.getBarcodeData();
 
-            if (Check_ValidWaybill(barcodevent.getBarcodeData()) == true) {
+            if (Utils.checkValidWaybill(barcodevent.getBarcodeData()) == true) {
 
                 // System.out.println(" - PTA Constant ID : ");
                 // System.out.println(R.id.PTA_Frame);

@@ -29,12 +29,11 @@ import com.honeywell.aidc.BarcodeReader;
 import com.honeywell.aidc.ScannerUnavailableException;
 import com.honeywell.aidc.TriggerStateChangeEvent;
 
-import org.apache.commons.lang3.StringUtils;
-
 import TabsPagerAdapter.TabsPagerAdapter;
 import koamtac.kdc.sdk.KDCConstants;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCReader;
+import utils.Utils;
 
 import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
 
@@ -376,137 +375,9 @@ public class  DeliveryActivity extends FragmentActivity implements
         //
     }
 
-    // Barcode DataReceived
-//  @Override
- /* public void BarcodeDataReceived(KDCData pData){
-	 
-	  Log.i("KDCReader", "KDC WC BarCodeReceived Block");
-	  System.out.print("KDCReader WC BarCodeReceived Block");
-	  
-	  		
-	  if(pData != null){
-		  
-		  ScannerData = pData;
-		  DeliveryActivity.WaybillFromScanner = ScannerData.GetData();
-		  
-		  if(Check_ValidWaybill(pData.GetData())==true)
-		  {
-			  
-			  System.out.println(" - WC Constant ID : ");
-	//		  System.out.println(R.id.WC_Frame);
-			  System.out.println(" value for pdata is : ");
-			  System.out.println(pData); 
-//			  Delivery_wc_fragment fragment = (Delivery_wc_fragment)getSupportFragmentManager().findFragmentById(R.id.buttonWC);
-//			  fragment.ScannerWCExecutions(); 
-			 // Delivery_wc_fragment frag;
-//			  FragmentManager fm1 = DeliveryActivity.this
-//			      .getSupportFragmentManager();
-//			  android.support.v4.app.FragmentTransaction ft1 = fm1.beginTransaction();
-			//  frag = new Delivery_wc_fragment();
-			//  ft1.replace(R.id.WC_Frame, frag);
-			//  ft1.commit();
-			   
-			// frag.ScannerWCExecutions();
-	
-//			 Delivery_wc_fragment fragment = (Delivery_wc_fragment) getSupportFragmentManager().findFragmentById(R.id.WC_Frame); 
-//			 fragment.ScannerWCExecutions();; 
-			  
-			  if(KDCScannerCallFrom=="WCFragment")
-			  {
-			  _activity.runOnUiThread(new Runnable(){
-				  @Override
-				  public void run(){
-					  
-					  Delivery_wc_fragment fragment = new Delivery_wc_fragment();
-						 //getSupportFragmentManager().beginTransaction().replace(R.id.WC_Frame, fragment).commit();
-						 System.out.println(" value for frag is : ");
-						  System.out.println(fragment);
-						  //fragment.chkdata=.GetData();
-						 fragment.ScannerWCExecutions();
-					
-					
-				  }
-			  });
-			  } 
-			  else if(KDCScannerCallFrom=="TAFragment")
-			  {
-			  _activity.runOnUiThread(new Runnable(){
-				  @Override
-				  public void run(){
-					  
-					 				
-						 Delivery_ta_fragment fragment2 = new Delivery_ta_fragment();
-						 //getSupportFragmentManager().beginTransaction().replace(R.id.WC_Frame, fragment).commit();
-						 System.out.println(" value for frag is : ");
-						  System.out.println(fragment2);
-						  //fragment.chkdata=.GetData();
-						 fragment2.ScannerTAExecutions();  
-					  
-				  }
-			  });
-			  }
-			 *//*Delivery_wc_fragment fragment = new Delivery_wc_fragment();
-			 //getSupportFragmentManager().beginTransaction().replace(R.id.WC_Frame, fragment).commit();
-			 System.out.println(" value for frag is : ");
-			  System.out.println(fragment);
-			  fragment.chkdata=pData.GetData();
-			 fragment.ScannerWCExecutions();*//*
 
-     *//* if(Delivery_wc_fragment.TAG=="Delivery_wc_fragment")
-			  {
-				    _activity.runOnUiThread(new Runnable(){
-					  @Override
-					  public void run(){
-						  Delivery_wc_fragment fragment = (Delivery_wc_fragment)getSupportFragmentManager().findFragmentById(R.id.buttonWC);
-						  fragment.ScannerWCExecutions();  
-					  }
-				  });
-			  }*//*
-//			  Delivery_wc_fragment fragment = (Delivery_wc_fragment)getSupportFragmentManager().findFragmentById(R.id.buttonWC);
-//			  fragment.ScannerWCExecutions();  
-			  
-			  //Delivery_wc_fragment instanceFragment = ((Delivery_wc_fragment) getSupportFragmentManager().findFragmentByTag("Frag_WC_tag"));
-			//   inst=manager.findFragmentById(R.id.WC_Frame);
-//			  Delivery_wc_fragment fragment = (Delivery_wc_fragment)manager.findFragmentById(R.id.WC_Frame);
-//			  fragment.ScannerWCExecutions();  
-		  }
-		  else
-		  {
-			  
-			  _activity.runOnUiThread(new Runnable(){
-				  @Override
-				  public void run(){
-					  
-					  Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
-				  }
-			  });
-		  }
-	  }
-	  else
-	  {
-		  _activity.runOnUiThread(new Runnable(){
-			  @Override
-			  public void run(){
-				  
-				  Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
-			  }
-		  });
-	  }
-	  
-  }*/
 
-    public static boolean Check_ValidWaybill (String s){
 
-        if (s.length() == 10 || s.length() == 12)
-        {
-            return StringUtils.isNumeric(s) == true;
-        }
-        else if (s.length() == 18)
-        {
-            return StringUtils.isAlphanumeric(s) == true;
-        }
-        return false;
-    }
     @Override
     public void onBarcodeEvent(final BarcodeReadEvent event) {
         DeliveryActivity.this.runOnUiThread(new Runnable() {
@@ -523,7 +394,7 @@ public class  DeliveryActivity extends FragmentActivity implements
 
                     DeliveryActivity.WaybillFromScanner = event.getBarcodeData();
 
-                    if (Check_ValidWaybill(event.getBarcodeData()) == true) {
+                    if (Utils.checkValidWaybill(event.getBarcodeData()) == true) {
 
                         System.out.println(" - WC Constant ID : ");
                         //		  System.out.println(R.id.WC_Frame);

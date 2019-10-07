@@ -35,13 +35,12 @@ import com.honeywell.aidc.ScannerNotClaimedException;
 import com.honeywell.aidc.ScannerUnavailableException;
 import com.honeywell.aidc.TriggerStateChangeEvent;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 
 import koamtac.kdc.sdk.KDCConstants;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCReader;
+import utils.Utils;
 import webservice.FuncClasses.CheckHoldvalidwaybill;
 import webservice.WebService;
 
@@ -885,7 +884,7 @@ public class HoldActivity extends MasterActivity implements
 			waybill = ScannerData.GetData();
 			// StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
 
-			if (Check_ValidWaybill(pData.GetData()) == true) {
+			if (Utils.checkValidWaybill(pData.GetData()) == true) {
 
 				System.out.println(" Holdactivity ID : ");
 				// System.out.println(R.id.WC_Frame);
@@ -937,15 +936,7 @@ public class HoldActivity extends MasterActivity implements
 
 	}
 
-	public static boolean Check_ValidWaybill(String s) {
 
-		if (s.length() == 10 || s.length() == 12) {
-			return StringUtils.isNumeric(s) == true;
-		} else if (s.length() == 18) {
-			return StringUtils.isAlphanumeric(s) == true;
-		}
-		return false;
-	}
 
 	@Override
 	public void onBarcodeEvent(final BarcodeReadEvent event) {
@@ -964,7 +955,7 @@ public class HoldActivity extends MasterActivity implements
 					waybill = barcodeData;
 					// StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
 
-					if (Check_ValidWaybill(event.getBarcodeData()) == true) {
+					if (Utils.checkValidWaybill(event.getBarcodeData()) == true) {
 
 						System.out.println(" Holdactivity ID : ");
 						// System.out.println(R.id.WC_Frame);

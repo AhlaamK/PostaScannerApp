@@ -34,8 +34,6 @@ import com.honeywell.aidc.BarcodeReadEvent;
 import com.honeywell.aidc.BarcodeReader;
 import com.honeywell.aidc.ScannerUnavailableException;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,6 +44,7 @@ import koamtac.kdc.sdk.KDCConstants;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCDataReceivedListener;
 import koamtac.kdc.sdk.KDCReader;
+import utils.Utils;
 
 import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
 
@@ -689,7 +688,7 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 			  waybill = ScannerData.GetData();
 			 // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
 			  
-			  if(Check_ValidWaybill(pData.GetData())==true)
+			  if(Utils.checkValidWaybill(pData.GetData())==true)
 			  {
 				  
 				  System.out.println(" Fuelactivity ID : ");
@@ -743,18 +742,7 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 		  
 	  }
 	  
-	  public static boolean Check_ValidWaybill (String s){
-			
-			if (s.length() == 10 || s.length() == 12)
-			{
-				return StringUtils.isNumeric(s) == true;
-			}
-			else if (s.length() == 18||s.length() == 15)
-			{
-				return StringUtils.isAlphanumeric(s) == true;
-			}
-			return false;
-		}
+
 
 	@Override
 	public void onBarcodeEvent(final BarcodeReadEvent barcodeReadEvent) {
@@ -768,7 +756,7 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 					waybill = barcodeReadEvent.getBarcodeData();
 					// StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
 
-					if (Check_ValidWaybill(barcodeReadEvent.getBarcodeData()) == true) {
+					if (Utils.checkValidWaybill(barcodeReadEvent.getBarcodeData()) == true) {
 
 						System.out.println(" Fuelactivity ID : ");
 						// System.out.println(R.id.WC_Frame);

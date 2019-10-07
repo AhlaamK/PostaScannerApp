@@ -25,10 +25,9 @@ import com.honeywell.aidc.BarcodeReader;
 import com.honeywell.aidc.ScannerUnavailableException;
 import com.honeywell.aidc.TriggerStateChangeEvent;
 
-import org.apache.commons.lang3.StringUtils;
-
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCReader;
+import utils.Utils;
 import webservice.WebService;
 
 import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
@@ -311,7 +310,7 @@ public class DialogActivity extends Activity implements View.OnClickListener ,Ba
                     waybill = barcodeData;
                     // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
                     System.out.println("barcodeData waybill is:" + waybill);
-                    if (Check_ValidWaybill(waybill) == true) {
+                    if (Utils.checkValidWaybill(waybill) == true) {
 
                         System.out.println("diaalog ID : ");
                         // System.out.println(R.id.WC_Frame);
@@ -359,18 +358,7 @@ public class DialogActivity extends Activity implements View.OnClickListener ,Ba
         });
     }
 
-    public static boolean Check_ValidWaybill (String s){
 
-        if (s.length() == 10 || s.length() == 12)
-        {
-            return StringUtils.isNumeric(s) == true;
-        }
-        else if (s.length() == 18)
-        {
-            return StringUtils.isAlphanumeric(s) == true;
-        }
-        return false;
-    }
 
 
 

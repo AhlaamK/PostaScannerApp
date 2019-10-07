@@ -1038,7 +1038,7 @@ public class Delivery_ta_fragment extends Fragment
 
              ScannerData = pData;
 
-             if(Check_ValidWaybill(pData.GetData())==true)
+             if(checkValidWaybill(pData.GetData())==true)
              {
                      //test calling
                     //Toast.makeText(_activity, "Valid Waybill", Toast.LENGTH_LONG).show();
@@ -1078,7 +1078,7 @@ public class Delivery_ta_fragment extends Fragment
 
      }
 
-     public static boolean Check_ValidWaybill (String s){
+     public static boolean checkValidWaybill (String s){
 
            if (s.length() == 10 || s.length() == 12)
            {

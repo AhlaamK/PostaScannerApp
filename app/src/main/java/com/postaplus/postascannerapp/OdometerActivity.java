@@ -768,7 +768,7 @@ implements BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener {
 			 
 			  ScannerData = pData;
 			  waybill=ScannerData.GetData();	
-			  // if(Check_ValidWaybill(pData.GetData())==true)
+			  // if(checkValidWaybill(pData.GetData())==true)
 			  {
 				  
 				  System.out.println(" OdometerActivity ID : ");
@@ -900,7 +900,7 @@ implements BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener {
 
 
 	  
-	 /* public static boolean Check_ValidWaybill (String s){
+	 /* public static boolean checkValidWaybill (String s){
 			
 			if (s.length() == 10 || s.length() == 12)
 			{
@@ -930,7 +930,7 @@ implements BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener {
 
 
 			waybill=barcodevent.getBarcodeData();
-			// if(Check_ValidWaybill(pData.GetData())==true)
+			// if(checkValidWaybill(pData.GetData())==true)
 			{
 
 				System.out.println(" OdometerActivity ID : ");
