@@ -104,7 +104,7 @@ public class ScreenActivity extends Activity {
 		//	ipaddress = "http://staging.postaplus.net/OpsCourierScannerService/OpsGCScanSrv.svc";
 
 
-			ipaddress = "http://10.0.0.20:1000/Courier";
+			ipaddress = "http://132.145.29.167:1000/Courier";
 //
 			//qa
 			//	ipaddress = "http://staging.postaplus.net:804/OpsCourierScannerService/OpsGCScanSrv.svc";

@@ -1330,7 +1330,7 @@ public class LoginActivity extends MasterActivity {
                     Log.e("PICKUPDT","DBVAL : "+ db);
                     sqldb = db.getReadableDatabase();
 
-                    if ((pkdtOb.ERR).contains("PENDING")) {
+                    if (pkdtOb.ERR != null && (pkdtOb.ERR).contains("PENDING")) {
                         //System.out.println("PENDING\n------------");
 
 
@@ -1377,7 +1377,7 @@ public class LoginActivity extends MasterActivity {
                     }
 
                     //if err message completed call GET_PICKUP_WAYBILLS_DT
-                    else if ((pkdtOb.ERR).contains("COMPLETED")) {
+                    else if (pkdtOb.ERR != null &&(pkdtOb.ERR).contains("COMPLETED")) {
                         //System.out.println("ERR=COMPLETED\n______________");
                         //if data is not in the table insert/update
                         Cursor c11 = sqldb.rawQuery("SELECT * FROM pickuphead WHERE Pickup_No='" + pkdtOb.PICK_NO + "'", null);
@@ -1422,7 +1422,7 @@ public class LoginActivity extends MasterActivity {
                     }
 
                     //if error contain finished message delete the pickup from pickup detail table
-                    else if ((pkdtOb.ERR).contains("FINISHED")) {
+                    else if (pkdtOb.ERR != null &&(pkdtOb.ERR).contains("FINISHED")) {
 
                         //System.out.println("ERR=FINISHED\n______________");
                         sqldb = db.getWritableDatabase();
