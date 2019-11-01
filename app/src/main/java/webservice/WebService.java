@@ -256,6 +256,7 @@ public class WebService {
 
     }
 
+
     public static OpenRst GET_OPENRST(String drivercode) {
         String JsonParams="";
 
@@ -926,16 +927,11 @@ if(ResponseData!= null) {
         Object ResponseData = JsonService.jsonreq(JsonParam,StringResponse.class);
 
 
-        Log.e("clrsyncreq", JsonParam);
-        Log.e("clrsyncRespObject", ResponseData.toString());
-        StringResponse ResponseJson = (StringResponse)ResponseData;
+        StringResponse responseJson = (StringResponse)ResponseData;
+        if (responseJson == null)
+            return false;
 
-        Log.e("clrsyncResponse", ResponseJson.getd().toString());
-      /*  if(ResponseJson.equals("true")) return true;
-        else return false;*/
-        return  Boolean.valueOf(ResponseJson.getd());
-
-
+        return  Boolean.valueOf(responseJson.getd());
     }
 
     public static CheckValidWaybill CHECK_VALIDWAYBILL(String drivercode, String waybill , String routeid ){
@@ -1188,6 +1184,16 @@ if(ResponseData != null) {
     return Arraypckpwaydetal;
 
 }return null;
+    }
+    public static boolean GET_SERVICE_STATUS_ASYNCH(String driverCode){
+        String JsonParam="";
+        JsonParam +="GET_SERVICE_STATUS_ASYNCH?DRIVERCODE="+driverCode;
+        StringResponse responseJson = (StringResponse) JsonService.jsonreq(JsonParam,StringResponse.class);
+        if(responseJson==null){
+            return false;
+        }else
+        return  Boolean.valueOf(responseJson.getd());
+
     }
 
     public static boolean GET_SERVICE_STATUS(String drivercode){

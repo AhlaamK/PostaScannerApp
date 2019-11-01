@@ -13,8 +13,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager.widget.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -149,7 +149,7 @@ public class PickupActivity extends FragmentActivity implements
         // Initilization
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
-        mAdapter = new TabsPagerAdapter_Pickup(getSupportFragmentManager());
+        mAdapter = new TabsPagerAdapter_Pickup(getSupportFragmentManager(),"");
         final SharedPreferences mSharedPreference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String value = (mSharedPreference.getString("HoneywellFlag", ""));
         Log.e("OnBarcodevaluepckp", String.valueOf(value));

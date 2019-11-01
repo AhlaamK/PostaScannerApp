@@ -684,290 +684,284 @@ public class PickupUpdateActivity extends MasterActivity
 			}
 		}); */
 
-        pickup.setOnClickListener(new OnClickListener() {
+        pickup.setOnClickListener(v -> {
 
-            @Override
-            public void onClick(View v) {
+            v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+            //	pd.show(PickupUpdateActivity.this, "Loading", "Wait while loading...");
+            //	pb.setVisibility(View.VISIBLE);
+            /*pickstts="YES";
+            if(processClick)
+            {
+                pickup.setEnabled(false);
+                pickup.setClickable(false);
+                pickup.setVisibility(View.GONE);
+                processClick=false;
+            }*/
+            //	final ProgressDialog pd = new ProgressDialog(PickupUpdateActivity.this);
 
-                v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-                //	pd.show(PickupUpdateActivity.this, "Loading", "Wait while loading...");
-                //	pb.setVisibility(View.VISIBLE);
-				/*pickstts="YES";
-				if(processClick)
-				{
-					pickup.setEnabled(false);
-					pickup.setClickable(false);
-					pickup.setVisibility(View.GONE);
-					processClick=false;
-				}*/
-                //	final ProgressDialog pd = new ProgressDialog(PickupUpdateActivity.this);
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+                return;
+            }
 
-                if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
-                    return;
-                }
+          /*  if(resulttab.getChildCount()==0){
+                Toast.makeText(getApplicationContext(), "Please scan awbs to Pickup", Toast.LENGTH_SHORT).show();
+                return;
+            }*/
 
-              /*  if(resulttab.getChildCount()==0){
-                    Toast.makeText(getApplicationContext(), "Please scan awbs to Pickup", Toast.LENGTH_SHORT).show();
-                    return;
-                }*/
+            tablecount = resulttab.getChildCount();
+            //wbilltabarr=new String[count];
+            //amounttabarr=new String[count];
+            //servicetabarr=new String[count];
+            //paytabarr=new String[count];
+            System.out.println("VALUES FROM  PICKUP " + tablecount + " " + drivercode + " " + pickupno);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+            date_time = sdf.format(new Date());
+            gps = new GPSTracker(mContext, PickupUpdateActivity.this);
 
-                tablecount = resulttab.getChildCount();
-                //wbilltabarr=new String[count];
-                //amounttabarr=new String[count];
-                //servicetabarr=new String[count];
-                //paytabarr=new String[count];
-                System.out.println("VALUES FROM  PICKUP " + tablecount + " " + drivercode + " " + pickupno);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                date_time = sdf.format(new Date());
-                gps = new GPSTracker(mContext, PickupUpdateActivity.this);
+            // check if GPS enabled
+            if (gps.canGetLocation()) {
 
-                // check if GPS enabled
-                if (gps.canGetLocation()) {
+                latitude = gps.getLatitude();
+                longitude = gps.getLongitude();
 
-                    latitude = gps.getLatitude();
-                    longitude = gps.getLongitude();
+                // \n is for new line
+                //  Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+            } else {
+                // can't get location
+                // GPS or Network is not enabled
+                // Ask user to enable GPS/network in settings
+                gps.showSettingsAlert();
+            }
+            pickflag = 0;
 
-                    // \n is for new line
-                    //  Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-                } else {
-                    // can't get location
-                    // GPS or Network is not enabled
-                    // Ask user to enable GPS/network in settings
-                    gps.showSettingsAlert();
-                }
-                pickflag = 0;
+            setpkpdtRequest = new setPickUpDt[tablecount];
+            for (int i = 0; i < tablecount; i++) {
+                setpkpdtRequest[i] = new setPickUpDt();
 
-                setpkpdtRequest = new setPickUpDt[tablecount];
-                for (int i = 0; i < tablecount; i++) {
-                    setpkpdtRequest[i] = new setPickUpDt();
-
-                }
-                for (int i = 0; i < tablecount; i++) {
-                    wbilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                    paytxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(2);
-                    amounttxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(3);
-                    servicetxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(4);
-                    tagtxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(5);
-                    System.out.println("tagtxt befre add" + tagtxt);
+            }
+            for (int i = 0; i < tablecount; i++) {
+                wbilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                paytxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(2);
+                amounttxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(3);
+                servicetxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(4);
+                tagtxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(5);
+                System.out.println("tagtxt befre add" + tagtxt);
 // tagval added to db tab
 
-                    db = new DatabaseHandler(getBaseContext());
-                    //open localdatabase in a read mode
-                    sqldb = db.getReadableDatabase();
-                    //select the payid from the paytypedetails table
-                    Cursor c1 = sqldb.rawQuery("SELECT * FROM paytypedetails WHERE PayTYPE='" + paytxt.getText().toString() + "'", null);
-                    if (c1.getCount() > 0) {
-                        c1.moveToFirst();
-                        if (payId == null) {
-                            payId = c1.getString(c1.getColumnIndex("PayID"));
-                            System.out.println("payId in pickup update on pickup");
-                            System.out.println(payId);
-
-                        }
+                db = new DatabaseHandler(getBaseContext());
+                //open localdatabase in a read mode
+                sqldb = db.getReadableDatabase();
+                //select the payid from the paytypedetails table
+                Cursor c11 = sqldb.rawQuery("SELECT * FROM paytypedetails WHERE PayTYPE='" + paytxt.getText().toString() + "'", null);
+                if (c11.getCount() > 0) {
+                    c11.moveToFirst();
+                    if (payId == null) {
+                        payId = c11.getString(c11.getColumnIndex("PayID"));
+                        System.out.println("payId in pickup update on pickup");
+                        System.out.println(payId);
 
                     }
-                    c1.close();
-                    Cursor c2 = sqldb.rawQuery("SELECT * FROM servicedetails WHERE ServiceTYPE='" + servicetxt.getText().toString() + "'", null);
-                    if (c2.getCount() > 0) {
-                        c2.moveToFirst();
-                        if (serviceId == null) {
-                            serviceId = c2.getString(c2.getColumnIndex("ServiceID"));
-                            System.out.println("serviceId in pickup update on pickup");
-                            System.out.println(serviceId);
-                        }
 
+                }
+                c11.close();
+                Cursor c21 = sqldb.rawQuery("SELECT * FROM servicedetails WHERE ServiceTYPE='" + servicetxt.getText().toString() + "'", null);
+                if (c21.getCount() > 0) {
+                    c21.moveToFirst();
+                    if (serviceId == null) {
+                        serviceId = c21.getString(c21.getColumnIndex("ServiceID"));
+                        System.out.println("serviceId in pickup update on pickup");
+                        System.out.println(serviceId);
                     }
-                    c2.close();
 
-                    System.out.println("WAYBILL IN PICKUP : " + wbilltxt.getText().toString());
-                    System.out.println("Tag_value IN PICKUP : " + tagtxt.getText().toString());
-                    System.out.println("mastrawbstrng IN PICKUP : " + mastrawbstrng);
-                    sqldb = db.getWritableDatabase();
-                    ContentValues values = new ContentValues();
-                    values.put("Driver_Code", drivercode);
-                    values.put("Pickup_No", pickupno);
-                    values.put("Waybill_Number", wbilltxt.getText().toString());
-                    values.put("PayType", payId);
-                    values.put("Amount", amounttxt.getText().toString());
-                    values.put("ServiceType", serviceId);
-                    values.put("Date_Time", date_time);
-                    values.put("Tag_value", tagtxt.getText().toString());
-                    //values.put("Tag_value",mastrawbstrng);
-                    System.out.println("tag value insert:" + tagtxt.getText().toString());
+                }
+                c21.close();
+
+                System.out.println("WAYBILL IN PICKUP : " + wbilltxt.getText().toString());
+                System.out.println("Tag_value IN PICKUP : " + tagtxt.getText().toString());
+                System.out.println("mastrawbstrng IN PICKUP : " + mastrawbstrng);
+                sqldb = db.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put("Driver_Code", drivercode);
+                values.put("Pickup_No", pickupno);
+                values.put("Waybill_Number", wbilltxt.getText().toString());
+                values.put("PayType", payId);
+                values.put("Amount", amounttxt.getText().toString());
+                values.put("ServiceType", serviceId);
+                values.put("Date_Time", date_time);
+                values.put("Tag_value", tagtxt.getText().toString());
+                //values.put("Tag_value",mastrawbstrng);
+                System.out.println("tag value insert:" + tagtxt.getText().toString());
 // mps
 
 
-                    sqldb.insertOrThrow("pickupdetails", null, values);
+                sqldb.insertOrThrow("pickupdetails", null, values);
 
-                    setpkpdtRequest[i].DRIVERCODE = drivercode;
-                    setpkpdtRequest[i].PICKUPNO = pickupno;
-                    setpkpdtRequest[i].WAYBILL = wbilltxt.getText().toString();
-                    setpkpdtRequest[i].PAYTYPE = payId;
-                    setpkpdtRequest[i].AMOUNT = amounttxt.getText().toString();
-                    setpkpdtRequest[i].SERVICE = serviceId;
-                    setpkpdtRequest[i].DATETIMESTR = date_time;
-                    setpkpdtRequest[i].STATUS = status;
-                    setpkpdtRequest[i].TAGVAL = tagtxt.getText().toString();
-                    //setpkpdtRequest[i].TAGVAL=masterawbtxt.toString();
-                    System.out.println("tag value is req:" + tagtxt.getText().toString());
+                setpkpdtRequest[i].DRIVERCODE = drivercode;
+                setpkpdtRequest[i].PICKUPNO = pickupno;
+                setpkpdtRequest[i].WAYBILL = wbilltxt.getText().toString();
+                setpkpdtRequest[i].PAYTYPE = payId;
+                setpkpdtRequest[i].AMOUNT = amounttxt.getText().toString();
+                setpkpdtRequest[i].SERVICE = serviceId;
+                setpkpdtRequest[i].DATETIMESTR = date_time;
+                setpkpdtRequest[i].STATUS = status;
+                setpkpdtRequest[i].TAGVAL = tagtxt.getText().toString();
+                //setpkpdtRequest[i].TAGVAL=masterawbtxt.toString();
+                System.out.println("tag value is req:" + tagtxt.getText().toString());
+            }
+
+            //pb.setVisibility(View.VISIBLE);
+
+            //	mProgressDialog.show();
+
+
+            //pickupTask = new pickupTask().execute();
+            //new	pickupTask().execute();
+            //pd.show(PickupUpdateActivity.this, "Loading", "Wait while loading...").setProgress(20);
+            //	pd.setMessage("Loading Wait while loading..." );
+            //	pd.show();
+            System.out.println("called method webservice");
+
+            pickupTask = new AsyncTask() {
+                @Override
+                protected Object doInBackground(Object[] objects) {
+                    System.out.println("pickup pickupno update background finished" + pickupno);
+                    //pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
+                    pick_status = WebService.SET_PICKUPDETAILS(drivercode, pickupno);
+                    if(pick_status!= null){
+                        System.out.println("pickup status update on pickup background finished" + pick_status);
+                        //pick_status=newpickStatus;
+                        return pick_status;
+                    }else return null;
+
                 }
+            };
 
-                //pb.setVisibility(View.VISIBLE);
-
-                //	mProgressDialog.show();
-
-
-                //pickupTask = new pickupTask().execute();
-                //new	pickupTask().execute();
-                //pd.show(PickupUpdateActivity.this, "Loading", "Wait while loading...").setProgress(20);
-                //	pd.setMessage("Loading Wait while loading..." );
+            System.out.println("pickuptask status is:" + pickupTask.getStatus());
+            if (pickupTask.getStatus() == AsyncTask.Status.PENDING) {
+                //task=new ProgressBarShow();
+                //	pd.setMessage("Wait while loading..." );
                 //	pd.show();
-                System.out.println("called method webservice");
+                if (pickstts.contentEquals("YES")) {
+                    pickstts = "NO";
 
-                pickupTask = new AsyncTask() {
-                    @Override
-                    protected Object doInBackground(Object[] objects) {
-                        System.out.println("pickup pickupno update background finished" + pickupno);
-                        //pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
-                        pick_status = WebService.SET_PICKUPDETAILS(drivercode, pickupno);
-                        if(pick_status!= null){
-                            System.out.println("pickup status update on pickup background finished" + pick_status);
-                            //pick_status=newpickStatus;
-                            return pick_status;
-                        }else return null;
+                    //	pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
 
+                    try {
+                        pickupTask.execute().get();
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
                     }
-                };
-
-                System.out.println("pickuptask status is:" + pickupTask.getStatus());
-                if (pickupTask.getStatus() == AsyncTask.Status.PENDING) {
-                    //task=new ProgressBarShow();
-                    //	pd.setMessage("Wait while loading..." );
-                    //	pd.show();
-                    if (pickstts.contentEquals("YES")) {
-                        pickstts = "NO";
-
-                        //	pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
-
-                        try {
-                            pickupTask.execute().get();
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
                 }
 
-                if (pickupTask.getStatus() == AsyncTask.Status.RUNNING) {
-                    //task=new ProgressBarShow();
-                    //pickupTask.execute();
-                    System.out.println("pickup status update on pickuptask running" + pick_status);
-                    //	pd.setMessage("Wait while loading..." );
-                    //	pd.show();
+            }
 
-                }
+            if (pickupTask.getStatus() == AsyncTask.Status.RUNNING) {
+                //task=new ProgressBarShow();
+                //pickupTask.execute();
+                System.out.println("pickup status update on pickuptask running" + pick_status);
+                //	pd.setMessage("Wait while loading..." );
+                //	pd.show();
 
-
-                //	pd.dismiss();
-
-
-                System.out.println("pickup status update on pickup" + pick_status);
-
-
-                System.out.println("pickuptask status beore finished is" + pickupTask.getStatus());
-                if (pickupTask.getStatus() == AsyncTask.Status.RUNNING) {
-                    // START NEW TASK HERE
-
-                    //	Updated adding show/hide:
-                    System.out.println("pickup status update on pickuptask running" + pick_status);
-                    System.out.println("pickupTask finished");
-                    System.out.println("pickuptask status after finished is" + pickupTask.getStatus());
-
-                    if (!pick_status.equals("TRUE")) {
-
-                        Runnable progressRunnable = new Runnable() {
-
-                            @Override
-                            public void run() {
-                                //pd.cancel();
-                                //	pd.dismiss();
-                                //pd.hide();
-                                Log.e("close block", "123123");
-                            }
-                        };
-
-                        Handler pdCanceller = new Handler();
-                        pdCanceller.postDelayed(progressRunnable, 1200);
-
-                        Toast.makeText(getApplicationContext(), pick_status, Toast.LENGTH_SHORT).show();
-
-                        lastClickTime = SystemClock.elapsedRealtime();
-                        pickstts = "YES";
-
-                        return;
-                    }
-
-                    System.out.println("pickup status in pickup update");
-                    System.out.println(pick_status);
-                    System.out.println(drivercode);
-                    System.out.println(pickupno);
-                    System.out.println(wbilltabarr);
-                    System.out.print(payId);
-                    System.out.println("amount is" + amounttabarr);
-                    System.out.print(serviceId);
-                    System.out.println(date_time);
-                    System.out.println(METHOD_NAME22);
-                    System.out.println("tag val for db is:" + tagvalue);
-
-
-                    if (pick_status.equals("TRUE")) {
-
-                        sqldb = db.getWritableDatabase();
-                        sqldb.execSQL("UPDATE pickuphead SET Status='C' WHERE Pickup_No='" + pickupno + "'");
-                        sqldb.execSQL("UPDATE pickuphead SET TransferStatus=2 WHERE Pickup_No='" + pickupno + "'");
-                        sqldb.execSQL("UPDATE pickuphead SET Pickup_Date_Time='" + date_time + "' WHERE Pickup_No='" + pickupno + "'");
-
-                        Toast.makeText(getApplicationContext(), "Submitted", Toast.LENGTH_SHORT).show();
-                        for (int j = resulttab.getChildCount(); j >= 0; j--) {
-                            resulttab.removeAllViews();
-                            counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                            System.out.println("value of counttxt true in pickup update" + counttxt.getText().toString());
-                        }
-
-
-                        openDialog();
-
-                        amountedt.setText("");
-                        servicespinner.setSelection(0);
-                        paytypespinner.setSelection(0);
-                        picknotxt.setText("");
-                        accnotxt.setText("");
-                        //	pb.setVisibility(View.INVISIBLE);
-                      //  _activity.finishActivity(0);
-                       /* Intent int1 = new Intent(_activity, PickupActivity.class);
-
-                        int1.putExtra("route", route);
-                        int1.putExtra("route1", routen);
-
-                        startActivity(new Intent(int1));*/
-                        lastClickTime = SystemClock.elapsedRealtime();
-                        pickstts = "YES";
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Connection Error try after some time", Toast.LENGTH_SHORT).show();
-                        pickstts = "YES";
-                        //pb.setVisibility(View.INVISIBLE);
-                        //	pd.dismiss();
-                        lastClickTime = SystemClock.elapsedRealtime();
-                    }
-                    db.close();
-                }
-                //pb.setVisibility(View.INVISIBLE);
             }
 
 
+            //	pd.dismiss();
+
+
+            System.out.println("pickup status update on pickup" + pick_status);
+
+
+            System.out.println("pickuptask status beore finished is" + pickupTask.getStatus());
+            if (pickupTask.getStatus() == AsyncTask.Status.RUNNING) {
+                // START NEW TASK HERE
+
+                //	Updated adding show/hide:
+                System.out.println("pickup status update on pickuptask running" + pick_status);
+                System.out.println("pickupTask finished");
+                System.out.println("pickuptask status after finished is" + pickupTask.getStatus());
+
+                if (!pick_status.equals("TRUE")) {
+
+                    Runnable progressRunnable = new Runnable() {
+
+                        @Override
+                        public void run() {
+                            //pd.cancel();
+                            //	pd.dismiss();
+                            //pd.hide();
+                            Log.e("close block", "123123");
+                        }
+                    };
+
+                    Handler pdCanceller = new Handler();
+                    pdCanceller.postDelayed(progressRunnable, 1200);
+
+                    Toast.makeText(getApplicationContext(), pick_status, Toast.LENGTH_SHORT).show();
+
+                    lastClickTime = SystemClock.elapsedRealtime();
+                    pickstts = "YES";
+
+                    return;
+                }
+
+                System.out.println("pickup status in pickup update");
+                System.out.println(pick_status);
+                System.out.println(drivercode);
+                System.out.println(pickupno);
+                System.out.println(wbilltabarr);
+                System.out.print(payId);
+                System.out.println("amount is" + amounttabarr);
+                System.out.print(serviceId);
+                System.out.println(date_time);
+                System.out.println(METHOD_NAME22);
+                System.out.println("tag val for db is:" + tagvalue);
+
+
+                if (pick_status.equals("TRUE")) {
+
+                    sqldb = db.getWritableDatabase();
+                    sqldb.execSQL("UPDATE pickuphead SET Status='C' WHERE Pickup_No='" + pickupno + "'");
+                    sqldb.execSQL("UPDATE pickuphead SET TransferStatus=2 WHERE Pickup_No='" + pickupno + "'");
+                    sqldb.execSQL("UPDATE pickuphead SET Pickup_Date_Time='" + date_time + "' WHERE Pickup_No='" + pickupno + "'");
+
+                    Toast.makeText(getApplicationContext(), "Submitted", Toast.LENGTH_SHORT).show();
+                    for (int j = resulttab.getChildCount(); j >= 0; j--) {
+                        resulttab.removeAllViews();
+                        counttxt.setText(String.valueOf(resulttab.getChildCount()));
+                        System.out.println("value of counttxt true in pickup update" + counttxt.getText().toString());
+                    }
+
+
+                    openDialog();
+
+                    amountedt.setText("");
+                    servicespinner.setSelection(0);
+                    paytypespinner.setSelection(0);
+                    picknotxt.setText("");
+                    accnotxt.setText("");
+                    //	pb.setVisibility(View.INVISIBLE);
+                  //  _activity.finishActivity(0);
+                   /* Intent int1 = new Intent(_activity, PickupActivity.class);
+
+                    int1.putExtra("route", route);
+                    int1.putExtra("route1", routen);
+
+                    startActivity(new Intent(int1));*/
+                    lastClickTime = SystemClock.elapsedRealtime();
+                    pickstts = "YES";
+                } else {
+                    Toast.makeText(getApplicationContext(), "Connection Error try after some time", Toast.LENGTH_SHORT).show();
+                    pickstts = "YES";
+                    //pb.setVisibility(View.INVISIBLE);
+                    //	pd.dismiss();
+                    lastClickTime = SystemClock.elapsedRealtime();
+                }
+                db.close();
+            }
+            //pb.setVisibility(View.INVISIBLE);
         });
         cbmps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

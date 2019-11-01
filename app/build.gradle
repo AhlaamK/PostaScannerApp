@@ -1,24 +1,22 @@
-apply plugin: 'com.android.application'
-
-buildscript {
-    repositories {
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-    dependencies {
-        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.11.0, 0.99.99]'
-    }
+plugins {
+    id 'com.onesignal.androidsdk.onesignal-gradle-plugin' version '0.12.3'
 }
+apply plugin: 'com.android.application'
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+apply plugin: 'com.google.gms.google-services'
+
+
 
 repositories {
-    maven { url 'https://maven.google.com' }
+    mavenCentral()
 }
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
+        multiDexEnabled true
         applicationId "com.postaplus.postascannerapp"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 28
         versionName 'VHCT4.20'
 
@@ -49,7 +47,6 @@ android {
                 // Project number pulled from dashboard, local value is ignored.
                 onesignal_google_project_number: 'REMOTE'
         ]
-        multiDexEnabled true
     }
 
 }
@@ -57,9 +54,12 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:23.2.1'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.karumi:dexter:6.0.0'
+
     implementation files('libs/commons-lang3-3.4.jar')
     implementation files('libs/kdcreader.jar')
     implementation files('libs/xmlpull_1_0_5.jar')
@@ -67,11 +67,12 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
     //Ak chnaged gmmms to firebase 8apr19
     // compile 'com.google.android.gms:play-services:9.4.0'
-    implementation 'com.google.firebase:firebase-appindexing:17.1.0'
-    implementation 'com.google.code.gson:gson:2.7'
-    implementation 'com.squareup.okhttp3:okhttp:3.4.2'
+    implementation 'com.google.firebase:firebase-appindexing:15.0.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation files('libs/DataCollection.jar')
-    implementation 'com.onesignal:OneSignal:[3.9.1, 3.99.99]'
-    implementation 'com.google.firebase:firebase-core:16.0.1'
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.onesignal:OneSignal:3.6.3'
+
+    implementation 'com.google.firebase:firebase-core:15.0.0'
+    implementation 'androidx.multidex:multidex:2.0.0'
 }
