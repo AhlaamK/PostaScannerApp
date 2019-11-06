@@ -64,7 +64,6 @@ public class PickupActivity extends FragmentActivity implements
     int tabpos = 0;
     ImageView imageViewPushicon;
     private ViewPager viewPager;
-    private TabsPagerAdapter_Pickup mAdapter;
     private ActionBar actionBar;
     // Tab titles
     private String[] tabs = {"Pickup", "Accept Pickup"};
@@ -102,12 +101,12 @@ public class PickupActivity extends FragmentActivity implements
     public static boolean Check_ValidWaybill(String s) {
 
         if (s.length() == 10 || s.length() == 12) {
-            if (StringUtils.isNumeric(s) == true)
+            if (StringUtils.isNumeric(s))
                 return true;
             else
                 return false;
         } else if (s.length() == 18) {
-            if (StringUtils.isAlphanumeric(s) == true)
+            if (StringUtils.isAlphanumeric(s))
                 return true;
             else
                 return false;
@@ -120,19 +119,20 @@ public class PickupActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer);
         ActionBar localActionBar = getActionBar();
-        localActionBar.setCustomView(R.layout.actionbar_layout);
-        localActionBar.setDisplayShowTitleEnabled(false);
-        localActionBar.setDisplayShowCustomEnabled(true);
-        localActionBar.setDisplayUseLogoEnabled(false);
-        localActionBar.setDisplayShowHomeEnabled(false);
-        localActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#1c181c")));
+        if (localActionBar != null) {
+            localActionBar.setCustomView(R.layout.actionbar_layout);
+            localActionBar.setDisplayShowTitleEnabled(false);
+            localActionBar.setDisplayShowCustomEnabled(true);
+            localActionBar.setDisplayUseLogoEnabled(false);
+            localActionBar.setDisplayShowHomeEnabled(false);
+            localActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#1c181c")));
+        }
         imageViewPushicon = (ImageView) findViewById(R.id.imageViewPushicon);
         imageViewPushicon.setVisibility(View.GONE);
-        //for networkonmainthreadexception
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        //KDC Full Commands
         _activity = this;
 
         _resources = getResources();
@@ -141,15 +141,14 @@ public class PickupActivity extends FragmentActivity implements
             barcodeReader.addBarcodeListener(_activity);
 
 
-        username = (TextView) findViewById(R.id.unametxt);
+        username = findViewById(R.id.unametxt);
 
         pref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         username.setText(pref.getString("uname", ""));
         System.out.println("_Actv onresis:" + _activity);
-        // Initilization
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
-        mAdapter = new TabsPagerAdapter_Pickup(getSupportFragmentManager(),"");
+        TabsPagerAdapter_Pickup mAdapter = new TabsPagerAdapter_Pickup(getSupportFragmentManager(), "");
         final SharedPreferences mSharedPreference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String value = (mSharedPreference.getString("HoneywellFlag", ""));
         Log.e("OnBarcodevaluepckp", String.valueOf(value));
@@ -164,9 +163,6 @@ public class PickupActivity extends FragmentActivity implements
                     .setTabListener(this));
         }
 
-        /**
-         * on swiping the viewpager make respective tab selected
-         * */
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
@@ -190,53 +186,15 @@ public class PickupActivity extends FragmentActivity implements
     public void onResume() {
         super.onResume();
         //  _activity = this;
-        if (!isActivityActiveFlag) isActivityActiveFlag = false;
+        if (!isActivityActiveFlag)
+            isActivityActiveFlag = false;
         System.out.println("_Actv onresis:" + _activity);
 
-      /*  SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("HoneywellFlag", "0");
-        editor.commit();*/
         if (barcodeReader != null)
             barcodeReader.removeBarcodeListener(_activity);
-        // moveTaskToBack(false);
-        // tabpos=1;
-       /* tpickup = new Thread(){
-            @Override
-            public void run(){
-             //   _kdcReader= new KDCReader(MasterActivity.ScannerDevice, _activity, _activity, null, null, null, _activity, false);
-                _kdcReader= new KDCReader(null, _activity, _activity, null, null, null, _activity, false);
-            }
-        };
-        tpickup.start();*/
-      /*  if(ThrKdc!=null)
-            ThrKdc.run();
-        else {
-            if(tabpos==1) {
-                ThrKdc = new Thread() {
-                    @Override
-                    public void run() {
-                        //   _kdcReader= new KDCReader(MasterActivity.ScannerDevice, _activity, _activity, null, null, null, _activity, false);
-                        _kdcReader = new KDCReader(null, _activity, _activity, null, null, null, _activity, false);
-                        _kdcReader.EnableBluetoothWakeupNull(true);
-                    }
-                };
-               ThrKdc.start();
-            }
-        }*/
         if (tabpos == 1) {
-           /* if(!KDCTaskExecutable.getStatus().equals(AsyncTask.Status.RUNNING) && !KDCTaskExecutable.getStatus().equals(AsyncTask.Status.FINISHED)){
-                //KDCTaskExecutable.cancel(true);
-                KDCTaskExecutable.execute();*/
             System.out.println("PickupActivity KDCTask Executed");
-        } else {
-           /* if(_kdcReader!=null) _kdcReader.Disconnect();
-            if(ThrKdc!=null)ThrKdc.interrupt();
-            KDCTaskExecutable.cancel(true);*/
         }
-
-
-        //   System.out.println("Resume activate in deliveryactivity");
     }
 
     @Override

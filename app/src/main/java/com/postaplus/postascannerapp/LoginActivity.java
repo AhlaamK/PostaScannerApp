@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.StrictMode;
 import androidx.core.app.ActivityCompat;
 import android.telephony.TelephonyManager;
@@ -189,7 +190,6 @@ public class LoginActivity extends MasterActivity {
                 Password = passWordET.getText().toString();
 
                 System.out.println("username on logn"+Username);
-
 
                 //Create instance for AsyncCallWS
                 AsyncCallWS task = new AsyncCallWS();
@@ -1759,8 +1759,10 @@ public class LoginActivity extends MasterActivity {
     public boolean onTouchEvent(MotionEvent event) {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.
                 INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
+        if (imm != null &&  getCurrentFocus()!=null) {
+            IBinder windowToken = getCurrentFocus().getWindowToken();
+            if (windowToken != null)
+            imm.hideSoftInputFromWindow(windowToken, 0);
         }
         return true;
     }

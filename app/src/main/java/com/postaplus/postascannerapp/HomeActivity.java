@@ -188,50 +188,45 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
         _activity = this;
 
         GetOPENRRST();
-        AidcManager.create(this, new AidcManager.CreatedCallback() {
+        AidcManager.create(this, aidcManager -> {
+            manager = aidcManager;
+            barcodeReader = manager.createBarcodeReader();
 
-                    @Override
-                    public void onCreated(AidcManager aidcManager) {
-                        manager = aidcManager;
-                        barcodeReader = manager.createBarcodeReader();
+            System.out.println("manager in ocree:" + manager + "barcode is:" + barcodeReader);
 
-                        System.out.println("manager in ocree:" + manager + "barcode is:" + barcodeReader);
+            try {
+                if (barcodeReader != null) {
+                    //barcodeReader.claim();
 
-                        try {
-                            if (barcodeReader != null) {
-                                //barcodeReader.claim();
-
-                                System.out.println("barcodeReader in try:" + barcodeReader);
-                            }
-                            Map<String, Object> properties = new HashMap<String, Object>();
-                            properties.put(BarcodeReader.PROPERTY_CODE_128_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_GS1_128_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_QR_CODE_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_CODE_39_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_UPC_A_ENABLE, true);
-                            properties.put(BarcodeReader.PROPERTY_EAN_13_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_AZTEC_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_CODABAR_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, true);
-                            properties.put(BarcodeReader.PROPERTY_PDF_417_ENABLED, false);
-                            properties.put(BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL, true);
-                            properties.put(BarcodeReader.PROPERTY_CODE_39_MAXIMUM_LENGTH, 10);
-                            properties.put(BarcodeReader.PROPERTY_CENTER_DECODE, true);
-                            properties.put(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, true);
-
-                            barcodeReader.addBarcodeListener(_activity);
-                            barcodeReader.addTriggerListener(_activity);
-
-
-                            System.out.println("barcodeReader in finish" + barcodeReader);
-                        } catch (Exception e) {
-                        }
-
-
-                    }
-
+                    System.out.println("barcodeReader in try:" + barcodeReader);
                 }
+                Map<String, Object> properties = new HashMap<String, Object>();
+                properties.put(BarcodeReader.PROPERTY_CODE_128_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_GS1_128_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_QR_CODE_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_CODE_39_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_UPC_A_ENABLE, true);
+                properties.put(BarcodeReader.PROPERTY_EAN_13_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_AZTEC_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_CODABAR_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, true);
+                properties.put(BarcodeReader.PROPERTY_PDF_417_ENABLED, false);
+                properties.put(BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL, true);
+                properties.put(BarcodeReader.PROPERTY_CODE_39_MAXIMUM_LENGTH, 10);
+                properties.put(BarcodeReader.PROPERTY_CENTER_DECODE, true);
+                properties.put(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, true);
+
+                barcodeReader.addBarcodeListener(_activity);
+                barcodeReader.addTriggerListener(_activity);
+
+
+                System.out.println("barcodeReader in finish" + barcodeReader);
+            } catch (Exception e) {
+            }
+
+
+        }
         );
 
 
