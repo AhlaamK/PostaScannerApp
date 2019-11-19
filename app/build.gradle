@@ -18,7 +18,7 @@ android {
         applicationId "com.postaplus.postascannerapp"
         minSdkVersion 17
         targetSdkVersion 28
-        versionName 'VHCT4.22'
+        versionName 'VHCT4.25'
 
     }
     buildTypes {
