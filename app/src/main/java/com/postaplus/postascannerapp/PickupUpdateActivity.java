@@ -883,7 +883,7 @@ public class PickupUpdateActivity extends MasterActivity
                 System.out.println("pickupTask finished");
                 System.out.println("pickuptask status after finished is" + pickupTask.getStatus());
 
-                if (!pick_status.equals("TRUE")) {
+                if (pick_status!=null && !pick_status.equals("TRUE")) {
 
                     Runnable progressRunnable = new Runnable() {
 

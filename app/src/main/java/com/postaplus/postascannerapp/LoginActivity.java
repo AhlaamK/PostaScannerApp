@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.StrictMode;
-import androidx.core.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,10 +32,10 @@ import com.onesignal.OneSignal;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
 import DatabaseHandlers.DBFCS.TBLogin;
 import DatabaseHandlers.DBFunctions;
+import androidx.core.app.ActivityCompat;
 import webservice.FuncClasses.Couriers;
 import webservice.FuncClasses.Events;
 import webservice.FuncClasses.HoldWayBills;
@@ -52,27 +51,25 @@ import webservice.WebService;
 
 
 public class LoginActivity extends MasterActivity {
+    public static final String usrnam = "uname";
+    static boolean errored = false;
+    public String Username;
+    public boolean loginStatus, mstatus;
     GPSTracker gps;
     double latitude, longitude;
     String lati, longti;
-    private String[] pickuperror1, routename, routecode, eventid, eventdesc, serviceID, serviceType, PayId, PayType, couriercode, couriername;
     int count;
     String[] waybill1, rname1, cname1, phone, area1, company1, civilid1, serial1, cardtype1, deldate1, deltime1, amount1, error1;
     String[] addresshold, waybillhold, cnamehold, phonehold, areahold, companyhold, civilidhold, serialhold, cardtypehold, deldatehold, deltimehold, amounthold, transcourierhold;
     String[] attempt1, pickupno1, acname1, pickaddr1, pickarea1, contact_person1, pick_phone1, picktime1, error11, address1;
     String[] pickupno12, wbill12, paytype12, amount12, service12;
-    public static final String usrnam = "uname";
     String rname = "";
     String route, odovalue;
-
-    static boolean errored = false;
     Button sumbitBtn;
     //TextView statusTV;
     EditText userNameET, passWordET;
     TextView versionDisp;
     ProgressBar webservicePG;
-    public String Username;
-    public boolean loginStatus, mstatus;
     String Password, serialid;
     String AppVersion = "";
     Events[] eventResponse;
@@ -87,10 +84,11 @@ public class LoginActivity extends MasterActivity {
     Routes[] routesresponse;
     Remarks[] pickupremarksResponse;
     Button clrbtn;
-    private SharedPreferences loginPreferences;
-    private Editor loginPrefsEditor;
     ActivityNotification actNoty = new ActivityNotification();
     OpenRst runsheet;
+    private String[] pickuperror1, routename, routecode, eventid, eventdesc, serviceID, serviceType, PayId, PayType, couriercode, couriername;
+    private SharedPreferences loginPreferences;
+    private Editor loginPrefsEditor;
 
     // public  static String retrno ,rstnumbr,acknumbr;
 
@@ -182,6 +180,7 @@ public class LoginActivity extends MasterActivity {
 
 
     }
+
     public void onLoginButtonClick(View v) {
         //Check if text controls are not empty
         if (userNameET.getText().length() != 0 && !userNameET.getText().toString().equals("")) {
@@ -189,7 +188,7 @@ public class LoginActivity extends MasterActivity {
                 Username = userNameET.getText().toString();
                 Password = passWordET.getText().toString();
 
-                System.out.println("username on logn"+Username);
+                System.out.println("username on logn" + Username);
 
                 //Create instance for AsyncCallWS
                 AsyncCallWS task = new AsyncCallWS();
@@ -211,27 +210,25 @@ public class LoginActivity extends MasterActivity {
     }
 
 
-
     //To clear cache data method
     public void clearcashData(Context context) {
         File dir = context.getCacheDir();
-        System.out.println("dir value is"+dir);
+        System.out.println("dir value is" + dir);
         File appDir = new File(dir.getParent());
-        System.out.println("appdir value is"+appDir);
-        if(appDir.exists()){
+        System.out.println("appdir value is" + appDir);
+        if (appDir.exists()) {
             String[] children = appDir.list();
-            for(String s : children){
-                if(!s.equals("lib")){
+            for (String s : children) {
+                if (!s.equals("lib")) {
                     deleteDir(new File(appDir, s));
                     //  Log.i("TAG", "data/user/0/com.postaplus.postascannerapp/" + s +" DELETED");
-                    Log.i("TAG", "/data/user/0/com.postaplus.postascannerapp" + s +" DELETED");
+                    Log.i("TAG", "/data/user/0/com.postaplus.postascannerapp" + s + " DELETED");
                 }
             }
         }
     }
 
-    public boolean deleteDir(File dir)
-    {
+    public boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
@@ -243,6 +240,7 @@ public class LoginActivity extends MasterActivity {
         }
         return dir.delete();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -259,8 +257,7 @@ public class LoginActivity extends MasterActivity {
         int count1 = c.getCount();*/
         // DBFunctions.GetLoggedUser(getBaseContext());
         TBLogin ActiveLogin = DBFunctions.GetLoggedUser(getBaseContext());
-        if(ActiveLogin!=null)
-        {
+        if (ActiveLogin != null) {
             //  if (count1 > 0) {
             /*c.moveToFirst();
 
@@ -302,10 +299,10 @@ public class LoginActivity extends MasterActivity {
                     Intent i = new Intent(this, HomeActivity.class);
                     i.putExtra("route1", String.valueOf(rname));
                     i.putExtra("route", ActiveLogin.ROUTE_CODE);
-                    actNoty.setRouteName(this,String.valueOf(rname));
-                    actNoty.setRouteCode(this,ActiveLogin.ROUTE_CODE);
+                    actNoty.setRouteName(this, String.valueOf(rname));
+                    actNoty.setRouteCode(this, ActiveLogin.ROUTE_CODE);
                     //actNoty.setdrivercode(this,Username);
-                    OneSignal.sendTag("username",Username);
+                    OneSignal.sendTag("username", Username);
 
                     startActivity(i);
                     db.close();
@@ -334,6 +331,32 @@ public class LoginActivity extends MasterActivity {
         new getroutetask().execute();
     }
 
+    // Hiding of soft keyboard when touched anywhere on screen
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.
+                INPUT_METHOD_SERVICE);
+        if (imm != null && getCurrentFocus() != null) {
+            IBinder windowToken = getCurrentFocus().getWindowToken();
+            if (windowToken != null)
+                imm.hideSoftInputFromWindow(windowToken, 0);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            //System.exit(0);
+            return true;
+
+        }
+        return false;
+    }
 
     public class getroutetask extends AsyncTask<Void, Void, String> {
 
@@ -366,40 +389,46 @@ public class LoginActivity extends MasterActivity {
         private void getpaytype() {
 
             paytypeResponse = WebService.GET_PAYTYPE();
-            db = new DatabaseHandler(getBaseContext());
-            try {
-                for (webservice.FuncClasses.PayType pytpObv : paytypeResponse) {
-                    System.out.println("paytype service is working" + pytpObv.PAYTYPE);
-                    sqldb = db.getReadableDatabase();
-                    Cursor courier = sqldb.rawQuery("SELECT * FROM paytypedetails WHERE PayID='" + pytpObv.PAYID + "'", null);
-                    sqldb = db.getWritableDatabase();
-                    if (courier.getCount() > 0) {
-                        sqldb.execSQL("UPDATE paytypedetails SET PayTYPE='" + pytpObv.PAYTYPE + "' WHERE PayID='" + pytpObv.PAYID + "'");
-                    } else {
-                        String sql = "INSERT INTO paytypedetails (PayID, PayTYPE) "
+            if (paytypeResponse != null) {
+                db = new DatabaseHandler(getBaseContext());
+                try {
+                    for (webservice.FuncClasses.PayType pytpObv : paytypeResponse) {
+                        System.out.println("paytype service is working" + pytpObv.PAYTYPE);
+                        sqldb = db.getReadableDatabase();
+                        Cursor courier = sqldb.rawQuery("SELECT * FROM paytypedetails WHERE PayID='" + pytpObv.PAYID + "'", null);
+                        sqldb = db.getWritableDatabase();
+                        if (courier.getCount() > 0) {
+                            sqldb.execSQL("UPDATE paytypedetails SET PayTYPE='" + pytpObv.PAYTYPE + "' WHERE PayID='" + pytpObv.PAYID + "'");
+                        } else {
+                            String sql = "INSERT INTO paytypedetails (PayID, PayTYPE) "
 
-                                + "VALUES ('" + pytpObv.PAYID + "', '"
-                                + pytpObv.PAYTYPE + "')";
-                        sqldb.execSQL(sql);
+                                    + "VALUES ('" + pytpObv.PAYID + "', '"
+                                    + pytpObv.PAYTYPE + "')";
+                            sqldb.execSQL(sql);
+                        }
+                        courier.close();
                     }
-                    courier.close();
+                    //      sqldb.close();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    db.close();
+                    //    sqldb.close;
                 }
-                //      sqldb.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-            finally {
-                db.close();
-                //    sqldb.close;
-            }
-
         }
 
         //function to get services
         private void getservice() {
             try {
                 serviceResponse = WebService.GET_SERVICE();
+                if (serviceResponse == null) {
+
+                    Toast.makeText(LoginActivity.this, R.string.service_empty_hint,
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
                 db = new DatabaseHandler(getBaseContext());
                 for (Service serObv : serviceResponse) {
                     System.out.println("Get service is working" + serObv.SERVICEID);
@@ -423,8 +452,7 @@ public class LoginActivity extends MasterActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 db.close();
             }
         }
@@ -435,23 +463,27 @@ public class LoginActivity extends MasterActivity {
             try {
 
                 eventResponse = WebService.GET_EVENTS();
-                if(eventResponse != null) {
+                if (eventResponse != null) {
                     db = new DatabaseHandler(getBaseContext());
                     //  sqldb = db.getWritableDatabase();
 
                     for (Events evOb : eventResponse) {
 
                         sqldb = db.getReadableDatabase();
-                        Cursor courier = sqldb.rawQuery("SELECT * FROM eventdata WHERE EVENTCODE='" + evOb.EVENTCODE + "'", null);
+                        String eventCode = evOb.EVENTCODE;
+                        String eventDesc = evOb.EVENTDESC;
+                        eventCode = eventCode.replaceAll("'","");
+                        eventDesc = eventDesc.replaceAll("'","");
+                        Cursor courier = sqldb.rawQuery("SELECT * FROM eventdata WHERE EVENTCODE='" + eventCode + "'", null);
                         sqldb = db.getWritableDatabase();
                         if (courier.getCount() > 0) {
-                            sqldb.execSQL("UPDATE eventdata SET EVENTDESC='" + evOb.EVENTDESC + "' WHERE EVENTCODE='" + evOb.EVENTCODE + "'");
+                            sqldb.execSQL("UPDATE eventdata SET EVENTDESC='" + eventDesc + "' WHERE EVENTCODE='" + eventCode + "'");
                         } else {
 
                             String sql = "INSERT  INTO eventdata (EVENTCODE, EVENTDESC) "
 
-                                    + "VALUES ('" + evOb.EVENTCODE + "', '"
-                                    + evOb.EVENTDESC + "')";
+                                    + "VALUES ('" + eventCode + "', '"
+                                    + eventDesc + "')";
                             sqldb.execSQL(sql);
                         }
                         courier.close();
@@ -467,8 +499,7 @@ public class LoginActivity extends MasterActivity {
                 Log.e("Get-event:", "Get Event in login activity is errored");
                 //Toast.makeText(getApplicationContext(),e.getMessage().toString(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 if (db != null)
                     db.close();
             }
@@ -501,7 +532,7 @@ public class LoginActivity extends MasterActivity {
 
                         String sql = "INSERT  INTO pickupRemarks (RemarkCode, RemarkDesc) "
 
-                                + "VALUES ('" + remOb.REMARKCODE  + "', '"
+                                + "VALUES ('" + remOb.REMARKCODE + "', '"
                                 + remOb.REMARKDESC + "')";
                         sqldb.execSQL(sql);
                     }
@@ -516,11 +547,11 @@ public class LoginActivity extends MasterActivity {
                 Log.e("Get-remarks:", "Get remarkpickup in login activity is errored");
                 //Toast.makeText(getApplicationContext(),e.getMessage().toString(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 db.close();
             }
         }
+
         @Override
         public void onPostExecute(String res) {
 
@@ -529,6 +560,172 @@ public class LoginActivity extends MasterActivity {
         }
     }
 
+    /*public class routetask extends AsyncTask<Void, Void, String> {
+
+        String response = "";
+
+        public void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+
+
+            //   getroutes();
+
+            return "";
+        }
+    }*/
+
+
+    /*public class deliverytask extends AsyncTask<Void, Void, String> {
+
+        String response = "";
+
+        public void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+
+
+            getdeliverydetail();
+
+            return "";
+        }
+
+
+        //function to get the detail of delivery table from the server
+
+    }*/
+
+
+    /*public class deliveryholdtask extends AsyncTask<Void, Void, String> {
+
+        String response = "";
+
+        public void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+
+
+            getdeliveryholddetail();
+
+            return "";
+        }
+
+
+        //get data from hold delivery table
+
+
+
+
+    }*/
+
+    /*public class deliverytranferaccepttask extends AsyncTask<Void, Void, String> {
+
+        String response = "";
+
+        public void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+
+
+            gettranswaybillacceptdt();
+
+            return "";
+        }
+
+
+        //to get the scanned transfer accept waybill before accepting
+
+    }*/
+
+
+    /*public class pickuptask extends AsyncTask<Void, Void, String> {
+
+        String response = "";
+
+        public void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+
+
+            getpickupddeatils();
+
+            return "";
+        }
+
+
+
+    }*/
+
+
+    /*public class holdtask extends AsyncTask<Void, Void, String> {
+
+        String response = "";
+
+        public void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+
+
+            getholdwaybilldetail();
+
+            return "";
+        }
+
+
+        //function to get the detail of delivery table from the server
+
+
+
+
+        //function to get routes
+
+    }*/
+
+  /*  public void getroutes() {
+        try {
+            routesresponse = WebService.GET_ROUTES(Username);
+            for (Routes routesOb : routesresponse) {
+                sqldb = db.getReadableDatabase();
+                Cursor rou = sqldb.rawQuery("SELECT * FROM routedata WHERE ROUTECODE='" + routesOb.RouteCode + "'", null);
+                sqldb = db.getWritableDatabase();
+                if (rou.getCount() > 0) {
+                    sqldb.execSQL("UPDATE routedata SET ROUTENAME='" + routesOb.RouteName + "' WHERE ROUTECODE='" + routesOb.RouteCode + "'");
+                } else {
+
+                    String sql = "INSERT or replace INTO routedata (ROUTECODE, ROUTENAME) "
+
+                            + "VALUES (" + routesOb.RouteCode + ", '"
+                            + routesOb.RouteName + "')";
+                    sqldb.execSQL(sql);
+                    //sqldb.insertOrThrow("routedata", null, values);
+                }
+                rou.close();
+            }
+            db.close();
+        } catch (Exception e) {
+            Log.e("GetRoutes:", "Get Routes in login activity is errored");
+            e.printStackTrace();
+        }
+
+    }*/
 
     private class AsyncCallWS extends AsyncTask<String, Void, Void> {
         @Override
@@ -546,9 +743,8 @@ public class LoginActivity extends MasterActivity {
 
 
             System.out.println("loginstatus sharedprefrences  is " + loginPreferences.getString("username", Username));
-            if(!loginPreferences.getString("username", Username).contentEquals(Username))
-            {
-                System.out.println("loginstatus sharedprefrences  is not matching"+Username);
+            if (!loginPreferences.getString("username", Username).contentEquals(Username)) {
+                System.out.println("loginstatus sharedprefrences  is not matching" + Username);
                 clearcashData(LoginActivity.this);
             }
 
@@ -562,7 +758,7 @@ public class LoginActivity extends MasterActivity {
             System.out.println(Password);
             System.out.println("serialid in webserv is");
             System.out.println(serialid);
-            System.out.println("Version in webserv is"+AppVersion);
+            System.out.println("Version in webserv is" + AppVersion);
             /*System.out.println("V1.15");
             System.out.println("METHOD_NAME29 in webserv is");*/
             //  System.out.println(METHOD_NAME29);
@@ -677,7 +873,7 @@ public class LoginActivity extends MasterActivity {
                         Intent intObj = new Intent(LoginActivity.this, HomeActivity.class);
                         intObj.putExtra("route1", String.valueOf(rname));
                         intObj.putExtra("route", String.valueOf(route));
-                        actNoty.setRouteName(LoginActivity.this,rname);
+                        actNoty.setRouteName(LoginActivity.this, rname);
                         actNoty.setRouteCode(LoginActivity.this, route);
                         //actNoty.setdrivercode(LoginActivity.this,Username);
                         //Navigate to Home Screen
@@ -742,17 +938,17 @@ public class LoginActivity extends MasterActivity {
 			//open localdatabase in a read mode
 			sqldb = db.getReadableDatabase();
 
-			//select all values in the table and check count 
+			//select all values in the table and check count
 			Cursor c = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='"+Username+"'", null);
 			c.moveToFirst();
 
-			Integer count =  c.getCount();   
+			Integer count =  c.getCount();
 			//if count==0 insert the values else update the data
 
 			if(count>0){
 				if(route.contains("No Route"))
 				{
-					sqldb.execSQL("UPDATE logindata SET Routecode="+null+" WHERE Username='"+Username+"'"); 
+					sqldb.execSQL("UPDATE logindata SET Routecode="+null+" WHERE Username='"+Username+"'");
 				}
 				else
 				{
@@ -764,7 +960,7 @@ public class LoginActivity extends MasterActivity {
 
 
 			else {
-				sqldb =db.getWritableDatabase();		
+				sqldb =db.getWritableDatabase();
 				ContentValues values = new ContentValues();
 				values.put("Username", Username);
 
@@ -785,7 +981,6 @@ public class LoginActivity extends MasterActivity {
         protected void onProgressUpdate(Void... values) {
         }
     }
-
 
     public class LoginActivitySYNCH extends AsyncTask<Void, Void, String> {
 
@@ -852,8 +1047,7 @@ public class LoginActivity extends MasterActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 db.close();
                 //  sqldb.close();
 
@@ -956,9 +1150,9 @@ public class LoginActivity extends MasterActivity {
                 //select all values in the table and check count
                 sqldb.execSQL("DELETE FROM deliverydata WHERE Drivercode <> '" + Username + "'");
                 for (RstDetail rstdtevOb : rstdetailResponse) {
-                    if (rstdtevOb.ErrMsg == null||rstdtevOb.ErrMsg=="") {
-                        System.out.println("AWVIdentifier in home activity"+rstdtevOb.AWBIdentifier);
-                        Log.e("Synch","DelvDetails Bolck Called");
+                    if (rstdtevOb.ErrMsg == null || rstdtevOb.ErrMsg == "") {
+                        System.out.println("AWVIdentifier in home activity" + rstdtevOb.AWBIdentifier);
+                        Log.e("Synch", "DelvDetails Bolck Called");
                         sqldb = db.getReadableDatabase();
 					/*Cursor c11 = sqldb.rawQuery("SELECT 1 FROM deliverydata WHERE Waybill='" + rstdtevOb.WayBill + "' ", null);
 					int count11 = c11.getCount();
@@ -974,29 +1168,22 @@ public class LoginActivity extends MasterActivity {
                             //c1.moveToNext();
                             sqldb = db.getWritableDatabase();
                             String UpdateFields = "";
-                            if(rstdtevOb.Last_Status.equals("WC") || rstdtevOb.Last_Status.equals("ACKW") || rstdtevOb.Last_Status.equals("RTW"))
+                            if (rstdtevOb.Last_Status.equals("WC") || rstdtevOb.Last_Status.equals("ACKW") || rstdtevOb.Last_Status.equals("RTW"))
                                 UpdateFields = ",StopDelivery=0,WC_Status='A',WC_Transfer_Status=0,TransferStatus=0,Attempt_Status=0";
-                            else if(rstdtevOb.Last_Status.equals("DELIVERED") || rstdtevOb.Last_Status.equals("ACKC") || rstdtevOb.Last_Status.equals("RTC") || rstdtevOb.Last_Status.equals("SD"))
-                            {
+                            else if (rstdtevOb.Last_Status.equals("DELIVERED") || rstdtevOb.Last_Status.equals("ACKC") || rstdtevOb.Last_Status.equals("RTC") || rstdtevOb.Last_Status.equals("SD")) {
                                 System.out.println("wc status while delivered");
-                                if(rstdtevOb.Last_Status.equals("SD"))
+                                if (rstdtevOb.Last_Status.equals("SD"))
                                     UpdateFields = ",StopDelivery=1,WC_Status='SD',WC_Transfer_Status=1,TransferStatus=0,Attempt_Status=1, ApprovalStatus='APPROVED'";
                                 else
                                     UpdateFields = ",StopDelivery=1,WC_Status='C',WC_Transfer_Status=1,TransferStatus=0,Attempt_Status=1, ApprovalStatus=''";
-                            }
-
-                            else
+                            } else
                                 UpdateFields = ",StopDelivery=0,WC_Status='C',WC_Transfer_Status=1,TransferStatus=0,Attempt_Status=1";
                             System.out.println("wc status while notdelivered");
                             sqldb.execSQL("UPDATE deliverydata SET Drivercode='" + Username + "',Routecode=" + rstdtevOb.RouteName
                                     + ",Consignee='" + rstdtevOb.ConsignName + "',Telephone='" + rstdtevOb.PhoneNo + "'," + "Area='" + rstdtevOb.Area + "'," + "Company='"
                                     + rstdtevOb.Company + "',CivilID='" + rstdtevOb.CivilId + "',Serial='" + rstdtevOb.Serial + "',CardType='" + rstdtevOb.CardType + "',DeliveryDate='" + rstdtevOb.DelDate + "',DeliveryTime='"
-                                    + rstdtevOb.DelTime + "',Amount='" + rstdtevOb.Amount + "',Address='" + rstdtevOb.Address + "',ShipperName='" + rstdtevOb.ShipperName + "',AWBIdentifier='" + rstdtevOb.AWBIdentifier + "',Last_Status='" + rstdtevOb.Last_Status + "' "+ UpdateFields +"  WHERE Waybill='" + rstdtevOb.WayBill + "'");
+                                    + rstdtevOb.DelTime + "',Amount='" + rstdtevOb.Amount + "',Address='" + rstdtevOb.Address + "',ShipperName='" + rstdtevOb.ShipperName + "',AWBIdentifier='" + rstdtevOb.AWBIdentifier + "',Last_Status='" + rstdtevOb.Last_Status + "' " + UpdateFields + "  WHERE Waybill='" + rstdtevOb.WayBill + "'");
                             System.out.println("Updated AWB : " + rstdtevOb.WayBill);
-
-
-
-
 
 
                         } else {
@@ -1017,20 +1204,18 @@ public class LoginActivity extends MasterActivity {
                             values.put("DeliveryDate", rstdtevOb.DelDate);
                             values.put("DeliveryTime", rstdtevOb.DelTime);
                             values.put("Amount", rstdtevOb.Amount);
-                            System.out.println("wc status : " + rstdtevOb.Last_Status.equals("WC") );
-                            if(rstdtevOb.Last_Status.equals("WC") || rstdtevOb.Last_Status.equals("ACKW") || rstdtevOb.Last_Status.equals("RTW")){
+                            System.out.println("wc status : " + rstdtevOb.Last_Status.equals("WC"));
+                            if (rstdtevOb.Last_Status.equals("WC") || rstdtevOb.Last_Status.equals("ACKW") || rstdtevOb.Last_Status.equals("RTW")) {
                                 values.put("WC_Status", "A");
                                 System.out.println("wc status while wc");
                                 values.put("Attempt_Status", "0");
                                 values.put("WC_Transfer_Status", "0");
-                            }
-                            else if(rstdtevOb.Last_Status.equals("DELIVERED") || rstdtevOb.Last_Status.equals("ACKC") || rstdtevOb.Last_Status.equals("RTC") || rstdtevOb.Last_Status.equals("SD")){
+                            } else if (rstdtevOb.Last_Status.equals("DELIVERED") || rstdtevOb.Last_Status.equals("ACKC") || rstdtevOb.Last_Status.equals("RTC") || rstdtevOb.Last_Status.equals("SD")) {
 
-                                if(rstdtevOb.Last_Status.equals("SD")){
+                                if (rstdtevOb.Last_Status.equals("SD")) {
                                     values.put("ApprovalStatus", "APPROVED");
                                     values.put("WC_Status", "SD");
-                                }
-                                else {
+                                } else {
                                     values.put("ApprovalStatus", "");
                                     values.put("WC_Status", "C");
                                 }
@@ -1038,8 +1223,7 @@ public class LoginActivity extends MasterActivity {
                                 values.put("StopDelivery", "1");
                                 values.put("Attempt_Status", "1");
                                 values.put("WC_Transfer_Status", "1");
-                            }
-                            else{
+                            } else {
                                 System.out.println("wc status while notwc");
                                 values.put("WC_Status", "C");
                                 values.put("Attempt_Status", "1");
@@ -1067,7 +1251,7 @@ public class LoginActivity extends MasterActivity {
             } catch (Exception e) {
                 Log.e("Get Dlvry detail:", "Get Delivery detail in login activity is errored");
                 e.printStackTrace();
-            }finally {
+            } finally {
                 db.close();
                 //	sqldb.close();
             }
@@ -1086,7 +1270,7 @@ public class LoginActivity extends MasterActivity {
                 sqldb.execSQL("DELETE FROM deliverydata WHERE Drivercode <> '" + Username + "'");
                 sqldb = db.getReadableDatabase();
                 for (ScanWaybillDt scwbldtOb : scanwbildtResponse) {
-                    if (scwbldtOb.ErrMsg == null||scwbldtOb.ErrMsg=="") {
+                    if (scwbldtOb.ErrMsg == null || scwbldtOb.ErrMsg == "") {
 
                         Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + scwbldtOb.WayBill + "'", null);
                         int count1 = c1.getCount();
@@ -1142,7 +1326,7 @@ public class LoginActivity extends MasterActivity {
                 Log.e("Get ScanWBll detail:", "Get Scan Waybill in login activity is errored");
 
                 e.printStackTrace();
-            }finally {
+            } finally {
                 db.close();
                 //       sqldb.close();
             }
@@ -1327,7 +1511,7 @@ public class LoginActivity extends MasterActivity {
                 sqldb = db.getReadableDatabase();
                 for (PickUpDt pkdtOb : pickupdtResponse) {
 
-                    Log.e("PICKUPDT","DBVAL : "+ db);
+                    Log.e("PICKUPDT", "DBVAL : " + db);
                     sqldb = db.getReadableDatabase();
 
                     if (pkdtOb.ERR != null && (pkdtOb.ERR).contains("PENDING")) {
@@ -1366,9 +1550,9 @@ public class LoginActivity extends MasterActivity {
                             values.put("TransferStatus", "0");
                             values.put("Pickup_Type", pkdtOb.IDENTIFIER);
                             values.put("ConsigneeName", pkdtOb.CONSIGNEE_NAME);
-                            values.put("DeliveryAddress",  pkdtOb.DEL_ADD);
-                            values.put("DeliveryCity",  pkdtOb.DEL_CITY);
-                            values.put("DeliveryPhone",  pkdtOb.DEL_PHONE);
+                            values.put("DeliveryAddress", pkdtOb.DEL_ADD);
+                            values.put("DeliveryCity", pkdtOb.DEL_CITY);
+                            values.put("DeliveryPhone", pkdtOb.DEL_PHONE);
 
                             sqldb.insertOrThrow("pickuphead", null, values);
 
@@ -1377,7 +1561,7 @@ public class LoginActivity extends MasterActivity {
                     }
 
                     //if err message completed call GET_PICKUP_WAYBILLS_DT
-                    else if (pkdtOb.ERR != null &&(pkdtOb.ERR).contains("COMPLETED")) {
+                    else if (pkdtOb.ERR != null && (pkdtOb.ERR).contains("COMPLETED")) {
                         //System.out.println("ERR=COMPLETED\n______________");
                         //if data is not in the table insert/update
                         Cursor c11 = sqldb.rawQuery("SELECT * FROM pickuphead WHERE Pickup_No='" + pkdtOb.PICK_NO + "'", null);
@@ -1422,7 +1606,7 @@ public class LoginActivity extends MasterActivity {
                     }
 
                     //if error contain finished message delete the pickup from pickup detail table
-                    else if (pkdtOb.ERR != null &&(pkdtOb.ERR).contains("FINISHED")) {
+                    else if (pkdtOb.ERR != null && (pkdtOb.ERR).contains("FINISHED")) {
 
                         //System.out.println("ERR=FINISHED\n______________");
                         sqldb = db.getWritableDatabase();
@@ -1436,8 +1620,7 @@ public class LoginActivity extends MasterActivity {
             } catch (Exception e) {
                 Log.e("Get Pickup detail:", "Get PickupDetail in login activity is errored");
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 //        sqldb.close();
                 db.close();
                 //      sqldb.close();
@@ -1455,7 +1638,7 @@ public class LoginActivity extends MasterActivity {
             db = new DatabaseHandler(getBaseContext());
             try {
                 pickupwblldtResponse = WebService.GET_PICKUP_WAYBILLS_DT(Username, pickno);
-                if(pickupwblldtResponse!= null) {
+                if (pickupwblldtResponse != null) {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
                     String date_time = sdf.format(new Date());
                     for (PickUpWaybillsDT pkpwbldtObv : pickupwblldtResponse) {
@@ -1503,11 +1686,11 @@ public class LoginActivity extends MasterActivity {
 
                     }
                     db.close();
-                } } catch (Exception e) {
+                }
+            } catch (Exception e) {
                 Log.e("Get Pickup Wbll detail:", "Get Pickup Waybil detail in login activity is errored");
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 db.close();
                 //     sqldb.close();
             }
@@ -1517,9 +1700,9 @@ public class LoginActivity extends MasterActivity {
         private void getholdwaybilldetail() {
             try {
                 holddwaybillResponse = WebService.GET_HOLDWAYBILLS(Username);
-                if(holddwaybillResponse==null){
+                if (holddwaybillResponse == null) {
                     return;
-                }else
+                } else
                     db = new DatabaseHandler(getBaseContext());
                 sqldb = db.getWritableDatabase();
                 sqldb.execSQL("DELETE FROM Holdwaybilldata WHERE Drivercode <> '" + Username + "'");
@@ -1587,199 +1770,6 @@ public class LoginActivity extends MasterActivity {
         }
     }
 
-    /*public class routetask extends AsyncTask<Void, Void, String> {
-
-        String response = "";
-
-        public void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-
-
-            //   getroutes();
-
-            return "";
-        }
-    }*/
-
-
-    /*public class deliverytask extends AsyncTask<Void, Void, String> {
-
-        String response = "";
-
-        public void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-
-
-            getdeliverydetail();
-
-            return "";
-        }
-
-
-        //function to get the detail of delivery table from the server
-
-    }*/
-
-
-    /*public class deliveryholdtask extends AsyncTask<Void, Void, String> {
-
-        String response = "";
-
-        public void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-
-
-            getdeliveryholddetail();
-
-            return "";
-        }
-
-
-        //get data from hold delivery table
-
-
-
-
-    }*/
-
-    /*public class deliverytranferaccepttask extends AsyncTask<Void, Void, String> {
-
-        String response = "";
-
-        public void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-
-
-            gettranswaybillacceptdt();
-
-            return "";
-        }
-
-
-        //to get the scanned transfer accept waybill before accepting
-
-    }*/
-
-
-    /*public class pickuptask extends AsyncTask<Void, Void, String> {
-
-        String response = "";
-
-        public void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-
-
-            getpickupddeatils();
-
-            return "";
-        }
-
-
-
-    }*/
-
-
-    /*public class holdtask extends AsyncTask<Void, Void, String> {
-
-        String response = "";
-
-        public void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-
-
-            getholdwaybilldetail();
-
-            return "";
-        }
-
-
-        //function to get the detail of delivery table from the server
-
-
-
-
-        //function to get routes
-
-    }*/
-
-  /*  public void getroutes() {
-        try {
-            routesresponse = WebService.GET_ROUTES(Username);
-            for (Routes routesOb : routesresponse) {
-                sqldb = db.getReadableDatabase();
-                Cursor rou = sqldb.rawQuery("SELECT * FROM routedata WHERE ROUTECODE='" + routesOb.RouteCode + "'", null);
-                sqldb = db.getWritableDatabase();
-                if (rou.getCount() > 0) {
-                    sqldb.execSQL("UPDATE routedata SET ROUTENAME='" + routesOb.RouteName + "' WHERE ROUTECODE='" + routesOb.RouteCode + "'");
-                } else {
-
-                    String sql = "INSERT or replace INTO routedata (ROUTECODE, ROUTENAME) "
-
-                            + "VALUES (" + routesOb.RouteCode + ", '"
-                            + routesOb.RouteName + "')";
-                    sqldb.execSQL(sql);
-                    //sqldb.insertOrThrow("routedata", null, values);
-                }
-                rou.close();
-            }
-            db.close();
-        } catch (Exception e) {
-            Log.e("GetRoutes:", "Get Routes in login activity is errored");
-            e.printStackTrace();
-        }
-
-    }*/
-
-    // Hiding of soft keyboard when touched anywhere on screen
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
-                INPUT_METHOD_SERVICE);
-        if (imm != null &&  getCurrentFocus()!=null) {
-            IBinder windowToken = getCurrentFocus().getWindowToken();
-            if (windowToken != null)
-            imm.hideSoftInputFromWindow(windowToken, 0);
-        }
-        return true;
-    }
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            //System.exit(0);
-            return true;
-
-        }
-        return false;
-    }
-
 
   /*  private void GetOPENRRST() {
 
@@ -1795,7 +1785,6 @@ public class LoginActivity extends MasterActivity {
 
 
     }*/
-
 
 
 }

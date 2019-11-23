@@ -81,49 +81,7 @@ public class NotificationActivity extends MasterActivity {
             }
         });
 
-        accept.setOnClickListener(v -> {
-            v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-            db = new DatabaseHandler(getBaseContext());
-            sqldb = db.getWritableDatabase();
-            String[] PickupNO = new String[resulttab.getChildCount()];
-            for (int j = 0; j < resulttab.getChildCount(); j++) {
-                ch = (CheckBox) ((TableRow) resulttab.getChildAt(j)).getChildAt(0);
-                if (ch.isChecked()) {
-                    PickupNO[j] = ch.getText().toString();
-                    //acceptstatus=WebService.setnotpickup(uname,pickupno1[i],date,METHOD_NAME23);
-                    //	acceptstatus = webservice.WebService.SET_PICKUP_RECVD(uname, pickupno1[i], date);
-                    acceptstatus = webservice.WebService.SET_PICKUP_RECVD(uname, PickupNO[j], date);
-                    if (!errored) {
-                        if (acceptstatus) {
-                            sqldb.execSQL("UPDATE pickuphead SET Status='A' WHERE Pickup_No='" + PickupNO[j] + "'");
-                            sqldb.execSQL("UPDATE pickuphead SET TransferStatus=1 WHERE Pickup_No='" + PickupNO[j] + "'");
-                            sqldb.execSQL("UPDATE pickuphead SET Accept_Date_Time='" + date + "' WHERE Pickup_No='" + PickupNO[j] + "'");
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Please select atleast 1 Pickup", Toast.LENGTH_LONG).show();
-
-                }
-            }
-            if (ch.isChecked()) {
-                if (acceptstatus) {
-
-                    Toast.makeText(getApplicationContext(), "Accepted", Toast.LENGTH_LONG).show();
-                    resulttab.removeView(tr);
-                    NotificationActivity.this.finish();
-                    Intent int1 = new Intent(NotificationActivity.this, PickupActivity.class);
-                    int1.putExtra("route", rcode);
-                    int1.putExtra("route1", rname);
-
-                    startActivity(new Intent(int1));
-
-                }
-                db.close();
-            }
-
-        });
+        accept.setOnClickListener(this::acceptAction);
 
         close.setOnClickListener(v -> {
             v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
@@ -137,6 +95,60 @@ public class NotificationActivity extends MasterActivity {
         });
 
 
+    }
+
+    private void acceptAction(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+        db = new DatabaseHandler(getBaseContext());
+        sqldb = db.getWritableDatabase();
+        String[] PickupNO = new String[resulttab.getChildCount()];
+        boolean isPickSelected = false;
+        for (int i = 0; i < resulttab.getChildCount(); i++) {
+            ch = (CheckBox) ((TableRow) resulttab.getChildAt(i)).getChildAt(0);
+            if (ch.isChecked()) {
+                isPickSelected = true;
+                break;
+            }
+        }
+        if (!isPickSelected) {
+            Toast.makeText(getApplicationContext(), "Please select atleast 1 Pickup", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        for (int j = 0; j < resulttab.getChildCount(); j++) {
+            ch = (CheckBox) ((TableRow) resulttab.getChildAt(j)).getChildAt(0);
+            if (ch.isChecked()) {
+                PickupNO[j] = ch.getText().toString();
+                //acceptstatus=WebService.setnotpickup(uname,pickupno1[i],date,METHOD_NAME23);
+                //	acceptstatus = webservice.WebService.SET_PICKUP_RECVD(uname, pickupno1[i], date);
+                acceptstatus = webservice.WebService.SET_PICKUP_RECVD(uname, PickupNO[j], date);
+                if (!errored) {
+                    if (acceptstatus) {
+                        sqldb.execSQL("UPDATE pickuphead SET Status='A' WHERE Pickup_No='" + PickupNO[j] + "'");
+                        sqldb.execSQL("UPDATE pickuphead SET TransferStatus=1 WHERE Pickup_No='" + PickupNO[j] + "'");
+                        sqldb.execSQL("UPDATE pickuphead SET Accept_Date_Time='" + date + "' WHERE Pickup_No='" + PickupNO[j] + "'");
+                    } else
+                        Toast.makeText(getApplicationContext(), "Pickup not accepted", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        if (ch.isChecked()) {
+            if (acceptstatus) {
+
+                Toast.makeText(getApplicationContext(), "Accepted", Toast.LENGTH_LONG).show();
+                resulttab.removeView(tr);
+                NotificationActivity.this.finish();
+                Intent int1 = new Intent(NotificationActivity.this, PickupActivity.class);
+                int1.putExtra("route", rcode);
+                int1.putExtra("route1", rname);
+
+                startActivity(new Intent(int1));
+
+            }
+            db.close();
+        }
     }
 
     public class pickupTask extends AsyncTask<Void, Void, String> {

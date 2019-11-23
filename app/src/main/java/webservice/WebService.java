@@ -294,6 +294,8 @@ public class WebService {
         List<webservice.JsonFuncClasses.PayType> ResponseData = JsonService.JsonListPayTyp(JsonParameters);
         System.out.println("ResponseData is getpaytyp" + ResponseData);
 
+        if (ResponseData == null)
+            return null;
         PayType[] ArrayPaytyp = new PayType[ResponseData.size()];
         int i = 0;
         System.out.println("ResponseData is paysize:" + ResponseData.size());

@@ -189,44 +189,44 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 
         GetOPENRRST();
         AidcManager.create(this, aidcManager -> {
-            manager = aidcManager;
-            barcodeReader = manager.createBarcodeReader();
+                    manager = aidcManager;
+                    barcodeReader = manager.createBarcodeReader();
 
-            System.out.println("manager in ocree:" + manager + "barcode is:" + barcodeReader);
+                    System.out.println("manager in ocree:" + manager + "barcode is:" + barcodeReader);
 
-            try {
-                if (barcodeReader != null) {
-                    //barcodeReader.claim();
+                    try {
+                        if (barcodeReader != null) {
+                            //barcodeReader.claim();
 
-                    System.out.println("barcodeReader in try:" + barcodeReader);
+                            System.out.println("barcodeReader in try:" + barcodeReader);
+                        }
+                        Map<String, Object> properties = new HashMap<String, Object>();
+                        properties.put(BarcodeReader.PROPERTY_CODE_128_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_GS1_128_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_QR_CODE_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_CODE_39_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_UPC_A_ENABLE, true);
+                        properties.put(BarcodeReader.PROPERTY_EAN_13_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_AZTEC_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_CODABAR_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, true);
+                        properties.put(BarcodeReader.PROPERTY_PDF_417_ENABLED, false);
+                        properties.put(BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL, true);
+                        properties.put(BarcodeReader.PROPERTY_CODE_39_MAXIMUM_LENGTH, 10);
+                        properties.put(BarcodeReader.PROPERTY_CENTER_DECODE, true);
+                        properties.put(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, true);
+
+                        barcodeReader.addBarcodeListener(_activity);
+                        barcodeReader.addTriggerListener(_activity);
+
+
+                        System.out.println("barcodeReader in finish" + barcodeReader);
+                    } catch (Exception e) {
+                    }
+
+
                 }
-                Map<String, Object> properties = new HashMap<String, Object>();
-                properties.put(BarcodeReader.PROPERTY_CODE_128_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_GS1_128_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_QR_CODE_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_CODE_39_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_UPC_A_ENABLE, true);
-                properties.put(BarcodeReader.PROPERTY_EAN_13_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_AZTEC_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_CODABAR_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, true);
-                properties.put(BarcodeReader.PROPERTY_PDF_417_ENABLED, false);
-                properties.put(BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL, true);
-                properties.put(BarcodeReader.PROPERTY_CODE_39_MAXIMUM_LENGTH, 10);
-                properties.put(BarcodeReader.PROPERTY_CENTER_DECODE, true);
-                properties.put(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, true);
-
-                barcodeReader.addBarcodeListener(_activity);
-                barcodeReader.addTriggerListener(_activity);
-
-
-                System.out.println("barcodeReader in finish" + barcodeReader);
-            } catch (Exception e) {
-            }
-
-
-        }
         );
 
 
@@ -1719,31 +1719,32 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
     private void getpaytype() {
         // TODO Auto-generated method stub
         paytypeResponse = WebService.GET_PAYTYPE();
-        db = new DatabaseHandler(getBaseContext());
-        try {
-            for (webservice.FuncClasses.PayType pytpObv : paytypeResponse) {
-                System.out.println("paytype service is working" + pytpObv.PAYTYPE);
-                sqldb = db.getReadableDatabase();
-                Cursor courier = sqldb.rawQuery("SELECT * FROM paytypedetails WHERE PayID='" + pytpObv.PAYID + "'", null);
-                sqldb = db.getWritableDatabase();
-                if (courier.getCount() > 0) {
-                    sqldb.execSQL("UPDATE paytypedetails SET PayTYPE='" + pytpObv.PAYTYPE + "' WHERE PayID='" + pytpObv.PAYID + "'");
-                } else {
-                    String sql = "INSERT INTO paytypedetails (PayID, PayTYPE) "
+        if (paytypeResponse != null) {
+            db = new DatabaseHandler(getBaseContext());
+            try {
+                for (webservice.FuncClasses.PayType pytpObv : paytypeResponse) {
+                    System.out.println("paytype service is working" + pytpObv.PAYTYPE);
+                    sqldb = db.getReadableDatabase();
+                    Cursor courier = sqldb.rawQuery("SELECT * FROM paytypedetails WHERE PayID='" + pytpObv.PAYID + "'", null);
+                    sqldb = db.getWritableDatabase();
+                    if (courier.getCount() > 0) {
+                        sqldb.execSQL("UPDATE paytypedetails SET PayTYPE='" + pytpObv.PAYTYPE + "' WHERE PayID='" + pytpObv.PAYID + "'");
+                    } else {
+                        String sql = "INSERT INTO paytypedetails (PayID, PayTYPE) "
 
-                            + "VALUES ('" + pytpObv.PAYID + "', '"
-                            + pytpObv.PAYTYPE + "')";
-                    sqldb.execSQL(sql);
+                                + "VALUES ('" + pytpObv.PAYID + "', '"
+                                + pytpObv.PAYTYPE + "')";
+                        sqldb.execSQL(sql);
+                    }
+                    courier.close();
                 }
-                courier.close();
+                db.close();
+                //		sqldb.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            db.close();
-            //		sqldb.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+
         }
-
-
     }
 
     private void getservice() {
@@ -1753,7 +1754,7 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
             serviceResponse = WebService.GET_SERVICE();
             if (serviceResponse == null) {
 
-                Toast.makeText(HomeActivity.this, "Please Try again!",
+                Toast.makeText(HomeActivity.this, R.string.service_empty_hint,
                         Toast.LENGTH_LONG).show();
                 return;
             }
