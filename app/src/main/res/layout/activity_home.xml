@@ -42,15 +42,15 @@
         android:layout_marginLeft="160dp"
         />
 
+
     <ImageView
+        android:id="@+id/imagedelivery"
         android:layout_width="235dp"
         android:layout_height="50dp"
-        android:id="@+id/imagedelivery"
-        android:layout_marginTop="40dp"
         android:layout_gravity="left"
         android:layout_marginLeft="80dp"
-        android:background="@drawable/btnbckgrnddelv"/>
-
+        android:layout_marginTop="40dp"
+        android:background="@drawable/btnbckgrnddelv" />
 
     <ImageView
         android:layout_width="235dp"

@@ -10,9 +10,9 @@ import com.postaplus.postascannerapp.Delivery_ta_fragment;
 import com.postaplus.postascannerapp.Delivery_wc_fragment;
 
 
-public class TabsPagerAdapter extends FragmentPagerAdapter {
+public class TabsPagerDeliveryAdapter extends FragmentPagerAdapter {
  
-    public TabsPagerAdapter(FragmentManager fm) {
+    public TabsPagerDeliveryAdapter(FragmentManager fm) {
         super(fm);
     }
  

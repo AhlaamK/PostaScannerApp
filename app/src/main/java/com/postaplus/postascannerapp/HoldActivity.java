@@ -883,7 +883,7 @@ public class HoldActivity extends MasterActivity implements
 
 			ScannerData = pData;
 			waybill = ScannerData.GetData();
-			// StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
+			// StartDeliveryActivity.waybillFromScanner = ScannerData.GetData();
 
 			if (Check_ValidWaybill(pData.GetData()) == true) {
 
@@ -962,7 +962,7 @@ public class HoldActivity extends MasterActivity implements
 
 					//ScannerData = barcodeData;
 					waybill = barcodeData;
-					// StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
+					// StartDeliveryActivity.waybillFromScanner = ScannerData.GetData();
 
 					if (Check_ValidWaybill(event.getBarcodeData()) == true) {
 

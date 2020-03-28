@@ -245,7 +245,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 	
     	// Creating Tables for login
-    String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_NAME1 + "("
+    String CREATE_LOGIN_TABLE = "CREATE TABLE " +  TABLE_NAME1 + "("
 		+ USER_NAME + " TEXT," + LOGIN_STATUS + " INTEGER,"
 		+ ROUTE_CODE + " TEXT," + RUNSHEET_CODE + " TEXT," + ODOMETER_VALUE + " TEXT,"+ODOMETER_VALUE_END + " TEXT,"+ ODOMETER_FileNo + " TEXT,"+ ODOMETER_id + " TEXT,"+ ODOMETER_SyncStatus + " INTEGER" +")";
 	db.execSQL(CREATE_LOGIN_TABLE);

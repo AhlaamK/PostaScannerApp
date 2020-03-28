@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PostaScannerApp.iml" filepath="$PROJECT_DIR$/PostaScannerApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PostaScannerApp.iml" filepath="$PROJECT_DIR$/PostaScannerApp.iml" group="PostaScannerApp" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="PostaScannerApp/app" />
     </modules>
   </component>
 </project>

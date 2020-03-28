@@ -252,21 +252,14 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 
 		        }
 		    });*/
-		recclick.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-
-				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-				recimage.setImageResource(R.drawable.recp);
-				//imgcountarr[6]=1;
-				uriSavedImage=Uri.fromFile(new File(imagefile1,  "FuelReciept.PNG"));
-				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, uriSavedImage);
-				startActivityForResult(intent, 0);
-
-
-			}
+		recclick.setOnClickListener(v -> {
+			v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+			recimage.setImageResource(R.drawable.recp);
+			//imgcountarr[6]=1;
+			uriSavedImage=Uri.fromFile(new File(imagefile1,  "FuelReciept.PNG"));
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+			startActivityForResult(intent, 0);
 		});
 		/*scan.setOnClickListener(new OnClickListener() {
 
@@ -688,7 +681,7 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 			  
 			  ScannerData = pData;
 			  waybill = ScannerData.GetData();
-			 // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
+			 // StartDeliveryActivity.waybillFromScanner = ScannerData.GetData();
 			  
 			  if(Check_ValidWaybill(pData.GetData())==true)
 			  {
@@ -767,7 +760,7 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 
 					//ScannerData = barcodeReadEvent;
 					waybill = barcodeReadEvent.getBarcodeData();
-					// StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
+					// StartDeliveryActivity.waybillFromScanner = ScannerData.GetData();
 
 					if (Check_ValidWaybill(barcodeReadEvent.getBarcodeData()) == true) {
 

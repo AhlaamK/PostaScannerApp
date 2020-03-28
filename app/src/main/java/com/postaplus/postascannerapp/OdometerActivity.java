@@ -111,7 +111,7 @@ public class OdometerActivity extends MasterActivity
 		drivercode = username.getText().toString();
 		route = MYActivity.getIntent().getExtras().getString("routecode");
 		routen = MYActivity.getIntent().getExtras().getString("routename");
-		//waybill=OdometerActivity.WaybillFromScanner;
+		//waybill=OdometerActivity.waybillFromScanner;
 		//Initializations
 
 		if (route == null || getIntent() == null)

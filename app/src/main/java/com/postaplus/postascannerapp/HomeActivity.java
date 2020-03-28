@@ -244,93 +244,60 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
         //System.out.println("Home stage2");
 
 
-        delvr.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-                try {
-                    if (isNetworkConnected()) {
-                        Connected = WebService.GET_SERVICE_STATUS(null);
-
-                        GetOPENRRST();
-
-                    }
-                    System.out.println("Drivercode value in homeactivity is");
-                    System.out.println(drivercode);
-                    System.out.println("METHOD_NAME9 value in homeactivity is");
-                    System.out.println(METHOD_NAME9);
-
-
-                    System.out.println("rstnumbr are:" + rstnumbr);
-
-                    if (rstnumbr != null && acknumbr != null && retrno != null && rstnumbr.equals("NA") && acknumbr.equals("NA") && retrno.equals("NA")) {
-                        Intent int1 = new Intent(HomeActivity.this, DeliveryActivity.class);
-
-                        int1.putExtra("routecode", rte);
-                        int1.putExtra("routename", rte1);
-                        sqldb = db.getWritableDatabase();
-                        sqldb.execSQL("UPDATE logindata SET Runsheetcode='" + rstnumbr + "' WHERE Username='" + drivercode + "'");
-                        ;
-                        HomeActivity.this.startActivity(new Intent(int1));
-                        return;
-
-                    } else {
-
-
-                        TBLogin ActiveLogin = DBFunctions.GetLoggedUser(HomeActivity.this);
-                        db = new DatabaseHandler(HomeActivity.this);
-                        System.out.println("Actv stts" + ActiveLogin.LOGIN_STATUS);
-                        if (ActiveLogin.LOGIN_STATUS == 1) {
-                            sqldb = db.getWritableDatabase();
-
-                            sqldb.execSQL("UPDATE logindata SET Runsheetcode='" + rstnumbr + "' WHERE Username='" + drivercode + "'");
-                        }
-                        if (ActiveLogin.ODOMETER_VALUE == null) {
-
-                            odometervalue = WebService.GET_ODOREADING(drivercode);
-                            sqldb = db.getWritableDatabase();
-                            if (odometervalue != null) {
-                                if (odometervalue.equals("NO READING")) {
-                                    sqldb.execSQL("UPDATE logindata SET Odometervalue=" + null + " WHERE Username='" + drivercode + "'");
-                                }
-
-                            } else {
-                                sqldb.execSQL("UPDATE logindata SET Odometervalue=" + null + " WHERE Username='" + drivercode + "'");
-                            }
-                        }
-
-                    }
-
-
-                    sqldb = db.getReadableDatabase();
-                    Cursor cc2 = sqldb.rawQuery("SELECT Odometervalue FROM logindata WHERE Username='" + drivercode + "'", null);
-                    cc2.moveToFirst();
-
-                    Integer count111 = cc2.getCount();
-
-                    if (count111 > 0) {
-                        odometervalue = cc2.getString(cc2.getColumnIndex("Odometervalue"));
-
-                    }
-                    cc2.close();
-                    db.close();
-
-
-                    System.out.println("strt are:" + rstnumbr);
-                    Intent int1 = new Intent(HomeActivity.this, StartDeliveryActivity.class);
-
-                    int1.putExtra("routecode", rte);
-                    int1.putExtra("routename", rte1);
-                    int1.putExtra("runsheetcode", rstnumbr);
-                    startActivity(new Intent(int1));
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-
-
+        delvr.setOnClickListener(v -> {
+            v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+            try {
+                if (isNetworkConnected()) {
+                    Connected = WebService.GET_SERVICE_STATUS(null);
+                    GetOPENRRST();
                 }
 
+
+                if (rstnumbr != null && acknumbr != null && retrno != null && rstnumbr.equals("NA") && acknumbr.equals("NA") && retrno.equals("NA")) {
+                    Intent int1 = new Intent(HomeActivity.this, DeliveryActivity.class);
+                    int1.putExtra("routecode", rte);
+                    int1.putExtra("routename", rte1);
+                    sqldb = db.getWritableDatabase();
+                    sqldb.execSQL("UPDATE logindata SET Runsheetcode='" + rstnumbr + "' WHERE Username='" + drivercode + "'");
+                    HomeActivity.this.startActivity(new Intent(int1));
+                    return;
+                } else {
+                    TBLogin ActiveLogin = DBFunctions.GetLoggedUser(HomeActivity.this);
+                    db = new DatabaseHandler(HomeActivity.this);
+                    System.out.println("Actv stts" + ActiveLogin.LOGIN_STATUS);
+                    if (ActiveLogin.LOGIN_STATUS == 1) {
+                        sqldb = db.getWritableDatabase();
+                        sqldb.execSQL("UPDATE logindata SET Runsheetcode='" + rstnumbr + "' WHERE Username='" + drivercode + "'");
+                    }
+                    if (ActiveLogin.ODOMETER_VALUE == null) {
+                        odometervalue = WebService.GET_ODOREADING(drivercode);
+                        sqldb = db.getWritableDatabase();
+                        if (odometervalue != null) {
+                            if (odometervalue.equals("NO READING")) {
+                                sqldb.execSQL("UPDATE logindata SET Odometervalue=" + null + " WHERE Username='" + drivercode + "'");
+                            }
+                        } else {
+                            sqldb.execSQL("UPDATE logindata SET Odometervalue=" + null + " WHERE Username='" + drivercode + "'");
+                        }
+                    }
+                }
+                sqldb = db.getReadableDatabase();
+                Cursor cc2 = sqldb.rawQuery("SELECT Odometervalue FROM logindata WHERE Username='" + drivercode + "'", null);
+                cc2.moveToFirst();
+                Integer count111 = cc2.getCount();
+                if (count111 > 0) {
+                    odometervalue = cc2.getString(cc2.getColumnIndex("Odometervalue"));
+
+                }
+                cc2.close();
+                db.close();
+                Intent int1 = new Intent(HomeActivity.this, StartDeliveryActivity.class);
+                int1.putExtra("routecode", rte);
+                int1.putExtra("routename", rte1);
+                int1.putExtra("runsheetcode", rstnumbr);
+                startActivity(new Intent(int1));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         });
@@ -830,87 +797,6 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
                 db1.close();
             }
 
-            private void Loader_from_Local_wbillevent() {
-                // TODO Auto-generated method stub
-                System.out.println("Loader_from_Local_wbillevent()");
-
-                db = new DatabaseHandler(getBaseContext());
-                SQLiteDatabase db1 = db.getReadableDatabase();
-
-                Cursor rr = db1.rawQuery("SELECT * FROM wbilldata WHERE TransferStatus=0", null);
-                int c1 = rr.getCount();
-                String[] evname = new String[c1];
-                String[] rname = new String[c1];
-                String[] dcode = new String[c1];
-                String[] wbill1 = new String[c1];
-                String[] eventcode1 = new String[c1];
-                String[] date_time = new String[c1];
-                String[] lat = new String[c1];
-                String[] long11 = new String[c1];
-                rr.moveToFirst();
-                int flag = 0;
-                if (c1 > 0) {
-
-                    for (int i = 0; i < c1; i++) {
-                        evname[i] = rr.getString(rr.getColumnIndex("Event_note"));
-                        rname[i] = rr.getString(rr.getColumnIndex("Reciever_Name"));
-                        dcode[i] = rr.getString(rr.getColumnIndex("Drivercode"));
-                        wbill1[i] = rr.getString(rr.getColumnIndex("Waybill"));
-                        eventcode1[i] = rr.getString(rr.getColumnIndex("Eventcode"));
-                        date_time[i] = rr.getString(rr.getColumnIndex("Date_Time"));
-                        lat[i] = rr.getString(rr.getColumnIndex("Latitude"));
-                        long11[i] = rr.getString(rr.getColumnIndex("Longtitude"));
-                        sqldb = db.getReadableDatabase();
-                        Cursor wd = sqldb.rawQuery("SELECT * FROM DeliveryData WHERE waybill = '" + wbill1[i] + "'", null);
-                        int wdcount = wd.getCount();
-                        String IsCODCollected = "N";
-                        String WaybillIdentifier = "NRML";
-                        String BarcodeIdentifier = "N";
-                        wd.moveToFirst();
-                        if (wdcount > 0) {
-                            IsCODCollected = wd.getString(wd.getColumnIndex("IsCollectedCOD"));
-                            WaybillIdentifier = wd.getString(wd.getColumnIndex("AWBIdentifier"));
-                            BarcodeIdentifier = wd.getString(wd.getColumnIndex("BarcodeIdentifier"));
-                            System.out.println("Barcodeidentifier is" + wd.getString(wd.getColumnIndex("BarcodeIdentifier")));
-                        }
-                        wd.close();
-                        waynillist.add(wbill1[i]);
-                        waynillist = new ArrayList<String>(new LinkedHashSet<String>(waynillist));
-                        System.out.println("waylist in home:" + waynillist);
-                        deliverystatus = WebService.SET_DELIVERY(rname[i], dcode[i], waynillist, eventcode1[i], lat[i], long11[i], date_time[i], evname[i], WaybillIdentifier, IsCODCollected, BarcodeIdentifier);
-                        //	deliverystatus=WebService.setdelivery(rname[i],dcode[i],wbill1[i],eventcode1[i],lat[i],long11[i],date_time[i],evname[i],METHOD_NAME20);
-                        //	AK	//deliverystatus = WebService.SET_DELIVERY(rname[i], dcode[i], wbill1[i], eventcode1[i], lat[i], long11[i], date_time[i], evname[i], WaybillIdentifier, IsCODCollected, BarcodeIdentifier);
-                        //System.out.println("stage1");
-                        if (deliverystatus.contains("True")) {
-                            db1 = db.getWritableDatabase();
-                            sqldb = db.getWritableDatabase();
-                            sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='" + wbill1[i] + "'");
-                            db1.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + wbill1[i] + "'");
-                            sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + wbill1[i] + "'");
-                            //flag=1;
-                            if ((eventcode1[i].contains("SD")) || (eventcode1[i].contains("NT")) || eventcode1[i].contains("MR") || eventcode1[i].contains("DELIVERED")) {
-                                db1 = db.getWritableDatabase();
-                                sqldb = db.getWritableDatabase();
-                                //System.out.println("stage3");
-                                sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + wbill1[i] + "'");
-                                db1.execSQL("UPDATE deliverydata SET ApprovalStatus='APPROVED' WHERE Waybill='" + wbill1[i] + "'");
-                            }
-                        } else if (deliverystatus.contains("REQ")) {
-                            //System.out.println("stage4");
-                            db1 = db.getWritableDatabase();
-                            flag = 1;
-                            db1.execSQL("UPDATE deliverydata SET ApprovalStatus='REQ' WHERE Waybill='" + wbill1[i] + "'");
-                        }
-                        rr.moveToNext();
-                    }
-                }
-                if (flag == 1) {
-                    //System.out.println("stage5");
-                    Toast.makeText(getApplicationContext(), "REQUESTED WAYBILL NOT APPROVED TO UPDATE", Toast.LENGTH_LONG).show();
-                }
-                rr.close();
-                db1.close();
-            }
 
 
         };
@@ -962,6 +848,7 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
             sqldb = db.getWritableDatabase();
             //select all values in the table and check count
             sqldb.execSQL("DELETE FROM deliverydata WHERE Drivercode <> '" + drivercode + "'");
+
             for (ScanWaybillDt scwbldtOb : scanwbildtResponse) {
                 if (scwbldtOb.ErrMsg == null || scwbldtOb.ErrMsg == "") {
                     sqldb = db.getReadableDatabase();
@@ -980,7 +867,8 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
                         sqldb.execSQL("UPDATE deliverydata SET Drivercode='" + drivercode + "',Routecode=" + scwbldtOb.RouteName
                                 + ",Consignee='" + scwbldtOb.ConsignName + "',Telephone='" + scwbldtOb.PhoneNo + "'," + "Area='" + scwbldtOb.Area + "'," + "Company='"
                                 + scwbldtOb.Company + "',CivilID='" + scwbldtOb.CivilId + "',Serial='" + scwbldtOb.Serial + "',CardType='" + scwbldtOb.CardType + "',DeliveryDate='" + scwbldtOb.DelDate + "',DeliveryTime='"
-                                + scwbldtOb.DelTime + "',Amount='" + scwbldtOb.Amount + "',StopDelivery=0,WC_Status='P',WC_Transfer_Status=0,TransferStatus=0,Attempt_Status='" + scwbldtOb.Attempt + "',Address='" + scwbldtOb.Address + "' WHERE Waybill='" + scwbldtOb.WayBill + "'");
+                                + scwbldtOb.DelTime + "',Amount='" + scwbldtOb.Amount + "',StopDelivery=0,WC_Status='P',WC_Transfer_Status=0,TransferStatus=0,Attempt_Status='" + scwbldtOb.Attempt + "',Address='" + scwbldtOb.Address +
+                                "' WHERE Waybill='" + scwbldtOb.WayBill + "'");
 
 
                     } else {
@@ -1609,27 +1497,15 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
             sqldb.execSQL("DELETE FROM deliverydata WHERE Drivercode <> '" + drivercode + "'");
             for (RstDetail rstdtevOb : rstdetailResponse) {
                 if (rstdtevOb.ErrMsg == null || rstdtevOb.ErrMsg == "") {
-                    System.out.println("AWVIdentifier in home activity" + rstdtevOb.AWBIdentifier);
-                    Log.e("Synch", "DelvDetails Bolck Called");
                     sqldb = db.getReadableDatabase();
-					/*Cursor c11 = sqldb.rawQuery("SELECT 1 FROM deliverydata WHERE Waybill='" + rstdtevOb.WayBill + "' ", null);
-					int count11 = c11.getCount();
-*/
                     Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + rstdtevOb.WayBill + "'", null);
                     int count1 = c1.getCount();
-                    //System.out.println("AWB Count : " + c1.getCount());
-                    //	System.out.println("AWB Identity : " + rstdtevOb.AWBIdentifier);
                     if (count1 > 0) {
-
-                        //System.out.println(c1.getString(c1.getColumnIndex("Waybill")));
-
-                        //c1.moveToNext();
                         sqldb = db.getWritableDatabase();
                         String UpdateFields = "";
                         if (rstdtevOb.Last_Status.equals("WC") || rstdtevOb.Last_Status.equals("ACKW") || rstdtevOb.Last_Status.equals("RTW"))
                             UpdateFields = ",StopDelivery=0,WC_Status='A',WC_Transfer_Status=0,TransferStatus=0,Attempt_Status=0";
                         else if (rstdtevOb.Last_Status.equals("DELIVERED") || rstdtevOb.Last_Status.equals("ACKC") || rstdtevOb.Last_Status.equals("RTC") || rstdtevOb.Last_Status.equals("SD")) {
-                            //System.out.println("wc status while delivered");
                             if (rstdtevOb.Last_Status.equals("SD"))
                                 UpdateFields = ",StopDelivery=1,WC_Status='SD',WC_Transfer_Status=1,TransferStatus=0,Attempt_Status=1, ApprovalStatus='APPROVED'";
                             else
@@ -1665,7 +1541,6 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
                         System.out.println("wc status : " + rstdtevOb.Last_Status.equals("WC"));
                         if (rstdtevOb.Last_Status.equals("WC") || rstdtevOb.Last_Status.equals("ACKW") || rstdtevOb.Last_Status.equals("RTW")) {
                             values.put("WC_Status", "A");
-                            System.out.println("wc status while wc");
                             values.put("Attempt_Status", "0");
                             values.put("WC_Transfer_Status", "0");
                         } else if (rstdtevOb.Last_Status.equals("DELIVERED") || rstdtevOb.Last_Status.equals("ACKC") || rstdtevOb.Last_Status.equals("RTC") || rstdtevOb.Last_Status.equals("SD")) {
@@ -1681,7 +1556,6 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
                             values.put("Attempt_Status", "1");
                             values.put("WC_Transfer_Status", "1");
                         } else {
-                            System.out.println("wc status while notwc");
                             values.put("WC_Status", "C");
                             values.put("Attempt_Status", "1");
                             values.put("WC_Transfer_Status", "0");
@@ -2755,7 +2629,6 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 						}
 					}, 15000);
 */
-                    //	System.out.println("AsyncLoaderfromServer val on post:"+ new AsyncLoaderfromServer().getStatus());
                     if (new AsyncLoaderfromServer().getStatus() == PENDING) {
                         mPb.setVisibility(View.VISIBLE);
                     } else
@@ -3087,7 +2960,6 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
             //Server TO LOCAL
             //Loader_from_server();
 
-            //new AsyncLoaderfromServer().execute();
             new AsyncLoaderfromServer().execute();
 
             //	clear_channelstatus=WebService.clearchannelstatus(drivercode,MasterActivity.METHOD_NAME41);

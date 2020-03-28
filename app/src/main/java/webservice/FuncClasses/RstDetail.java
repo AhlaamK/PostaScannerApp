@@ -23,4 +23,8 @@ public class RstDetail {
     public String AWBIdentifier=null;
     public String Last_Status=null;
 
+
+
+
+
 }

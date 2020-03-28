@@ -309,7 +309,7 @@ public class DialogActivity extends Activity implements View.OnClickListener ,Ba
 
                     //ScannerData = barcodeData;
                     waybill = barcodeData;
-                    // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
+                    // StartDeliveryActivity.waybillFromScanner = ScannerData.GetData();
                     System.out.println("barcodeData waybill is:" + waybill);
                     if (Check_ValidWaybill(waybill) == true) {
 
@@ -411,177 +411,6 @@ public class DialogActivity extends Activity implements View.OnClickListener ,Ba
             return "";
         }
 
-
-
-      /*  @Override
-        public void onPostExecute(String res) {
-            //response=null;
-            System.out.println("UserNotyTrackResp on post:" + UserNotyTrackResp);
-
-            try {
-                System.out.println("UserNotyTrackResp notfytrck1:" + UserNotyTrackResp);
-
-
-                db = new DatabaseHandler(getBaseContext());
-                System.out.println("db dialog:" + db);
-                //open localdatabase in a read mode
-                //open localdatabase in a read mode
-                sqldb = db.getReadableDatabase();
-                // Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbill + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' ", null);
-
-                Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbill+ "' ", null);
-                count1 = c2.getCount();
-                //System.out.println("stage");
-                c2.moveToFirst();
-                wbillarr = new String[count1];
-                //laststats=new String[count1];
-                stopdelarr = new int[count1];
-
-                System.out.println("wbillarr dialog delv:" + wbillarr.toString()+"c2.getCount()"+c2.getCount() );
-
-                if (c2.getCount() > 0) {
-
-
-                    for (int i = 0; i < count1; i++) {
-                        //System.out.println("stage3");
-                        wbillarr[i] = c2.getString(c2.getColumnIndex("Waybill"));
-
-                        stopdelarr[i] = c2.getInt(c2.getColumnIndex("StopDelivery"));
-                        laststats=c2.getString(c2.getColumnIndex("WC_Status"));
-                        System.out.println("laststats[i]"+laststats);
-
-                        ApprvalStatus = c2.getString(c2.getColumnIndex("ApprovalStatus"));
-                        Attemptstatus = c2.getString(c2.getColumnIndex("Attempt_Status"));
-
-                        System.out.println("approval status is:" + ApprvalStatus + "Stopdlv : " + stopdelarr[i] + " Attpmpt " + Attemptstatus+"laststats"+laststats);
-                        if(laststats.equals("C")) laststats = "DELIVERED";
-                        else if(laststats.equals("A")) laststats = "WC";
-
-                        //System.out.println("i="+i+wbillarr[i]+" "+consr[i]+" "+arear[i]+" "+phoner[i]+" "+compnyr[i]+" "+civilidr[i]+" "+stopdelarr[i]);
-                        //  if (ApprvalStatus == null) ApprvalStatus = "";
-                        //  if (stopdelarr[i] == 0 || (stopdelarr[i] == 1 && ApprvalStatus.equals("APPROVED") && Attemptstatus.equals("0"))) {
-
-
-                        if (wbillarr[i] != null && ! laststats.equals("DELIVERED")) {
-                            UserNotyTrackResp = WebService.CUSTOMER_NOTIFY_TRACK(wbillarr[i], dcode);
-                            System.out.println("wbillarr[i] are:" + wbillarr[i]);
-                            c2.moveToNext();
-                            if (UserNotyTrackResp == null) {
-
-                                Toast.makeText(DialogActivity.this, "Please Try again!",
-                                        Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                            if (UserNotyTrackResp.contains("TRUE"))
-
-                            {
-                                waybilldialog = new TextView(DialogActivity.this);
-                                // waybilltxt.setLayoutParams(lp);
-                                waybilldialog.setGravity(Gravity.CENTER_HORIZONTAL);
-                                waybilldialog.setText(Taskwabill);
-                                System.out.println("wbill text is" + wbill);
-
-
-                                trdialog.addView(waybilldialog);
-
-
-                                resulttabledialog.addView(trdialog, new TableLayout.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-
-
-                            } else if(UserNotyTrackResp.contains("INVALIDVALUE")){
-                                Toast.makeText(_activity, UserNotyTrackResp, Toast.LENGTH_LONG).show();
-                                return;
-                            }else{
-                                Toast.makeText(_activity, "Not in your Runsheet", Toast.LENGTH_LONG).show();
-                                return;
-                            }
-
-
-                        } else {
-                            if (stopdelarr[i] == 1 && ApprvalStatus.equals("APPROVED")) {
-                                _activity.runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        Toast.makeText(_activity, "Stopped Delivery", Toast.LENGTH_LONG).show();
-                                    }
-                                    // Toast.makeText(getApplicationContext(), "Stopped Delivery",
-                                    //  Toast.LENGTH_LONG).show();
-                                });
-
-                            } else {
-                                _activity.runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        Toast.makeText(_activity, "Already Delivered", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                                // Toast.makeText(StartDeliveryActivity.this, "Already Delivered",
-                                //        Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                *//*  if(!wbillarr[i].equals(null)){
-                           UserNotyTrackResp = WebService.CUSTOMER_NOTIFY_TRACK(wbillarr[i], dcode);
-                       } else {
-                           _activity.runOnUiThread(new Runnable() {
-                               public void run() {
-                                   Toast.makeText(_activity, "Not in your Runsheet", Toast.LENGTH_LONG).show();
-                               }
-                           });
-
-                       }*//*
-                    }
-
-                    db.close();
-
-
-
-                    c2.close();
-                    db.close();
-
-
-                    //  UserNotyTrackResp = WebService.CUSTOMER_NOTIFY_TRACK(wbillarr[i], drivercode);
-                    System.out.println("UserNotyTrackResp 2:" + UserNotyTrackResp);
-                *//*    if (UserNotyTrackResp == null) {
-
-                        Toast.makeText(DialogActivity.this, "Please Try again!",
-                                Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-
-                    if (UserNotyTrackResp.contains("TRUE"))
-
-                    {
-                        waybilldialog = new TextView(DialogActivity.this);
-                        // waybilltxt.setLayoutParams(lp);
-                        waybilldialog.setGravity(Gravity.CENTER_HORIZONTAL);
-                        waybilldialog.setText(wbill);
-                        System.out.println("wbill text is" + wbill);
-
-
-                        trdialog.addView(waybilldialog);
-
-
-                        resulttabledialog.addView(trdialog, new TableLayout.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-
-
-                    } else if(UserNotyTrackResp.contains("INVALIDVALUE")){
-                        Toast.makeText(_activity, UserNotyTrackResp, Toast.LENGTH_LONG).show();
-                    }else{
-                        Toast.makeText(_activity, "Not in your Runsheet", Toast.LENGTH_LONG).show();
-                    }
-*//*
-
-                }else{
-                    Toast.makeText(DialogActivity.this, "Not in your Runsheet!",
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-            }catch (Exception e){
-
-            }
-        }*/
-
         @Override
         public void onPostExecute(String res) {
             //response=null;
@@ -596,7 +425,6 @@ public class DialogActivity extends Activity implements View.OnClickListener ,Ba
                 //open localdatabase in a read mode
                 //open localdatabase in a read mode
                 sqldb = db.getReadableDatabase();
-                // Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbill + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' ", null);
                 System.out.println("wbill dialog on post:" + db+"wbill:"+wbill);
                 Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbill+ "' ", null);
 

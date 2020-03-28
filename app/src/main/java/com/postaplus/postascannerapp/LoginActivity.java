@@ -1056,89 +1056,7 @@ public class LoginActivity extends MasterActivity {
 
         }
 
-        /*private void getdeliverydetail() {
-            // TODO Auto-generated method stub
-            try {
-                rstdetailResponse = WebService.GET_RSTDETAIL(Username);
-                db = new DatabaseHandler(getBaseContext());
-                //open localdatabase in a read mode
-                sqldb = db.getWritableDatabase();
-                //select all values in the table and check count
-                sqldb.execSQL("DELETE FROM deliverydata WHERE Drivercode <> '" + Username + "'");
-                for (RstDetail rstdtevOb : rstdetailResponse) {
-                    sqldb = db.getReadableDatabase();
 
-                    if (rstdtevOb.ErrMsg == null) {
-                        System.out.println("AWVIdentifier in login activity"+rstdtevOb.AWBIdentifier);
-
-                        Cursor c11 = sqldb.rawQuery("SELECT 1 FROM deliverydata WHERE Waybill='" + rstdtevOb.WayBill + "' AND WC_Transfer_Status=1", null);
-                        int count11 = c11.getCount();
-                        c11.close();
-                        if (count11 != 1) {
-
-                            Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + rstdtevOb.WayBill + "'", null);
-                            int count1 = c1.getCount();
-
-                            if (count1 > 0) {
-
-                                //System.out.println(c1.getString(c1.getColumnIndex("Waybill")));
-
-                                //c1.moveToNext();
-
-                                sqldb = db.getWritableDatabase();
-
-                                sqldb.execSQL("UPDATE deliverydata SET Drivercode='" + Username + "',Routecode=" + rstdtevOb.RouteName
-                                        + ",Consignee='" + rstdtevOb.ConsignName + "',Telephone='" + rstdtevOb.PhoneNo + "'," + "Area='" + rstdtevOb.Area + "'," + "Company='"
-                                        + rstdtevOb.Company + "',CivilID='" + rstdtevOb.CivilId + "',Serial='" + rstdtevOb.Serial + "',CardType='" + rstdtevOb.CardType + "',DeliveryDate='" + rstdtevOb.DelDate + "',DeliveryTime='"
-                                        + rstdtevOb.DelTime + "',Amount='" + rstdtevOb.Amount + "',StopDelivery=0,WC_Status='A',WC_Transfer_Status=0,TransferStatus=0,Attempt_Status='" + rstdtevOb.Attempt + "',Address='" + rstdtevOb.Address + "',ShipperName='" + rstdtevOb.ShipperName + "',AWBIdentifier='" + rstdtevOb.AWBIdentifier + "' WHERE Waybill='" + rstdtevOb.WayBill + "'");
-
-
-                            } else {
-                                c1.moveToLast();
-
-                                sqldb = db.getWritableDatabase();
-                                ContentValues values = new ContentValues();
-                                values.put("Drivercode", Username);
-                                values.put("Routecode", rstdtevOb.RouteName);
-                                values.put("Waybill", rstdtevOb.WayBill);
-                                values.put("Consignee", rstdtevOb.ConsignName);
-                                values.put("Telephone", rstdtevOb.PhoneNo);
-                                values.put("Area", rstdtevOb.Area);
-                                values.put("Company", rstdtevOb.Company);
-                                values.put("CivilID", rstdtevOb.CivilId);
-                                values.put("Serial", rstdtevOb.Serial);
-                                values.put("CardType", rstdtevOb.CardType);
-                                values.put("DeliveryDate", rstdtevOb.DelDate);
-                                values.put("DeliveryTime", rstdtevOb.DelTime);
-                                values.put("Amount", rstdtevOb.Amount);
-                                values.put("WC_Status", "A");
-                                values.put("StopDelivery", "0");
-                                values.put("WC_Transfer_Status", "0");
-                                values.put("TransferStatus", "0");
-                                values.put("Attempt_Status", rstdtevOb.Attempt);
-                                values.put("Address", rstdtevOb.Address);
-                                values.put("ShipperName", rstdtevOb.ShipperName);
-                                values.put("AWBIdentifier", rstdtevOb.AWBIdentifier);
-
-                                sqldb.insertOrThrow("deliverydata", null, values);
-
-                            }
-                            c1.close();
-
-
-                        }
-                        //  c11.close();
-
-                    }
-                }
-            } catch (Exception e) {
-                Log.e("Get Dlvry detail:", "Get Delivery detail in login activity is errored");
-                e.printStackTrace();
-            } finally {
-                db.close();
-         //       sqldb.close();
-            }
-        }*/
 
         private void getdeliverydetail() {
             // TODO Auto-generated method stub
@@ -1271,24 +1189,14 @@ public class LoginActivity extends MasterActivity {
                 sqldb = db.getReadableDatabase();
                 for (ScanWaybillDt scwbldtOb : scanwbildtResponse) {
                     if (scwbldtOb.ErrMsg == null || scwbldtOb.ErrMsg == "") {
-
                         Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + scwbldtOb.WayBill + "'", null);
                         int count1 = c1.getCount();
-
                         if (count1 > 0) {
-
-                            //System.out.println(c1.getString(c1.getColumnIndex("Waybill")));
-
-                            //c1.moveToNext();
-
                             sqldb = db.getWritableDatabase();
-
                             sqldb.execSQL("UPDATE deliverydata SET Drivercode='" + Username + "',Routecode=" + scwbldtOb.RouteName
                                     + ",Consignee='" + scwbldtOb.ConsignName + "',Telephone='" + scwbldtOb.PhoneNo + "'," + "Area='" + scwbldtOb.Area + "'," + "Company='"
                                     + scwbldtOb.Company + "',CivilID='" + scwbldtOb.CivilId + "',Serial='" + scwbldtOb.Serial + "',CardType='" + scwbldtOb.CardType + "',DeliveryDate='" + scwbldtOb.DelDate + "',DeliveryTime='"
                                     + scwbldtOb.DelTime + "',Amount='" + scwbldtOb.Amount + "',StopDelivery=0,WC_Status='P',WC_Transfer_Status=0,TransferStatus=0,Attempt_Status='" + scwbldtOb.Attempt + "',Address='" + scwbldtOb.Address + "' WHERE Waybill='" + scwbldtOb.WayBill + "'");
-
-
                         } else {
                             c1.moveToLast();
 

@@ -22,39 +22,16 @@ public class Delivery_print_fragment extends Fragment {
        back=(Button)rootView.findViewById(R.id.btnbck);
        print=(Button)rootView.findViewById(R.id.printbutton);
 
-       back.setOnClickListener(new OnClickListener() {
-
-           @Override
-           public void onClick(View v) {
-               v.startAnimation(AnimationUtils.loadAnimation(getActivity().getBaseContext(), R.anim.image_click));
-
-               // moveTaskToBack(true);
-                 getActivity().finish();
-
-
-           }
-       });
+       handleBackButton();
        print.setEnabled(false);
-      /* print.setOnClickListener(new OnClickListener() {
 
-           @SuppressLint("NewApi")
-           @Override
-           public void onClick(View v) {
-               v.startAnimation(AnimationUtils.loadAnimation(getActivity().getBaseContext(), R.anim.image_click));
-
-                PrintManager printManager = (PrintManager) getActivity().getBaseContext()
-                           .getSystemService(Context.PRINT_SERVICE);
-
-                   // Set job name, which will be displayed in the print queue
-                   String jobName = getActivity().getBaseContext().getString(R.string.app_name) + " Document";
-
-                   // Start a print job, passing in a PrintDocumentAdapter implementation
-                   // to handle the generation of a print document
-                   printManager.print(jobName, new MyPrintDocumentAdapter(getActivity().getBaseContext()),
-                           null); //
-
-           }
-       });*/
        return rootView;
    }
+
+    private void handleBackButton() {
+        back.setOnClickListener(v -> {
+            v.startAnimation(AnimationUtils.loadAnimation(getActivity().getBaseContext(), R.anim.image_click));
+              getActivity().finish();
+        });
+    }
 }

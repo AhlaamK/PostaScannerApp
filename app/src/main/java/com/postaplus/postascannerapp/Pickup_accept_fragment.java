@@ -62,7 +62,7 @@ public class Pickup_accept_fragment extends Fragment {
 		
 		route= MYActivity.getIntent().getExtras().getString("routecode");
 		routen= MYActivity.getIntent().getExtras().getString("routename");
-		waybill=PickupActivity.WaybillFromScanner;
+		waybill=PickupActivity.waybillFromScanner;
 		System.out.println("PA Fragment selected");
         rootView = inflater.inflate(R.layout.activity_delivery_transfer, container, false);
         resulttab=(TableLayout)rootView.findViewById(R.id.resulttable1);

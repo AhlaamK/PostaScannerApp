@@ -27,8 +27,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
-import android.provider.MediaStore;
-import androidx.core.app.ActivityCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -71,6 +69,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import androidx.core.app.ActivityCompat;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCReader;
 import webservice.WebService;
@@ -79,7 +78,25 @@ import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
 import static com.postaplus.postascannerapp.HomeActivity.rstnumbr;
 
 public class StartDeliveryActivity extends MasterActivity
-        implements BarcodeReader.BarcodeListener,BarcodeReader.TriggerListener {
+        implements BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
+    static final byte[] TYPE_BT_OOB = "application/vnd.bluetooth.ep.oob".getBytes();
+    static final String spinnervalue_Events = "EVENTS";
+    static final String spinnervalue_Shipper = "SHIPPER";
+    //KDC Parameters
+    //
+    public static String WaybillFromScanner = "";
+    public static String KDCScannerCallFrom = "";
+    public static String barcodefrmScanner;
+    public static String barcodeIdentifier = "N";
+    public static boolean delvryflag = false;
+    public int SCANNER_REQUEST_CODE = 123;
+    //  static boolean DonotInterruptKDCScan = true;
+    public boolean DonotInterruptKDCScan = true;
+    public String chkdata = "";
+    public String waybill;
+    public StartDeliveryActivity MYActivity;
+    public String FlagDeliveryMode = "NRML";
+    public boolean isActivityActiveFlag = false;
     String root, time_id, deliverystatus;
     boolean calststus, flagdup = false;
     //static boolean errored;
@@ -89,12 +106,12 @@ public class StartDeliveryActivity extends MasterActivity
     double latitude, longitude;
     String lati, longti;
     TableLayout resulttab = null;
-    TableRow tr, tr1,trdialog;
+    TableRow tr, tr1, trdialog;
     LayoutParams lp, wp, cp, pp;
     int dpwidth = 411;
     int dpheight = 731;
     float summ, temp;
-    TextView username, wbtxt, areatxt, constxt, recivetxt, waybilltxt, deltxt, counttxt, codsum,waybilldialog,waybilltt;
+    TextView username, wbtxt, areatxt, constxt, recivetxt, waybilltxt, deltxt, counttxt, codsum, waybilldialog, waybilltt;
     String filePath1, filePath2, filePath3, filePath4, filePath5, filePath6;
     File imagefile, imagefile1;
     FileOutputStream imagefo;
@@ -104,9 +121,8 @@ public class StartDeliveryActivity extends MasterActivity
     String lat, longt;
     String wbill, area, cons, phonedb, route, routen, company, civilid, wbilldata1, waybillfrmCam, date, time, runsheet, eventcode1, date_time, recieve_name;
     int stopdeliver;
-    public int SCANNER_REQUEST_CODE = 123;
     Spinner evspinner;
-    String[] eventcode, eventname, wbillarr, arear, consr, phoner, compnyr, civilidr, shiprNme, codAmnt,laststatsval;
+    String[] eventcode, eventname, wbillarr, arear, consr, phoner, compnyr, civilidr, shiprNme, codAmnt, laststatsval;
     String callphone, phone1, drivercode, wbillsub, eventnote = null;
     int[] stopdelarr;
     ImageView img1, img2, img3, img4, img5, img6, signimage, defaultimage, imagetest, img, imag, imag1, imag2, imag3, imag4;
@@ -117,185 +133,49 @@ public class StartDeliveryActivity extends MasterActivity
     String[] imagearr;
     Bitmap bm;
     Uri uriSavedImage = null, uriSavedImage1 = null;
-    //KDC Parameters
-    //
-    public static String WaybillFromScanner = "";
-    public static String KDCScannerCallFrom = "";
     //public static View WCrootView;
     Context mContext;
     Resources _resources;
     BluetoothDevice _btDevice = null;
-    static final byte[] TYPE_BT_OOB = "application/vnd.bluetooth.ep.oob".getBytes();
     Button _btnScan = null;
-
     //BluetoothDevice _btDevice;
     StartDeliveryActivity _activity;
     KDCData ScannerData;
     KDCReader _kdcReader;
-    //  static boolean DonotInterruptKDCScan = true;
-    public boolean DonotInterruptKDCScan = true;
-    public String chkdata = "";
-    public String waybill;
     View rootView;
     Intent ImageIntent;
     Thread ThrKdc = null;
-    public StartDeliveryActivity MYActivity;
-    public String FlagDeliveryMode = "NRML";
-    public boolean isActivityActiveFlag = false;
     ImageView imgdelv, imgack, imgrtn, imgdelv1, imgack1, imgrtn1, menuimg1;
     Spinner ac, rt;
     CheckBox cbAtcltd, cbCOD;
     boolean FlagcodAmt = false;
     String IsCODCollectedstats = "NA";
     String FlagspinnerValue;
-    static final String spinnervalue_Events = "EVENTS";
-    static final String spinnervalue_Shipper = "SHIPPER";
     int Flagspin = 0;
     ProgressBar Pb;
     //  KDCTask KDCTaskExecutable = new KDCTask();
     int phoneFlag = 0;
     String ApprvalStatus, Attemptstatus;
-    public static String barcodefrmScanner;
-    public static String barcodeIdentifier = "N";
     int Flagcam = 0;
     String[] waybillarrys = null;
     List<String> waynillist = new ArrayList<String>();
-
     List<String> DBWAYBILLIST = new ArrayList<String>();
     String[] strArray11 = null;
     String CODamnt;
     List<String> ackwablist = new ArrayList<String>();
-    public static boolean delvryflag=false;
     TableLayout resulttabledialog;
-    TextView textchoose,textalert;
+    TextView textchoose, textalert;
     String UserNotyTrackResp;
     String laststats;
-    // Button confirmaction;
-    /*public void ScannerExecutions() {
-		System.out.println(" pdata new value in chkdata is ");
-		System.out.println(chkdata);
 
-		//MYActivity =StartDeliveryActivity;
-		//View rootView =StartDeliveryActivity.rootView;
+    public static boolean Check_ValidWaybill(String s) {
 
-		route = MYActivity.getIntent().getExtras().getString("routecode");
-		routen = MYActivity.getIntent().getExtras().getString("routename");
-		//waybill=StartDeliveryActivity.WaybillFromScanner;
-		System.out.println("MYactivity value is");
-		System.out.println(MYActivity);
-
-		//Initializations
-		if (resulttab == null) resulttab = (TableLayout) rootView.findViewById(R.id.resulttable1);
-		if (counttxt == null) counttxt = (TextView) rootView.findViewById(R.id.textcount);
-		if (route == null || getIntent() == null)
-			route = getIntent().getExtras().getString("routecode");
-		if (wbill == null) wbill = waybilltxt.getText().toString();
-	}*/
-
-    //commented 21 feb2018
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-            if(barcodeReader != null){
-                barcodeReader.release();
-                barcodeReader.removeBarcodeListener(_activity);
-            }
-            Intent intent = new Intent(StartDeliveryActivity.this, HomeActivity.class);
-            intent.putExtra("route", route);
-            intent.putExtra("route1", routen);
-
-            startActivity(intent);
-            _activity.finish();
-
-
+        if (s.length() == 10 || s.length() == 12) {
+            return StringUtils.isNumeric(s) == true;
+        } else if (s.length() == 18) {
+            return StringUtils.isAlphanumeric(s) == true;
         }
         return false;
-    }
-
-
-   /* @Override
-    public void onBackPressed() {
-        // do nothing.
-        if(barcodeReader != null) {
-            barcodeReader.release();
-            barcodeReader.removeBarcodeListener(_activity);
-
-
-            Intent intent = new Intent(StartDeliveryActivity.this, HomeActivity.class);
-            intent.putExtra("route", route);
-            intent.putExtra("route1", routen);
-
-            startActivity(intent);
-        }
-    }
-*/
-
-    protected ArrayAdapter Spinner_Load(String Type) {
-
-
-        db = new DatabaseHandler(getBaseContext());
-        //open localdatabase in a read mode
-        sqldb = db.getReadableDatabase();
-
-        ArrayAdapter<String> adapter = null;
-
-        if (Type.equals(spinnervalue_Events)) {
-            System.out.println("events called");
-            //select all values from eventtable and populate it in the spinner
-            Cursor c1 = sqldb.rawQuery("SELECT '-1' AS EVENTCODE,'' AS EVENTDESC UNION SELECT EVENTCODE,EVENTDESC  FROM eventdata ORDER BY EVENTDESC ASC", null);
-            int count = c1.getCount();
-
-
-            eventcode = new String[count];
-            eventname = new String[count];
-            //System.out.println("stage3");
-            c1.moveToFirst();
-
-            for (int i = 0; i < count; i++) {
-
-                eventname[i] = c1.getString(c1.getColumnIndex("EVENTDESC"));
-                eventcode[i] = c1.getString(c1.getColumnIndex("EVENTCODE"));
-                // System.out.println("i="+i+eventname[i]);
-                c1.moveToNext();
-            }
-
-            //Collections.sort(eventname);
-            adapter = new ArrayAdapter<String>(StartDeliveryActivity.this, android.R.layout.simple_spinner_item, eventname);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-            FlagspinnerValue = spinnervalue_Events;
-
-            // closing connection
-            c1.close();
-
-        } else if (Type.equals(spinnervalue_Shipper)) {
-            System.out.println("shipper called -- " + FlagDeliveryMode);
-            //select all values from eventtable and populate it in the spinner
-            Cursor cur = sqldb.rawQuery("SELECT '' AS ShipperName UNION SELECT DISTINCT ShipperName FROM deliverydata WHERE AWBIdentifier='" + FlagDeliveryMode + "' AND WC_Status = 'A' ORDER BY ShipperName ASC", null);
-            int count = cur.getCount();
-            //	int rows = c1.getCount();
-            shiprNme = new String[count];
-            System.out.println("shippername count" + shiprNme);
-            cur.moveToFirst();
-            for (int i = 0; i < count; i++) {
-                shiprNme[i] = cur.getString(cur.getColumnIndex("ShipperName"));
-                System.out.println("shippername in loop:" + shiprNme[i]);
-
-                cur.moveToNext();
-            }
-            cur.close();
-
-            //Collections.sort(eventname);
-            adapter = new ArrayAdapter<String>(StartDeliveryActivity.this, android.R.layout.simple_spinner_item, shiprNme);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-            //sh.setAdapter(adapter);
-            FlagspinnerValue = spinnervalue_Shipper;
-
-        }
-        db.close();
-        return adapter;
     }
 
     @Override
@@ -319,46 +199,6 @@ public class StartDeliveryActivity extends MasterActivity
         _resources = getResources();
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-      /*  if (barcodeReader != null) {
-            barcodeReader.addBarcodeListener(_activity);
-            try {
-                barcodeReader.claim();
-                System.out.println("barcode onccreatres str:" + barcodeReader);
-            } catch (ScannerUnavailableException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Scanner unavailable", Toast.LENGTH_SHORT).show();
-            }
-        }*/
-
-
-
-        // openDialog();
-
-       /* if(delvryflag==false){
-            Intent i = new Intent(StartDeliveryActivity.this, DialogActivity.class);
-            i.putExtra("routecode",route);
-            i.putExtra("routename",routen);
-            i.putExtra("dcode",drivercode);
-            startActivity(i);
-            // _activity.finish();
-        }
-*/
-
-        // isActivityActiveFlag=true;
-        /*ThrKdc = new Thread() {
-            @Override
-            public void run() {
-                _kdcReader = new KDCReader(null, _activity, _activity, null, null, null, _activity, false);
-                MasterActivity.ScannerDevice = _kdcReader.GetBluetoothDevice();
-             *//*   _kdcReader.EnableBluetoothAutoPowerOn(false);
-                _kdcReader.EnableAutoReconnect(false);
-                _kdcReader.EnableBluetoothWakeupNull(false);*//*
-                _kdcReader.EnableBluetoothWakeupNull(true);
-            }
-        };
-        ThrKdc.start();*/
-        //new KDCTask().execute();
 
 
         menuimg = (ImageView) findViewById(R.id.imageicon);
@@ -388,14 +228,12 @@ public class StartDeliveryActivity extends MasterActivity
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         counttxt = (TextView) findViewById(R.id.textcount);
         codsum = (TextView) findViewById(R.id.codcount);
-        // final CheckBox cbCOD = (CheckBox) findViewById(R.id.CODcheckBox);
-        //  final CheckBox cbAtcltd = (CheckBox) findViewById(R.id.amntCltd);
         cbCOD = (CheckBox) findViewById(R.id.CODcheckBox);
         cbAtcltd = (CheckBox) findViewById(R.id.amntCltd);
         //  final EditText et = (EditText) findViewById(R.id.CODeditText);
         //  et.setEnabled(false);
         //et.setFocusable(false);
-        if(route == null || getIntent() == null){
+        if (route == null || getIntent() == null) {
             route = getIntent().getExtras().getString("routecode");
             routen = getIntent().getExtras().getString("routename");
         }
@@ -431,11 +269,9 @@ public class StartDeliveryActivity extends MasterActivity
                 if (isChecked) {
                     //         et.setEnabled(false);
                     //et.setFocusable(false);
-                    //   cbCOD.setEnabled(false);
                     cbAtcltd.setChecked(false);
                 } else {
                     cbAtcltd.setChecked(false);
-                    // cbCOD.setEnabled(true);
                     //        et.setEnabled(true);
                     //et.setFocusable(true);
                     getWindow().setSoftInputMode(
@@ -496,7 +332,6 @@ public class StartDeliveryActivity extends MasterActivity
 
         } else {
 
-            //new details().execute();
             new details1().execute();
         }
 
@@ -535,99 +370,11 @@ public class StartDeliveryActivity extends MasterActivity
 			}
 		});*/
 
-        clear.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-                _activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = count1; i >= 0; i--) {
-                            resulttab.removeAllViews();
-                            summ = 0;
-                           // codsum.setText(String.valueOf("Total COD:" + summ));
-                    codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                    System.out.println("value for resulttab after clearing" + resulttab);
-
-                        }
-                        counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                        //	codsum.setText(String.valueOf(resulttab.getChildCount()));
-                        //	tvScanResults.setText("");
-
-                        img.setImageResource(R.drawable.camera);
-                        imag.setImageResource(R.drawable.camera);
-                        imag1.setImageResource(R.drawable.camera);
-                        imag2.setImageResource(R.drawable.camera);
-                        imag3.setImageResource(R.drawable.camera);
-                        imag4.setImageResource(R.drawable.camera);
-                        recivetxt.setText("");
-                        evspinner.setSelection(0);
-                        signimage.setImageDrawable(null);
-                        imgcount = 0;
-                        ImageIntent = null;
-                        waynillist = new ArrayList<String>();
-                        waynillist.clear();
-
-                        Intent i = new Intent(StartDeliveryActivity.this, StartDeliveryActivity.class);
-                        i.putExtra("routecode", route);
-                        i.putExtra("routename", routen);
-                        startActivity(i);
-                    }
-
-                });
-            }
+        clear.setOnClickListener(v -> {
+            cleanClickAction(v);
         });
-	/*	scan.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-
-				if (v.getId() == R.id.btnscan) {
-					// go to fullscreen scan
-					Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-					intent.putExtra("SCAN_MODE", "SCAN_MODE");
-					startActivityForResult(intent, SCANNER_REQUEST_CODE);
-
-				}
-			}
-		});*/
-
-        /*db = new DatabaseHandler(getBaseContext());
-        //open localdatabase in a read mode
-        sqldb = db.getReadableDatabase();
-
-        //select all values from eventtable and populate it in the spinner
-        Cursor c1 = sqldb.rawQuery("SELECT '-1' AS EVENTCODE,'' AS EVENTDESC UNION SELECT EVENTCODE,EVENTDESC  FROM eventdata ORDER BY EVENTDESC ASC", null);
-        int count = c1.getCount();
 
 
-        eventcode = new String[count];
-        eventname = new String[count];
-        //System.out.println("stage3");
-        c1.moveToFirst();
-
-        for (int i = 0; i < count; i++) {
-
-            eventname[i] = c1.getString(c1.getColumnIndex("EVENTDESC"));
-            eventcode[i] = c1.getString(c1.getColumnIndex("EVENTCODE"));
-            // System.out.println("i="+i+eventname[i]);
-            c1.moveToNext();
-        }
-
-        //Collections.sort(eventname);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(StartDeliveryActivity.this, android.R.layout.simple_spinner_item, eventname);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        evspinner.setAdapter(adapter);
-        FlagspinnerValue = spinnervalue_Events;
-
-        // closing connection
-        c1.close();
-        db.close();*/
-
-        //Spinner Loading Method
         evspinner.setAdapter(Spinner_Load(spinnervalue_Events));
 
 
@@ -681,20 +428,7 @@ public class StartDeliveryActivity extends MasterActivity
 
                         startActivity(intent);
                         _activity.finish();
-              /*  if (!isActivityActiveFlag) {
-                    Toast.makeText(getApplicationContext(), "Please wait for scanner to connect",
-                            Toast.LENGTH_LONG).show();
-                    return;
-                } else {
-                    // StartDeliveryActivity.this.finish();
-                    Intent intent = new Intent(StartDeliveryActivity.this, DeliveryActivity.class);
-                    System.out.println("route0"+route+"routesrat"+routen);
-                    intent.putExtra("routecode", route);
-                    intent.putExtra("routename", routen);
 
-                    startActivity(intent);
-                    StartDeliveryActivity.this.finish();
-                }*/
 
                     }
                 });
@@ -711,233 +445,14 @@ public class StartDeliveryActivity extends MasterActivity
                 imgdelv.setImageResource(R.drawable.delchk);
                 imgack.setImageResource(R.drawable.ackdelvy);
                 imgrtn.setImageResource(R.drawable.return1);
-
-
-                //Load Spinner with Events
                 evspinner.setAdapter(Spinner_Load(spinnervalue_Events));
-
-
                 resulttab.removeAllViews();
-                //    Flagspin=0;
-				/*
-				StartDeliveryActivity.this.finish();
-				Intent intent = new Intent(StartDeliveryActivity.this, DeliveryActivity.class);
-				intent.putExtra("routecode", route);
-				intent.putExtra("routename", routen);
-
-				startActivity(intent);*/
-
-                /*Spinner s = (Spinner) findViewById(R.id.eventspinner);
-                s.setSelection(0);*/
-/*
-                db = new DatabaseHandler(getBaseContext());
-                //open localdatabase in a read mode
-                sqldb = db.getReadableDatabase();
-
-                //select all values from eventtable and populate it in the spinner
-                Cursor c1 = sqldb.rawQuery("SELECT '-1' AS EVENTCODE,'' AS EVENTDESC UNION SELECT EVENTCODE,EVENTDESC  FROM eventdata ORDER BY EVENTDESC ASC", null);
-                int count = c1.getCount();
-
-
-                eventcode = new String[count];
-                eventname = new String[count];
-                //System.out.println("stage3");
-                c1.moveToFirst();
-
-                for (int i = 0; i < count; i++) {
-
-                    eventname[i] = c1.getString(c1.getColumnIndex("EVENTDESC"));
-                    eventcode[i] = c1.getString(c1.getColumnIndex("EVENTCODE"));
-                    // System.out.println("i="+i+eventname[i]);
-                    c1.moveToNext();
-                }
-
-                //Collections.sort(eventname);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(StartDeliveryActivity.this, android.R.layout.simple_spinner_item, eventname);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                s.setAdapter(adapter);
-                FlagspinnerValue = spinnervalue_Events;
-                //	evspinner.setAdapter(adapter);
-                //	evspinner.setOnItemSelectedListener();
-                // closing connection
-                c1.close();
-                db.close();*/
-
-
             }
         });
-        imgack.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-                FlagDeliveryMode = "ACK";
-                imgdelv.setImageResource(R.drawable.del);
-                imgack.setImageResource(R.drawable.ackdchk);
-                imgrtn.setImageResource(R.drawable.return1);
-
-                img1.setVisibility(View.VISIBLE);
-                img.setVisibility(View.INVISIBLE);
-                img2.setVisibility(View.VISIBLE);
-                imag.setVisibility(View.INVISIBLE);
-                img3.setVisibility(View.VISIBLE);
-                imag1.setVisibility(View.INVISIBLE);
-                img4.setVisibility(View.VISIBLE);
-                imag2.setVisibility(View.INVISIBLE);
-                img5.setVisibility(View.VISIBLE);
-                imag3.setVisibility(View.INVISIBLE);
-                img6.setVisibility(View.VISIBLE);
-                imag4.setVisibility(View.INVISIBLE);
-
-                //   img.setImageResource(R.drawable.camera);
-                //   imag.setImageResource(R.drawable.camera);
-                //      imag1.setImageResource(R.drawable.camera);
-                //     imag2.setImageResource(R.drawable.camera);
-                //    imag3.setImageResource(R.drawable.camera);
-                //      imag4.setImageResource(R.drawable.camera);
-				/*StartDeliveryActivity.this.finish();
-				Intent intent = new Intent(StartDeliveryActivity.this, DeliveryActivity.class);
-				intent.putExtra("routecode", route);
-				intent.putExtra("routename", routen);
-				startActivity(intent);*/
-
-                //Flagspin = 0;
-                if (Flagspin == 1) Flagspin = 0;
-
-                ac = (Spinner) findViewById(R.id.eventspinner);
-                ac.setSelection(0);
-
-                db = new DatabaseHandler(getBaseContext());
-                //open localdatabase in a read mode
-                sqldb = db.getReadableDatabase();
-                System.out.println("value of flagspin in ack is:" + Flagspin);
-                if (Flagspin == 0) {
-                    System.out.println("flagspin in ack for shipper called");
-                    //Spinner Load with Shipper
-                    ac.setAdapter(Spinner_Load(spinnervalue_Shipper));
-                }
-
-
-                ac.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (FlagspinnerValue.equals(spinnervalue_Shipper))
-                            resulttab.removeAllViews();
-                        else
-                            return;
-
-
-                        String label = parent.getItemAtPosition(position).toString();
-                        System.out.println("SELECTED SPINNER IS" + label);
-                        sqldb = db.getReadableDatabase();
-                        Cursor cAck = sqldb.rawQuery("SELECT * FROM deliverydata WHERE ShipperName='" + label + "' AND AWBIdentifier='" + FlagDeliveryMode + "' AND WC_Status = 'A'", null);
-                        int ackCount = cAck.getCount();
-
-                        Log.e("StartDelivery", "Record Count " + ackCount);
-
-                        //		resulttab.removeAllViews();
-
-
-                        //System.out.println("stage3");
-                        wbillarr = new String[ackCount];
-                        System.out.println("waybill count" + wbillarr);
-                        consr = new String[ackCount];
-                        arear = new String[ackCount];
-                        phoner = new String[ackCount];
-                        compnyr = new String[ackCount];
-                        civilidr = new String[ackCount];
-                        stopdelarr = new int[ackCount];
-                        //	cAck.moveToFirst();
-                        cAck.moveToFirst();
-                        for (int i = 0; i < ackCount; i++) {
-                            ackwablist = new ArrayList<String>();
-                            TableRow tack = new TableRow(StartDeliveryActivity.this);
-
-                            lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                            tack.setId((resulttab.getChildCount()));
-                            lp.setMargins(15, 2, 95, 2);
-                            tack.setLayoutParams(lp);
-                            //  lp.setMargins(0, 10, 40, 0);
-
-                            deltxt = new TextView(StartDeliveryActivity.this);
-                            deltxt.setLayoutParams(lp);
-                            deltxt.setText("ACK");
-
-                            final TextView waybilltxt = new TextView(StartDeliveryActivity.this);
-                            waybilltxt.setLayoutParams(lp);
-                            waybilltxt.setText(cAck.getString(cAck.getColumnIndex("Waybill")));
-                            //added need to ask-       wbilldata1=cAck.getString(cAck.getColumnIndex("Waybill"));
-                            final TextView cnametxt = new TextView(StartDeliveryActivity.this);
-                            cnametxt.setLayoutParams(lp);
-                            cnametxt.setText(cAck.getString(cAck.getColumnIndex("Consignee")));
-
-
-                            final TextView phonetxt = new TextView(StartDeliveryActivity.this);
-                            phonetxt.setLayoutParams(lp);
-                            phonetxt.setText(cAck.getString(cAck.getColumnIndex("Telephone")));
-                            callphone = phonetxt.getText().toString();
-
-                            final TextView codtxt = new TextView(StartDeliveryActivity.this);
-                            codtxt.setLayoutParams(lp);
-                            //   codtxt.setText(cAck.getString(cAck.getColumnIndex("Amount")));
-                            codtxt.setText("0.000");
-
-                            tack.addView(deltxt);
-                            tack.addView(waybilltxt);
-                            tack.addView(cnametxt);
-                            tack.addView(codtxt);
-                            tack.addView(phonetxt);
-                            //c1.moveToNext();
-
-                            resulttab.addView(tack, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-                            cAck.moveToNext();
-                            //           }
-                            //     cAck.close();
-                        }
-                        cAck.close();
-
-                        //Spinner Load with Events
-                        if (Flagspin == 1) {
-                            ac.setAdapter(Spinner_Load(spinnervalue_Events));
-                            Flagspin = 0;
-                        } else {
-                            //     ac.setAdapter(Spinner_Load(spinnervalue_Shipper));
-                            Flagspin = 1;
-                        }
-
-
-                        //evspinner.setAdapter(Spinner_Load(spinnervalue_Events));
-                        /*if(Flagspin==0)
-                        {
-                            //Spinner Load with Shipper
-                            ac.setAdapter(Spinner_Load(spinnervalue_Shipper));
-                            Flagspin=1;
-                        }
-                        else if(Flagspin==1)
-                        {
-                            ac.setAdapter(Spinner_Load(spinnervalue_Events));
-                            Flagspin=0;
-                        }*/
-
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                        if (FlagspinnerValue.equals(spinnervalue_Shipper))
-                            resulttab.removeAllViews();
-                        else
-                            return;
-                    }
-                });
-
-                db.close();
-
-
-            }
+        imgack.setOnClickListener(v -> {
+            backClickAction(v);
         });
+
         imgrtn.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -961,18 +476,6 @@ public class StartDeliveryActivity extends MasterActivity
                 img6.setVisibility(View.VISIBLE);
                 imag4.setVisibility(View.INVISIBLE);
 
-             /*   img.setImageResource(R.drawable.camera);
-                imag.setImageResource(R.drawable.camera);
-                imag1.setImageResource(R.drawable.camera);
-                imag2.setImageResource(R.drawable.camera);
-                imag3.setImageResource(R.drawable.camera);
-                imag4.setImageResource(R.drawable.camera);*/
-    /*StartDeliveryActivity.this.finish();
-    Intent intent = new Intent(StartDeliveryActivity.this, DeliveryActivity.class);
-    intent.putExtra("routecode", route);
-    intent.putExtra("routename", routen);
-
-    startActivity(intent);*/
 
                 rt = (Spinner) findViewById(R.id.eventspinner);
                 rt.setSelection(0);
@@ -1110,10 +613,10 @@ public class StartDeliveryActivity extends MasterActivity
                     img1.setVisibility(View.INVISIBLE);
                     img.setImageResource(R.drawable.postlogoapp);
                     img.setVisibility(View.VISIBLE);
-                    TextView TableWaybill=null;
+                    TextView TableWaybill = null;
                     System.out.println("resulttab strt:" + resulttab.getChildCount());
 
-                 //   intent.putExtra(MediaStore.EXTRA_OUTPUT, mBitmaps);
+                    //   intent.putExtra(MediaStore.EXTRA_OUTPUT, mBitmaps);
                     startActivityForResult(intent, 0);
                     System.out.println("value for T1 while click camera" + tr1);
                 } else if ((resulttab.getChildCount()) <= 0) {
@@ -1219,30 +722,7 @@ public class StartDeliveryActivity extends MasterActivity
                 if ((resulttab.getChildCount()) > 0) {
                     ArrayList<Uri> mBitmaps = new ArrayList<Uri>();
                     Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    //img6.setImageResource(R.drawable.postlogoapp);
-                  //  imgcountarr[6] = 1;
-/*
-                    TextView TableWaybill=null;
-                    for(int k = 0; k<resulttab.getChildCount();k++) {
-                        TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(k)).getChildAt(1);
-                        // System.out.println("TableWaybill " + TableWaybill.getText().toString() + "wbill" + wbill);
 
-                        System.out.println("value for wbilldata1 in img1" + wbill + "waybilltxt iz:" + waybilltxt);
-
-                        System.out.println("value for imagefile in img1" + imagefile);
-                        System.out.println("value for timeid in img1" + time_id);
-                        imgcountarr[6] = 1;
-                        uriSavedImage = Uri.fromFile(new File(imagefile, wbilldata1 + "_" + time_id + "_006.PNG"));
-                        System.out.println("value for uriSavedImage loop" + uriSavedImage);
-                        mBitmaps = new ArrayList<Uri>(resulttab.getChildCount());
-                        mBitmaps.add(uriSavedImage);
-                        //finish();
-                        System.out.println("value of after calling arrays intent" + mBitmaps+"size"+mBitmaps.size());
-                    }
-
-                   // uriSavedImage = Uri.fromFile(new File(imagefile, wbilldata1 + "_" + time_id + "_006.PNG"));
-                   // intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mBitmaps);*/
                     startActivityForResult(intent, 5);
                     img6.setVisibility(View.INVISIBLE);
                     imag4.setImageResource(R.drawable.postlogoapp);
@@ -1266,1809 +746,1411 @@ public class StartDeliveryActivity extends MasterActivity
 
         //wbillarr=new String [resulttab.getChildCount()];
         imgcount = 0;
-        eventbtn.setOnClickListener(new OnClickListener() {
-
-
-            @Override
-            public void onClick(final View v) {
-                DonotInterruptKDCScan = true;
-                //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-                _activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        boolean flagfor = false;
-                        int tablecount = (resulttab.getChildCount());
-
-
-                        if (evspinner.getSelectedItemPosition() == 0) {
-
-                            Toast.makeText(getApplicationContext(), "Please Select at least one Event!", Toast.LENGTH_LONG).show();
-                            return;
-                        }
-
-
-                        v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-                        SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-                        time_id = date11.format(new Date());
-
-                        imgcount = 0;
-                        for (int i = 0; i < imgcountarr.length; i++) {
-
-                            if (imgcountarr[i] == 1) {
-
-                                imgcount++;
-                                //System.out.println(imgcount);
-                            }
-
-                        }
-
-
-                        eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
-                        //System.out.println(eventcode1);
-                        //if the event code is delivered ask for reciever's name and signature
-                        if (eventcode1.contains("DELIVERED") || eventcode1.contains("Delivered")) {
-//12mar2018 commnted
-                            if ((!FlagcodAmt && summ > 0) && FlagDeliveryMode.equals("NRML")) {
-                                Toast.makeText(getApplicationContext(), "Please collect COD Amount", Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                  /*  if ((Integer.parseInt(CODamnt)< 0) && FlagDeliveryMode.equals("NRML")) {
-                        Toast.makeText(getApplicationContext(), "Please collect COD Amount", Toast.LENGTH_LONG).show();
-                        return;
-                    }*/
-                            else {
-                                if (cbAtcltd.isChecked()) {
-                                    IsCODCollectedstats = "Y";
-                                } else if (cbCOD.isChecked()) {
-                                    IsCODCollectedstats = "N";
-                                } else
-                                    IsCODCollectedstats = "NA";
-                            }
-
-                            // Event Change as per the Delivery Mode for DELIVERED EVENT Only
-                            eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
-                            System.out.println("FlagDeliveryMode are:" + FlagDeliveryMode);
-                            if (FlagDeliveryMode.equals("NRML")) eventcode1 = "DELIVERED";
-                            else if (FlagDeliveryMode.equals("ACK")) eventcode1 = "ACKC";
-                            else if (FlagDeliveryMode.equals("RTN")) eventcode1 = "RTC";
-
-
-                            if (evspinner.getSelectedItemPosition() != 0 && (resulttab.getChildCount()) > 0 || waybill != null) {
-                                System.out.println("ignimage befr getDrawable" + signimage.getDrawable());
-                                if (signimage.getDrawable() == null) {
-                                    LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
-                                    View promptsView = li.inflate(R.layout.prompt_layout, null);
-
-                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                            StartDeliveryActivity.this);
-
-                                    // set prompts.xml to alertdialog builder
-                                    alertDialogBuilder.setView(promptsView);
-
-                                    final EditText userInput = (EditText) promptsView.findViewById(R.id.editTextDialogUserInput);
-
-                                    // set dialog message
-                                    alertDialogBuilder
-                                            .setCancelable(false)
-                                            .setPositiveButton("OK",
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int id) {
-                                                            // get user input and set it to result
-                                                            // edit text
-                                                            Intent i = new Intent(StartDeliveryActivity.this, CaptureSignature.class);
-                                                            startActivityForResult(i, 0);
-                                                            System.out.println("ignimage after getDrawable" + signimage.getDrawable());
-
-                                                            recivetxt.setText(userInput.getText());
-
-                                                            recieve_name = recivetxt.getText().toString();
-                                                            System.out.println("recieve_name after getDrawable" + recieve_name);
-                                                        }
-                                                    })
-                                            .setNegativeButton("Cancel",
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int id) {
-                                                            dialog.cancel();
-                                                        }
-                                                    });
-
-                                    // create alert dialog
-                                    AlertDialog alertDialog = alertDialogBuilder.create();
-                                    flagfor = false;
-                                    // show it
-                                    alertDialog.show();
-                                } else {
-                                    db = new DatabaseHandler(getBaseContext());
-                                    //open localdatabase in a read mode
-                                    sqldb = db.getReadableDatabase();
-                                    //take runsheet code
-                                    Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
-                                    int c = rbc.getCount();
-
-                                    if (c > 0) {
-                                        rbc.moveToFirst();
-                                        runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
-                                    }
-                                    rbc.close();
-                                    SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                    date_time = date1.format(new Date());
-
-
-                                    gps = new GPSTracker(mContext, StartDeliveryActivity.this);
-
-                                    // check if GPS enabled
-                                    if (gps.canGetLocation()) {
-
-                                        latitude = gps.getLatitude();
-                                        longitude = gps.getLongitude();
-                                        lati = String.valueOf(latitude);
-                                        longti = String.valueOf(longitude);
-
-                                    } else {
-                                        // can't get location
-                                        // GPS or Network is not enabled
-                                        // Ask user to enable GPS/network in settings
-                                        gps.showSettingsAlert();
-                                    }
-                                    // get prompts view
-
-
-                                    //clear the localdatabase old data
-                                    sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
-
-
-                                    for (int i = 0; i < tablecount; i++) {
-                                        waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                        System.out.println(waybilltxt.getText().toString());
-                                        wbillsub = waybilltxt.getText().toString();
-                                        //save all data to local database-wbilldata
-                                        sqldb = db.getWritableDatabase();
-                                        ContentValues values = new ContentValues();
-                                        values.put("ID", time_id);
-                                        values.put("Drivercode", drivercode);
-                                        values.put("Waybill", wbillsub);
-                                        values.put("Runsheetcode", runsheet);
-                                        values.put("Eventcode", eventcode1);
-                                        values.put("Latitude", latitude);
-                                        values.put("Longtitude", longitude);
-                                        values.put("Date_Time", date_time);
-                                        values.put("TransferStatus", "0");
-
-
-                                        sqldb.insertOrThrow("wbilldata", null, values);
-
-                                        List<String> list = new ArrayList<String>();
-                                        //   File f = new File(DirectoryPath);
-                                        //  f.mkdirs();
-                                        File sdCardRoot = Environment.getExternalStorageDirectory();
-                                        File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
-                                        System.out.println("yourDir outimg track is:" + yourDir);
-                                        for (File f : yourDir.listFiles()) {
-                                            if (f.isFile())
-                                                if (f.getName().contains(wbillsub)) {
-                                                    System.out.println("yourDir img track is:" + yourDir + "/" + f.getName());
-                                                    list.add(yourDir + "/" + f.getName());
-                                                }
-
-                                        }
-
-                                        System.out.println("wbillsub img track is:" + wbillsub + "list:" + list);
-                                        //select all values in the table and check count
-                                        Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + wbillsub + "'", null);
-                                        int ccount = cc.getCount();
-                                        sqldb = db.getWritableDatabase();
-
-                                        if (ccount > 0) {
-                                            sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + wbillsub + "'");
-                                        } else {
-
-                                            //clear the localdatabase old data
-                                            sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode<>'" + drivercode + "'");
-
-                                            String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
-
-                                                    + "VALUES ('" + drivercode + "','"
-                                                    + wbillsub + "','" + list + "',0)";
-                                            sqldb.execSQL(sql);
-
-
-                                        }
-                                        SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                        date_time = date112.format(new Date());
-
-                                        //deliverystatus = WebService.setdelivery(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, METHOD_NAME20);
-                                        //commneted By Ahlaam temp check
-                                        DBWAYBILLIST.add(wbillsub);
-                                        DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                        System.out.println("delvry stts 1" + wbillsub + "waynillist:" + waynillist);
-                                        // deliverystatus= WebService.SET_DELIVERY(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-  /*
-                               deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, DBWAYBILLIST, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', IsCollectedCOD = '" + IsCODCollectedstats + "', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-                                sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + wbillsub + "'");
-                                //System.out.println("i:"+recieve_name+","+drivercode+","+wbillsub+","+eventcode1+","+date_time);
-                                if (deliverystatus.contains("True")) {
-
-                                    sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + wbillsub + "'");
-
-                                    sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + wbillsub + "'");
-
-                                    //Log.e("Eventcode", eventcode1);
-
-                                    if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                        //System.out.println("stage-mr/sd/delivered");
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + wbillsub + "'");
-                                    } else {
-
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + wbillsub + "'");
-                                    }
-                                    flagfor = true;
-
-                                }*/
-
-                                    }
-                                    if( isNetworkConnected()) {
-                                        if (FlagDeliveryMode.equals("RTN")) {
-                                            //waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else if (FlagDeliveryMode.equals("ACK")) {
-                                            // waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST;
-                                            System.out.println("ack list:" + waynillist);
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else {
-                                            // waynillist.add(wbillsub);
-                                            //   waynillist = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            System.out.println("waynillist nrml list:" + waynillist);
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        }
-                                    }else{
-                                        Toast toast = Toast.makeText(getApplicationContext(),"You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER, 0, 0);
-                                        toast.show();
-                                       //resulttab.removeAllViewsInLayout();
-
-                                    }
-                                   /* ak 14 oct if (deliverystatus == null) {
-                                        Toast.makeText(getApplicationContext(), "Please Try again", Toast.LENGTH_LONG).show();
-                                        return;
-                                    }*/
-                                    for (int i = 0; i < tablecount; i++) {
-                                        // sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', IsCollectedCOD = '" + IsCODCollectedstats + "', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                        // sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-                                        //  sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + wbillsub + "'");
-
-                                //ak CPMNT
-                                      /*  sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', IsCollectedCOD = '" + IsCODCollectedstats + "', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                        sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                        sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                        sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");*/
-
-
-                                        System.out.println("deliverystatus are:" + deliverystatus + "wbillsub:" + wbillsub + "tabcnt in delv" + tablecount + "waylist" + waynillist.get(i));
-                                        if(deliverystatus != null) {
-                                            if (deliverystatus.contains("True")) {
-
-
-                                                sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', IsCollectedCOD = '" + IsCODCollectedstats + "', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                                sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                                sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
-
-                                                sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
-
-
-                                                sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
-
-                                                // sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                System.out.println("WC_Status for awb" + "wbillsub updt" + wbillsub);
-                                                //Log.e("Eventcode", eventcode1);
-
-                                                if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                                    //System.out.println("stage-mr/sd/delivered");
-                                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                } else {
-
-                                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                }
-                                                flagfor = true;
-
-                                            } else {
-                                                Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
-                                                sqldb.execSQL("UPDATE wbilldata SET TransferStatus=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                               // sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
-
-                                            }
-                                        }else {
-                                            Toast toast = Toast.makeText(getApplicationContext(),"You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
-                                            toast.setGravity(Gravity.CENTER, 0, 0);
-                                            toast.show();
-                                            sqldb.execSQL("UPDATE wbilldata SET TransferStatus=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                            sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
-
-                                        }
-
-                                        //  System.out.println("wbillsub updted delv"+wbillsub);
-
-                                    }
-
-                                    //  System.out.println("i:"+recieve_name+","+drivercode+","+wbillsub+","+eventcode1+","+date_time);
-
-                                    if (flagfor) {
-                                        Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                        //     isActivityActiveFlag=true;
-
-                                        //Reset Flag COD Amnt;
-                                        FlagcodAmt = false;
-                                        cbCOD.setChecked(false);
-                                        cbAtcltd.setChecked(false);
-                                        waynillist = new ArrayList<String>();
-                                        waynillist.clear();
-                                        System.out.println("waynill after submit:" + waynillist);
-                                        DBWAYBILLIST.clear();
-                                        imgcount = 0;
-                                        //Clear image main counter here
-                                        for (int i = 0; i < imgcountarr.length; i++) {
-
-                                            imgcountarr[i] = 0;
-
-                                        }
-                                        for (int i = count1; i >= 0; i--) {
-                                            System.out.println("values in result tab is:" + resulttab);
-                                            resulttab.removeAllViews();
-
-                                        }
-                                        int ct = (resulttab.getChildCount());
-                                        System.out.println("value for count text on clicking view" + (ct - 1));
-                                        counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                                        summ=0;
-                                        codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                                        //	tvScanResults.setText("");
-                                        img.setImageResource(R.drawable.camera);
-                                        imag.setImageResource(R.drawable.camera);
-                                        imag1.setImageResource(R.drawable.camera);
-                                        imag2.setImageResource(R.drawable.camera);
-                                        imag3.setImageResource(R.drawable.camera);
-                                        imag4.setImageResource(R.drawable.camera);
-                                        recivetxt.setText("");
-                                        recieve_name = "";
-                                        evspinner.setSelection(0);
-                                        signimage.setImageDrawable(null);
-
-                                        openDialog();
-                                    }
-
-                                }
-                            } else if ((resulttab.getChildCount()) <= 0) {
-
-                                Toast.makeText(getApplicationContext(), "Pls scan AWB",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (evspinner.getSelectedItemPosition() == 0) {
-                                Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                            db.close();
-
-                        }//end delivered if condition
-
-                        //if event code is NA ask for reason and call the recipient
-                        else if ((eventcode1.equals("NA"))) {
-                            if (evspinner.getSelectedItemPosition() != 0 && imgcount >= 1 && (resulttab.getChildCount()) > 0) {
-                                eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
-                                db = new DatabaseHandler(getBaseContext());
-                                //open localdatabase in a read mode
-                                sqldb = db.getReadableDatabase();
-                                String Condition = "(";
-
-                                for (int i = 0; i < tablecount; i++) {
-                                    waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                    System.out.println(waybilltxt.getText().toString());
-                                    if (Condition != "(") {
-                                        Condition = Condition + ",'" + waybilltxt.getText().toString() + "'";
-                                    } else {
-                                        Condition = Condition + "'" + waybilltxt.getText().toString() + "'";
-                                    }
-                                    //wbillsub=waybilltxt.getText().toString();
-                                }
-                                Condition = Condition + ")";
-                                System.out.println(Condition);
-                                Cursor cc1 = sqldb.rawQuery("SELECT Callstatus,Waybill FROM deliverydata WHERE Callstatus=1 AND Waybill IN " + Condition, null);
-                                int count = cc1.getCount();
-                                //check the call status
-                                if ((count > 0 && FlagDeliveryMode.equals("NRML")) || !FlagDeliveryMode.equals("NRML")) {
-                                    //ask for comment
-                                    if (recivetxt.getText().length() <= 0) {
-                                        LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
-                                        View promptsView = li.inflate(R.layout.prompt_layout1, null);
-
-                                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                                StartDeliveryActivity.this);
-
-                                        // set prompts.xml to alertdialog builder
-                                        alertDialogBuilder.setView(promptsView);
-
-                                        final EditText userInput = (EditText) promptsView
-                                                .findViewById(R.id.editTextDialogUserInput);
-
-                                        // set dialog message
-                                        alertDialogBuilder
-                                                .setCancelable(false)
-                                                .setPositiveButton("OK",
-                                                        new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog, int id) {
-                                                                // get user input and set it to result
-                                                                // edit text
-
-                                                                recivetxt.setText(userInput.getText());
-
-                                                                eventnote = recivetxt.getText().toString();
-                                                            }
-                                                        })
-                                                .setNegativeButton("Cancel",
-                                                        new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog, int id) {
-                                                                dialog.cancel();
-                                                            }
-                                                        });
-
-                                        // create alert dialog
-                                        AlertDialog alertDialog = alertDialogBuilder.create();
-                                        flagfor = false;
-                                        // show it
-                                        alertDialog.show();
-                                    }//comment statement end
-
-                                    else {
-                                        //take runsheet code
-                                        Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
-                                        int c = rbc.getCount();
-
-                                        if (c > 0) {
-                                            rbc.moveToFirst();
-                                            runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
-                                        }
-                                        rbc.close();
-                                        SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                        date_time = date1.format(new Date());
-
-
-                                        gps = new GPSTracker(mContext, StartDeliveryActivity.this);
-
-                                        // check if GPS enabled
-                                        if (gps.canGetLocation()) {
-
-                                            latitude = gps.getLatitude();
-                                            longitude = gps.getLongitude();
-                                            lati = String.valueOf(latitude);
-                                            longti = String.valueOf(longitude);
-                                        } else {
-                                            // can't get location
-                                            // GPS or Network is not enabled
-                                            // Ask user to enable GPS/network in settings
-                                            gps.showSettingsAlert();
-                                        }
-                                        // get prompts view
-
-
-                                        //clear the localdatabase old data
-                                        sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
-
-
-                                        for (int i = 0; i < tablecount; i++) {
-                                            waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                            System.out.println(waybilltxt.getText().toString() + "wbillsub");
-                                            wbillsub = waybilltxt.getText().toString();
-                                            //save all data to local database-wbilldata
-                                            sqldb = db.getWritableDatabase();
-                                            ContentValues values = new ContentValues();
-                                            values.put("ID", time_id);
-                                            values.put("Drivercode", drivercode);
-                                            values.put("Waybill", wbillsub);
-                                            values.put("Runsheetcode", runsheet);
-                                            values.put("Eventcode", eventcode1);
-                                            values.put("Latitude", latitude);
-                                            values.put("Longtitude", longitude);
-                                            values.put("Date_Time", date_time);
-
-                                            values.put("TransferStatus", "0");
-
-
-                                            sqldb.insertOrThrow("wbilldata", null, values);
-
-                                            List<String> list = new ArrayList<String>();
-                                            //   File f = new File(DirectoryPath);
-                                            //  f.mkdirs();
-                                            File sdCardRoot = Environment.getExternalStorageDirectory();
-                                            File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
-                                            System.out.println("f.getName:" + yourDir.list().toString() + "fil aary" + yourDir.listFiles().toString());
-                                            for (File f : yourDir.listFiles()) {
-                                                System.out.println("f.getName:" + f.listFiles());
-
-                                                if (f.isFile())
-                                                    if (f.getName().contains(waybilltxt.getText().toString())) {
-
-                                                        System.out.println("f.getName:" + f.getName());
-                                                        list.add(yourDir + "/" + f.getName());
-                                                        // System.out.println("list inside lloop is:"+wbillsub+"list"+list);
-                                                    }
-
-                                            }
-
-
-                                            System.out.println("wbillsub img na track is:" + wbillsub + "list" + list);
-
-                                            //select all values in the table and check count
-                                            Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + wbillsub + "'", null);
-                                            int ccount = cc.getCount();
-                                            sqldb = db.getWritableDatabase();
-                                            System.out.println("wbillsub img na track is:" + list);
-                                            if (ccount > 0) {
-                                                sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + wbillsub + "'");
-                                            } else {
-                                                //save all data to local database-wbilldata
-
-
-                                                //clear the localdatabase old data
-                                                sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode <> '" + drivercode + "'");
-
-                                                String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
-
-                                                        + "VALUES ('" + drivercode + "','"
-                                                        + wbillsub + "','" + list + "',0)";
-                                                sqldb.execSQL(sql);
-
-
-                                            }
-
-
-                                            //select all values in the table and check count
-
-                                            SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                            date_time = date112.format(new Date());
-
-                                            //deliverystatus = WebService.setdelivery(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, METHOD_NAME20);
-                                            // Temporay Commnet
-
-                                            //  deliverystatus= WebService.SET_DELIVERY(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote,FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                            DBWAYBILLIST.add(wbillsub);
-                                            DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            System.out.println("delvry stts2" + wbillsub);
-
-                                            //    deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, DBWAYBILLIST, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-
-                                            //System.out.println("deliverystatus:i:"+i+recieve_name+","+drivercode+","+wbillsub+","+eventcode1+","+date_time);
-                                            //commented by AK
-                                    /*sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                    sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-                                    sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + wbillsub + "'");
-                                    if (deliverystatus.contains("True")) {
-
-                                        sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + wbillsub + "'");
-                                        //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                        sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + wbillsub + "'");
-
-                                        //Log.e("Eventcode", eventcode1);
-
-                                        if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                            //sqldb.execSQL("UPDATE wbilldata SET Event_note='"+eventnote+"' WHERE Waybill='"+wbillsub+"'");
-                                            //System.out.println("stage-mr/sd/delivered");
-                                            sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + wbillsub + "'");
-                                        } else {
-                                            //sqldb.execSQL("UPDATE wbilldata SET Event_note='"+eventnote+"' WHERE Waybill='"+wbillsub+"'");
-                                            //System.out.println("stage");
-                                            sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + wbillsub + "'");
-                                        }
-                                        flagfor = true;
-
-                                        //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                    }*/
-                                            if (FlagDeliveryMode.equals("RTN")) {
-                                                // returnwablist.add(wbillsub);
-                                                waynillist = DBWAYBILLIST;
-                                                deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                            }
-                                        }
-                                        if(isNetworkConnected()) {
-                                            if (FlagDeliveryMode.equals("RTN")) {
-                                                // waynillist.add(wbillsub);
-                                                waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                                deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                            } else if (FlagDeliveryMode.equals("ACK")) {
-                                                //waynillist.add(wbillsub);
-                                                waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                                System.out.println("ack list na:" + waynillist);
-                                                deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                            } else {
-
-                                                deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                            }
-                                        }/*else{
-
-                                            Toast.makeText(getApplicationContext(), "You are in Offline mode.Please sync the awbs to deliver them", Toast.LENGTH_LONG).show();
-
-                                        }*/
-                                        // deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                       /* if (deliverystatus == null) {
-                                            Toast.makeText(getApplicationContext(), "Please Try again", Toast.LENGTH_LONG).show();
-                                            // return;
-                                        }*/
-                                        for (int i = 0; i < tablecount; i++) {
-                                            //   sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                            //  sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-                                            //  sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + wbillsub + "'");
-
-                                            System.out.println("deliverystatus" + deliverystatus);
-                                            if (deliverystatus != null) {
-                                                if (deliverystatus.contains("True")) {
-
-                                                    sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                                    sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                                    sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + waynillist.get(i) + "'");
-
-
-                                                    sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                    //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                                    sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
-
-                                                    //Log.e("Eventcode", eventcode1);
-
-                                                    if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                                        //sqldb.execSQL("UPDATE wbilldata SET Event_note='"+eventnote+"' WHERE Waybill='"+wbillsub+"'");
-                                                        //System.out.println("stage-mr/sd/delivered");
-                                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                    } else {
-                                                        //sqldb.execSQL("UPDATE wbilldata SET Event_note='"+eventnote+"' WHERE Waybill='"+wbillsub+"'");
-                                                        //System.out.println("stage");
-                                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                    }
-                                                    flagfor = true;
-
-                                                    //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                                } else {
-                                                    Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
-                                                }
-
-                                            }else{
-
-                                                Toast toast = Toast.makeText(getApplicationContext(),"You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
-                                                toast.setGravity(Gravity.CENTER, 0, 0);
-                                                toast.show();
-
-                                            }
-                                        }
-                                    }
-                                }//end if call condition
-                                else {
-                                    Toast.makeText(getApplicationContext(), "Make call before Submission", Toast.LENGTH_LONG).show();
-                                }
-
-
-                                if (flagfor) {
-                                    //Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-                                    imgcount = 0;
-                                    for (int i = 0; i < imgcountarr.length; i++) {
-
-                                        imgcountarr[i] = 0;
-
-                                    }
-                                    for (int i = count1; i >= 0; i--) {
-                                        resulttab.removeAllViews();
-
-                                    }
-                                    counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                                    waynillist = new ArrayList<String>();
-                                    waynillist.clear();
-                                    System.out.println("waynill after submit:" + waynillist);
-                                    DBWAYBILLIST.clear();
-                                    //	tvScanResults.setText("");
-                                    img1.setImageResource(R.drawable.camera);
-                                    img2.setImageResource(R.drawable.camera);
-                                    img3.setImageResource(R.drawable.camera);
-                                    img4.setImageResource(R.drawable.camera);
-                                    img5.setImageResource(R.drawable.camera);
-                                    img6.setImageResource(R.drawable.camera);
-                                    recivetxt.setText("");
-                                    // recieve_name="";
-                                    evspinner.setSelection(0);
-                                    signimage.setImageDrawable(null);
-
-                                }
-
-                            } else if ((resulttab.getChildCount()) <= 0) {
-
-                                Toast.makeText(getApplicationContext(), "Pls scan AWB",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (evspinner.getSelectedItemPosition() == 0) {
-                                Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (imgcount < 1) {
-                                Toast.makeText(getApplicationContext(), "Pls take a pic of minimum 1",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                            db.close();
-
-                            if (flagfor) {
-                                Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-                                waynillist = new ArrayList<String>();
-                                waynillist.clear();
-                                waynillist.isEmpty();
-                                summ=0;
-                                codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                                openDialog();
-
-                            }
-
-                        }//end-NA condition
-
-
-                        //if event code is MR ask for reason (prompt window)
-                        else if ((eventcode1.equals("MR"))) {
-                            eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
-                            db = new DatabaseHandler(getBaseContext());
-                            //open localdatabase in a read mode
-                            sqldb = db.getReadableDatabase();
-                            if (evspinner.getSelectedItemPosition() != 0 && imgcount >= 1 && (resulttab.getChildCount()) > 0) {
-                                //System.out.println("Stage1");
-
-                                //ask for comment
-                                if (recivetxt.getText().length() <= 0) {
-
-                                    LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
-                                    View promptsView = li.inflate(R.layout.prompt_layout1, null);
-
-                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                            StartDeliveryActivity.this);
-
-                                    // set prompts.xml to alertdialog builder
-                                    alertDialogBuilder.setView(promptsView);
-
-                                    final EditText userInput = (EditText) promptsView
-                                            .findViewById(R.id.editTextDialogUserInput);
-
-                                    // set dialog message
-                                    alertDialogBuilder
-                                            .setCancelable(false)
-                                            .setPositiveButton("OK",
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int id) {
-                                                            // get user input and set it to result
-                                                            // edit text
-
-                                                            recivetxt.setText(userInput.getText());
-
-                                                            eventnote = recivetxt.getText().toString();
-                                                        }
-                                                    })
-                                            .setNegativeButton("Cancel",
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int id) {
-                                                            dialog.cancel();
-                                                        }
-                                                    });
-
-                                    // create alert dialog
-                                    AlertDialog alertDialog = alertDialogBuilder.create();
-                                    flagfor = false;
-                                    // show it
-                                    alertDialog.show();
-                                }//comment statement end
-
-                                else {
-
-                                    //take runsheet code
-                                    Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
-                                    int c = rbc.getCount();
-
-                                    if (c > 0) {
-                                        rbc.moveToFirst();
-                                        runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
-                                    }
-                                    rbc.close();
-                                    SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                    date_time = date1.format(new Date());
-
-
-                                    gps = new GPSTracker(mContext, StartDeliveryActivity.this);
-
-                                    // check if GPS enabled
-                                    if (gps.canGetLocation()) {
-
-                                        latitude = gps.getLatitude();
-                                        longitude = gps.getLongitude();
-                                        lati = String.valueOf(latitude);
-                                        longti = String.valueOf(longitude);
-                                    } else {
-                                        // can't get location
-                                        // GPS or Network is not enabled
-                                        // Ask user to enable GPS/network in settings
-                                        gps.showSettingsAlert();
-                                    }
-                                    // get prompts view
-
-
-                                    //clear the localdatabase old data
-                                    sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
-
-                                    System.out.println("Stage3");
-                                    for (int i = 0; i < tablecount; i++) {
-                                        //System.out.println("Stage4");
-
-                                        waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                        System.out.println(waybilltxt.getText().toString());
-                                        wbillsub = waybilltxt.getText().toString();
-                                        //save all data to local database-wbilldata
-                                        sqldb = db.getWritableDatabase();
-                                        ContentValues values = new ContentValues();
-                                        values.put("ID", time_id);
-                                        values.put("Drivercode", drivercode);
-                                        values.put("Waybill", wbillsub);
-                                        values.put("Runsheetcode", runsheet);
-                                        values.put("Eventcode", eventcode1);
-                                        values.put("Latitude", latitude);
-                                        values.put("Longtitude", longitude);
-                                        values.put("Date_Time", date_time);
-                                        values.put("TransferStatus", "0");
-
-
-                                        sqldb.insertOrThrow("wbilldata", null, values);
-
-                                        List<String> list = new ArrayList<String>();
-                                        //   File f = new File(DirectoryPath);
-                                        //  f.mkdirs();
-                                        File sdCardRoot = Environment.getExternalStorageDirectory();
-                                        File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
-                                        for (File f : yourDir.listFiles()) {
-                                            if (f.isFile())
-                                                //Ak 3sept18
-                                                //if (f.getName().contains(wbillsub)) {
-                                                if (f.getName().contains(waynillist.get(i))) {
-                                                    list.add(yourDir + "/" + f.getName());
-                                                }
-
-                                        }
-
-
-                                        //select all values in the table and check count
-                                        Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + waynillist.get(i) + "'", null);
-                                        int ccount = cc.getCount();
-                                        sqldb = db.getWritableDatabase();
-
-                                        if (ccount > 0) {
-                                            sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                        } else {
-                                            //save all data to local database-wbilldata
-
-
-                                            //clear the localdatabase old data
-                                            sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode <> '" + drivercode + "'");
-
-                                            String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
-
-                                                    + "VALUES ('" + drivercode + "','"
-                                                    + wbillsub + "','" + list + "',0)";
-                                            sqldb.execSQL(sql);
-
-
-                                        }
-
-
-                                        //select all values in the table and check count
-
-                                        SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                        date_time = date112.format(new Date());
-
-                                        //deliverystatus = WebService.setdelivery(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, METHOD_NAME20);
-                                        //Temp Commnt
-                                        DBWAYBILLIST.add(wbillsub);
-                                        DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                        System.out.println("delvry stts 3" + wbillsub + "DBBWA" + DBWAYBILLIST);
-                                        // deliverystatus= WebService.SET_DELIVERY(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                              /*  deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, DBWAYBILLIST, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                //System.out.println("deliverystatus:i:"+i+recieve_name+","+drivercode+","+wbillsub+","+eventcode1+","+date_time);
-                                sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-                                sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + wbillsub + "'");
-                                if (deliverystatus.contains("True")) {
-                                    //System.out.println("Stage5");
-
-                                    sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + wbillsub + "'");
-                                    //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                    sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + wbillsub + "'");
-
-                                    //Log.e("Eventcode", eventcode1);
-
-                                    if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                        //System.out.println("stage-mr/sd/delivered");
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + wbillsub + "'");
-                                    } else {
-                                        //System.out.println("stage");
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + wbillsub + "'");
-                                    }
-                                    flagfor = true;
-
-                                    //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                } else {
-
-                                    flagfor = false;
-                                }
-*/
-
-                                    }//end-for loop
-                                    //  DBWAYBILLIST
-                                    if(isNetworkConnected()) {
-                                        if (FlagDeliveryMode.equals("RTN")) {
-                                            // waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else if (FlagDeliveryMode.equals("ACK")) {
-                                            // waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            System.out.println("ack list mr:" + waynillist);
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else {
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        }
-                                    }else {
-                                        Toast toast = Toast.makeText(getApplicationContext(),"You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER, 0, 0);
-                                        toast.show();
-                                    }
-                                    // deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, DBWAYBILLIST, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                    //System.out.println("deliverystatus:i:"+i+recieve_name+","+drivercode+","+wbillsub+","+eventcode1+","+date_time);
-                                   /* if (deliverystatus == null) {
-                                        Toast.makeText(getApplicationContext(), "Please Try again", Toast.LENGTH_LONG).show();
-                                        return;
-                                    }*/
-                                    for (int i = 0; i < tablecount; i++) {
-                                        sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                        sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                        sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                        if(deliverystatus!=null) {
-
-                                            if (deliverystatus.contains("True")) {
-                                                //System.out.println("Stage5");
-                                                // replaced wbillsub with waynillist.get(i)
-
-                                                sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                                sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
-
-                                                //Log.e("Eventcode", eventcode1);
-
-                                                if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                                    //System.out.println("stage-mr/sd/delivered");
-                                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                } else {
-                                                    //System.out.println("stage");
-                                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                }
-                                                flagfor = true;
-
-                                                //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                            } else {
-
-                                                flagfor = false;
-
-                                                Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
-
-                                            }
-                                        }else {
-                                            flagfor = false;
-
-                                            Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
-                                        }
-
-                                    }
-                                    System.out.println("flag val:" + flagfor);
-                                    if (flagfor) {
-                                        //System.out.println("Stage8");
-                                        Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-                                        waynillist = new ArrayList<String>();
-                                        waynillist.clear();
-                                        System.out.println("waynill after submit:" + waynillist);
-                                        DBWAYBILLIST.clear();
-                                        imgcount = 0;
-                                        for (int i = 0; i < imgcountarr.length; i++) {
-
-                                            imgcountarr[i] = 0;
-
-                                        }
-                                        for (int i = count1; i >= 0; i--) {
-                                            resulttab.removeAllViews();
-
-                                        }
-                                        counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                                      //  codsum.setText(String.valueOf("Total COD:"+resulttab.getChildCount()));
-                                        summ=0;
-                                        codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                                       // codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                                        //	tvScanResults.setText("");
-                                        img1.setImageResource(R.drawable.camera);
-                                        img2.setImageResource(R.drawable.camera);
-                                        img3.setImageResource(R.drawable.camera);
-                                        img4.setImageResource(R.drawable.camera);
-                                        img5.setImageResource(R.drawable.camera);
-                                        img6.setImageResource(R.drawable.camera);
-                                        recivetxt.setText("");
-                                        recieve_name = "";
-                                        evspinner.setSelection(0);
-                                        signimage.setImageDrawable(null);
-                                        openDialog();
-                                    }
-
-                                }
-                            } else if ((resulttab.getChildCount()) <= 0) {
-
-                                Toast.makeText(getApplicationContext(), "Pls scan AWB",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (evspinner.getSelectedItemPosition() == 0) {
-                                Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (imgcount < 1) {
-                                Toast.makeText(getApplicationContext(), "Pls take a pic of minimum 1",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                            db.close();
-
-
-                        }//end-MR condition
-
-
-                        //if event code is SD/NT ask for reason (prompt window)
-                        else if ((eventcode1.equals("SD")) || (eventcode1.equals("NT"))) {
-                            eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
-                            db = new DatabaseHandler(getBaseContext());
-                            //open localdatabase in a read mode
-                            sqldb = db.getReadableDatabase();
-                            if (evspinner.getSelectedItemPosition() != 0 && (resulttab.getChildCount()) > 0) {
-                                //System.out.println("Stage1");
-
-                                //ask for comment
-                                if (recivetxt.getText().length() <= 0) {
-                                    //System.out.println("Stage-commnt");
-                                    LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
-                                    View promptsView = li.inflate(R.layout.prompt_layout1, null);
-
-                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                            StartDeliveryActivity.this);
-
-                                    // set prompts.xml to alertdialog builder
-                                    alertDialogBuilder.setView(promptsView);
-
-                                    final EditText userInput = (EditText) promptsView
-                                            .findViewById(R.id.editTextDialogUserInput);
-
-                                    // set dialog message
-                                    alertDialogBuilder
-                                            .setCancelable(false)
-                                            .setPositiveButton("OK",
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int id) {
-                                                            // get user input and set it to result
-                                                            // edit text
-
-                                                            recivetxt.setText(userInput.getText());
-
-                                                            eventnote = recivetxt.getText().toString();
-                                                        }
-                                                    })
-                                            .setNegativeButton("Cancel",
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int id) {
-                                                            dialog.cancel();
-                                                        }
-                                                    });
-
-                                    // create alert dialog
-                                    AlertDialog alertDialog = alertDialogBuilder.create();
-                                    flagfor = false;
-                                    // show it
-                                    alertDialog.show();
-                                }//comment statement end
-
-                                else {
-                                    //System.out.println("Stage2");
-                                    //take runsheet code
-                                    Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
-                                    int c = rbc.getCount();
-
-                                    if (c > 0) {
-                                        rbc.moveToFirst();
-                                        runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
-                                    }
-                                    rbc.close();
-                                    SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                    date_time = date1.format(new Date());
-
-
-                                    gps = new GPSTracker(mContext, StartDeliveryActivity.this);
-
-                                    // check if GPS enabled
-                                    if (gps.canGetLocation()) {
-
-                                        latitude = gps.getLatitude();
-                                        longitude = gps.getLongitude();
-                                        lati = String.valueOf(latitude);
-                                        longti = String.valueOf(longitude);
-                                    } else {
-                                        // can't get location
-                                        // GPS or Network is not enabled
-                                        // Ask user to enable GPS/network in settings
-                                        gps.showSettingsAlert();
-                                    }
-                                    // get prompts view
-
-
-                                    //clear the localdatabase old data
-                                    sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
-
-                                    System.out.println("Stage3");
-                                    int ff = 0;
-                                    for (int i = 0; i < tablecount; i++) {
-                                        //System.out.println("Stage4");
-
-                                        waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                        System.out.println(waybilltxt.getText().toString());
-                                        wbillsub = waybilltxt.getText().toString();
-                                        //save all data to local database-wbilldata
-                                        sqldb = db.getWritableDatabase();
-                                        ContentValues values = new ContentValues();
-                                        values.put("ID", time_id);
-                                        values.put("Drivercode", drivercode);
-                                        values.put("Waybill", wbillsub);
-                                        values.put("Runsheetcode", runsheet);
-                                        values.put("Eventcode", eventcode1);
-                                        values.put("Latitude", latitude);
-                                        values.put("Longtitude", longitude);
-                                        values.put("Date_Time", date_time);
-
-                                        values.put("TransferStatus", "0");
-
-
-                                        sqldb.insertOrThrow("wbilldata", null, values);
-
-                                        List<String> list = new ArrayList<String>();
-                                        //   File f = new File(DirectoryPath);
-                                        //  f.mkdirs();
-                                        File sdCardRoot = Environment.getExternalStorageDirectory();
-                                        File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
-                                        for (File f : yourDir.listFiles()) {
-                                            if (f.isFile())
-                                                if (f.getName().contains(wbillsub)) {
-                                                    list.add(yourDir + "/" + f.getName());
-                                                }
-
-                                        }
-
-
-                                        //select all values in the table and check count
-							/*	Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='"+ wbillsub+"'", null);
-								int ccount=cc.getCount();
-								sqldb =db.getWritableDatabase();
-
-								if(ccount>0)
-								{
-									sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='"+drivercode+"',Image_filename='"+list+"',TransferStatus=1 WHERE Waybill='"+wbillsub+"'");
-								}
-								else
-								{
-									//save all data to local database-wbilldata
-
-
-
-									//clear the localdatabase old data
-									sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode <> '"+drivercode+"'");
-
-									String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
-
-			                                            + "VALUES ('"+ drivercode+ "','"
-			                                            +wbillsub+ "','" +list+ "',1)";
-									sqldb.execSQL(sql);
-
-
-								}*/
-
-
-                                        //select all values in the table and check count
-
-                                        SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                        date_time = date112.format(new Date());
-
-
-                                        //deliverystatus = WebService.setdelivery(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, METHOD_NAME20);
-                                        // deliverystatus= WebService.SET_DELIVERY(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats,barcodeIdentifier);
-                                        DBWAYBILLIST.add(wbillsub);
-                                        DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                        System.out.println("delvry stts 4" + wbillsub);
-                                        //   deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        //System.out.println("deliverystatus:i:"+i+recieve_name+","+drivercode+","+wbillsub+","+eventcode1+","+date_time);
-                              /*  sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-                                sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + wbillsub + "'");
-                                if (deliverystatus.equals("True")) {
-                                    //System.out.println("Stage5");
-
-                                    sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + wbillsub + "'");
-                                    //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                    sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + wbillsub + "'");
-                                    sqldb.execSQL("UPDATE deliverydata SET ApprovalStatus='APPROVED' WHERE Waybill='" + wbillsub + "'");
-                                    //Log.e("Eventcode", eventcode1);
-
-                                    if (eventcode1.equals("SD") || eventcode1.equals("MR") || eventcode1.equals("DELIVERED")) {
-                                        //System.out.println("stage-mr/sd/delivered");
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + wbillsub + "'");
-                                    } else {
-                                        //System.out.println("stage");
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + wbillsub + "'");
-                                    }
-                                    flagfor = true;
-                                    ff = 1;
-                                    //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                } else if (deliverystatus.equals("REQ")) {
-                                    sqldb.execSQL("UPDATE deliverydata SET WC_Status='A', ApprovalStatus='REQ', Attempt_Status=0 WHERE Waybill='" + wbillsub + "'");
-
-                                    //System.out.println("REQ");
-                                    flagfor = false;
-                                    ff = 2;
-                                } else {
-                                    flagfor = false;
-                                    ff = 0;
-                                }*/
-
-
-                                    }//end-for loop
-                                    if (isNetworkConnected()) {
-                                        if (FlagDeliveryMode.equals("RTN")) {
-                                            // waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else if (FlagDeliveryMode.equals("ACK")) {
-                                            // waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            System.out.println("ack list SD:" + waynillist);
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else {
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        }
-                                    }else {
-                                        //Toast.makeText(getApplicationContext(), "subitted sucesfully", Toast.LENGTH_LONG).show();
-                                        Toast.makeText(getApplicationContext(), "NOT APPROVED TO UPDATE", Toast.LENGTH_LONG).show();
-                                    }
-                                    for (int i = 0; i < tablecount; i++) {
-                                        //  sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                        //  sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-                                        //  sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + wbillsub + "'");
-                                        if(deliverystatus==null){return;}
-                                        if (deliverystatus.equals("True")) {
-                                            //System.out.println("Stage5");
-                                            sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                            sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                            sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                            sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                            //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                            sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                            sqldb.execSQL("UPDATE deliverydata SET ApprovalStatus='APPROVED' WHERE Waybill='" + waynillist.get(i) + "'");
-                                            //Log.e("Eventcode", eventcode1);
-
-                                            if (eventcode1.equals("SD") || eventcode1.equals("MR") || eventcode1.equals("DELIVERED")) {
-                                                //System.out.println("stage-mr/sd/delivered");
-                                                sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                            } else {
-                                                //System.out.println("stage");
-                                                sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                            }
-                                            flagfor = true;
-                                            ff = 1;
-                                            //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                        } else if (deliverystatus.equals("REQ")) {
-                                            sqldb.execSQL("UPDATE deliverydata SET WC_Status='A', ApprovalStatus='REQ', Attempt_Status=0 WHERE Waybill='" + waynillist.get(i) + "'");
-
-                                            //System.out.println("REQ");
-                                            flagfor = false;
-                                            ff = 2;
-                                        } else {
-                                            flagfor = false;
-                                            ff = 0;
-
-                                            Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
-                                            return;
-
-                                        }
-                                    }
-
-                                    if ((flagfor) && (ff == 1)) {
-                                        //System.out.println("Stage8");
-                                        Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-                                        waynillist = new ArrayList<String>();
-                                        waynillist.clear();
-                                        System.out.println("waynill after submit:" + waynillist);
-                                        DBWAYBILLIST.clear();
-                                        imgcount = 0;
-                                        for (int i = 0; i < imgcountarr.length; i++) {
-
-                                            imgcountarr[i] = 0;
-
-                                        }
-                                        for (int i = count1; i >= 0; i--) {
-                                            resulttab.removeAllViews();
-
-                                        }
-                                        counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                                       // codsum.setText(String.valueOf("Total COD:"+resulttab.getChildCount()));
-                                        summ=0;
-                                        codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                                        //	tvScanResults.setText("");
-                                        img1.setImageResource(R.drawable.camera);
-                                        img2.setImageResource(R.drawable.camera);
-                                        img3.setImageResource(R.drawable.camera);
-                                        img4.setImageResource(R.drawable.camera);
-                                        img5.setImageResource(R.drawable.camera);
-                                        img6.setImageResource(R.drawable.camera);
-                                        recivetxt.setText("");
-                                        recieve_name = "";
-                                        evspinner.setSelection(0);
-                                        signimage.setImageDrawable(null);
-                                        openDialog();
-
-                                    }
-                                    //if(flagfor)
-                                    //{
-                                    //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-                                    //}
-                                    else if (!(flagfor) && (ff == 2)) {
-                                        //System.out.println("Stage9");
-                                        Toast.makeText(getApplicationContext(), "NOT APPROVED TO UPDATE", Toast.LENGTH_LONG).show();
-                                    } else if (!(flagfor) && (ff == 0)) {
-                                        //System.out.println("Stage9");
-                                        Toast.makeText(getApplicationContext(), "Check Connection", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            } else if ((resulttab.getChildCount()) <= 0) {
-
-                                Toast.makeText(getApplicationContext(), "Pls scan AWB",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (evspinner.getSelectedItemPosition() == 0) {
-                                Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
-                                        Toast.LENGTH_LONG).show();
-                            }
-					/*else if (imgcount<1)
-					{
-						Toast.makeText(getApplicationContext(),"Pls take a pic of minimum 1",
-								Toast.LENGTH_LONG).show();
-					}*/
-                            db.close();
-
-
-                        }//end-SD/NT condition
-
-
-                        //if not NA,not SA,not MR,not delivered ask to call the reciever
-                        else if (((!eventcode1.equals("SD")) && (!eventcode1.equals("MR")) && (!eventcode1.equals("DELIVERED")) && (!eventcode1.equals("NA")) && (!eventcode1.equals("NT")) || (waybill != null))) {
-                            eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
-                            if ((evspinner.getSelectedItemPosition() != 0 && imgcount >= 1 && resulttab.getChildCount() > 0)) {
-                                db = new DatabaseHandler(getBaseContext());
-                                //open localdatabase in a read mode
-                                sqldb = db.getReadableDatabase();
-                                String Condition = "(";
-                                for (int i = 0; i < tablecount; i++) {
-                                    waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                    System.out.println(waybilltxt.getText().toString());
-                                    if (Condition != "(") {
-                                        Condition = Condition + ",'" + waybilltxt.getText().toString() + "'";
-                                    } else {
-                                        Condition = Condition + "'" + waybilltxt.getText().toString() + "'";
-                                    }
-                                    //wbillsub=waybilltxt.getText().toString();
-                                }
-                                Condition = Condition + ")";
-                                System.out.println(Condition);
-                                Cursor cc1 = sqldb.rawQuery("SELECT Callstatus,Waybill FROM deliverydata WHERE Callstatus=1 AND Waybill IN " + Condition, null);
-                                int count = cc1.getCount();
-
-                                if ((count > 0 && FlagDeliveryMode.equals("NRML")) || !FlagDeliveryMode.equals("NRML")) {
-                                    //take runsheet code
-                                    Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
-                                    int c = rbc.getCount();
-                                    System.out.println("c strst are:"+c+"flagmode:"+FlagDeliveryMode);
-                                    if (c > 0) {
-                                        rbc.moveToFirst();
-                                        runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
-                                    }
-                                    rbc.close();
-                                    SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                    date_time = date1.format(new Date());
-
-
-                                    gps = new GPSTracker(mContext, StartDeliveryActivity.this);
-
-                                    // check if GPS enabled
-                                    if (gps.canGetLocation()) {
-
-                                        latitude = gps.getLatitude();
-                                        longitude = gps.getLongitude();
-                                        lati = String.valueOf(latitude);
-                                        longti = String.valueOf(longitude);
-                                    } else {
-                                        // can't get location
-                                        // GPS or Network is not enabled
-                                        // Ask user to enable GPS/network in settings
-                                        gps.showSettingsAlert();
-                                    }
-                                    // get prompts view
-
-
-                                    //clear the localdatabase old data
-                                    sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
-
-
-                                    for (int i = 0; i < tablecount; i++) {
-                                        waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                        System.out.println(waybilltxt.getText().toString());
-                                        wbillsub = waybilltxt.getText().toString();
-                                        //save all data to local database-wbilldata
-                                        sqldb = db.getWritableDatabase();
-                                        ContentValues values = new ContentValues();
-                                        values.put("ID", time_id);
-                                        values.put("Drivercode", drivercode);
-                                        values.put("Waybill", wbillsub);
-                                        values.put("Runsheetcode", runsheet);
-                                        values.put("Eventcode", eventcode1);
-                                        values.put("Latitude", latitude);
-                                        values.put("Longtitude", longitude);
-                                        values.put("Date_Time", date_time);
-
-                                        values.put("TransferStatus", "0");
-
-
-                                        sqldb.insertOrThrow("wbilldata", null, values);
-
-                                        List<String> list = new ArrayList<String>();
-                                        //   File f = new File(DirectoryPath);
-                                        //  f.mkdirs();
-                                        File sdCardRoot = Environment.getExternalStorageDirectory();
-                                        File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
-                                        for (File f : yourDir.listFiles()) {
-                                            if (f.isFile())
-                                                if (f.getName().contains(wbillsub)) {
-                                                    list.add(yourDir + "/" + f.getName());
-                                                }
-
-                                        }
-                                        //select all values in the table and check count
-                                        Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + wbillsub + "'", null);
-                                        int ccount = cc.getCount();
-                                        sqldb = db.getWritableDatabase();
-
-                                        if (ccount > 0) {
-                                            sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + wbillsub + "'");
-                                        } else {
-                                            //save all data to local database-wbilldata
-
-
-                                            //clear the localdatabase old data
-                                            sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode <> '" + drivercode + "'");
-
-                                            String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
-
-                                                    + "VALUES ('" + drivercode + "','"
-                                                    + wbillsub + "','" + list + "',0)";
-                                            sqldb.execSQL(sql);
-
-
-                                        }
-
-
-                                        //select all values in the table and check count
-
-                                        SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-                                        date_time = date112.format(new Date());
-
-                                        //deliverystatus = WebService.setdelivery(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, METHOD_NAME20);
-                                        //  deliverystatus= WebService.SET_DELIVERY(recieve_name, drivercode, wbillsub, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-
-                                        //   listString = waynillist.toString();
-
-
-                                        //System.out.println("strArray11 are:"+Arrays.toString(strArray11));
-                                        DBWAYBILLIST.add(wbillsub);
-                                        DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                        //  waynillist
-
-                                        System.out.println("delvry stts 5" + DBWAYBILLIST + "waynillist ate" + waynillist);
-                                        //  deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        //System.out.println("deliverystatus:i:"+i+recieve_name+","+drivercode+","+wbillsub+","+eventcode1+","+date_time);
-                                        //  sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                        // sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
-
-                             /*   if (deliverystatus.contains("True")) {
-
-                                    //sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='' WHERE Waybill='"+wbillarr[i]+"'");
-                                    sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + wbillsub + "'");
-                                    sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + wbillsub + "'");
-                                    //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                    //Log.e("Eventcode", eventcode1);
-
-                                    if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                        //System.out.println("stage-mr/sd/delivered");
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + wbillsub + "'");
-                                    } else {
-                                        //System.out.println("stage");
-                                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + wbillsub + "'");
-                                    }
-                                    flagfor = true;
-
-                                    //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-
-                                }*/
-
-
-                                    }
-                                    if(isNetworkConnected()) {
-                                        if (FlagDeliveryMode.equals("RTN")) {
-                                            // waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else if (FlagDeliveryMode.equals("ACK")) {
-                                            // waynillist.add(wbillsub);
-                                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
-                                            System.out.println("ack list diff:" + waynillist);
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        } else {
-                                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                        }
-                                    }else {
-                                        Toast toast = Toast.makeText(getApplicationContext(),"You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER, 0, 0);
-                                        toast.show();
-                                    }
-                                    // deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
-                                   /* if (deliverystatus == null) {
-                                        Toast.makeText(getApplicationContext(), "Please Try again", Toast.LENGTH_LONG).show();
-                                        return;
-                                    }*/
-                                    for (int i = 0; i < resulttab.getChildCount(); i++) {
-                                        //  sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
-                                        //  sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'")
-                                        if (deliverystatus != null) {
-                                            if (deliverystatus.contains("True")) {
-                                           /* sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                            sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                            //sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='' WHERE Waybill='"+wbillarr[i]+"'");
-                                            sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                            sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");*/
-
-                                                sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                                sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
-                                                //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
-                                                //Log.e("Eventcode", eventcode1);
-
-                                                if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
-                                                    //System.out.println("stage-mr/sd/delivered");
-                                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                } else {
-                                                    //System.out.println("stage");
-                                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
-                                                }
-                                                flagfor = true;
-
-                                                System.out.println("WABILL FOR UPADTE:" + wbillsub);
-                                            } else {
-
-                                                Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
-                                                return;
-
-                                            }
-                                        }/*else {
-                                            Toast.makeText(getApplicationContext(), "Make call before Submission", Toast.LENGTH_LONG).show();
-                                        }*/
-                                    }
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Make call before Submission", Toast.LENGTH_LONG).show();
-                                }
-
-
-                                if (flagfor) {
-                                    Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-                                    imgcount = 0;
-                                    waynillist = new ArrayList<String>();
-                                    waynillist.clear();
-                                    System.out.println("waynill after submit:" + waynillist);
-                                    DBWAYBILLIST.clear();
-                                    for (int i = 0; i < imgcountarr.length; i++) {
-
-                                        imgcountarr[i] = 0;
-
-                                    }
-                                    for (int i = count1; i >= 0; i--) {
-                                        resulttab.removeAllViews();
-
-                                    }
-                                    counttxt.setText(String.valueOf((resulttab.getChildCount())));
-                                   // codsum.setText(String.valueOf(resulttab.getChildCount()));
-                                    summ=0;
-                                    codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                                    //	tvScanResults.setText("");
-                                    img1.setImageResource(R.drawable.camera);
-                                    img2.setImageResource(R.drawable.camera);
-                                    img3.setImageResource(R.drawable.camera);
-                                    img4.setImageResource(R.drawable.camera);
-                                    img5.setImageResource(R.drawable.camera);
-                                    img6.setImageResource(R.drawable.camera);
-                                    recivetxt.setText("");
-                                    recieve_name = "";
-                                    evspinner.setSelection(0);
-                                    signimage.setImageDrawable(null);
-                                    openDialog();
-
-                                }
-
-                            } else if ((resulttab.getChildCount()) <= 0) {
-
-                                Toast.makeText(getApplicationContext(), "Pls scan AWB",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (evspinner.getSelectedItemPosition() == 0) {
-                                Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (imgcount < 1) {
-                                Toast.makeText(getApplicationContext(), "Pls take a pic of minimum 1",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                            db.close();
-
-                            if (flagfor) {
-                                Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
-                                waynillist = new ArrayList<String>();
-                                waynillist.clear();
-                                System.out.println("waynill after submit:" + waynillist);
-                                DBWAYBILLIST.clear();
-                                summ=0;
-                                codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
-                                // openDialog();
-                            }
-
-                        }
-                    }
-                });
-
-            }
+        eventbtn.setOnClickListener(v -> {
+            submitAction(v);
         });
     }
 
-    @Override
-    public void onBarcodeEvent(final BarcodeReadEvent event) {
-        // TODO Auto-generated method stub
-        _activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String barcodeData = event.getBarcodeData();
-                String timestamp = event.getTimestamp();
-                // update UI to reflect the data
+    private void submitAction(View v) {
+        DonotInterruptKDCScan = true;
 
-                System.out.println("barcodeData is:"+barcodeData);
+        _activity.runOnUiThread(() -> {
+            boolean flagfor = false;
+            int tablecount = (resulttab.getChildCount());
 
 
+            if (evspinner.getSelectedItemPosition() == 0) {
 
-                if(event.getBarcodeData().contains("R"))
-                {
-                    String rscan=event.getBarcodeData();
-                    String rscanSub= rscan.substring(1);
-                    System.out.println("pdata value in da aftersub is:"+rscanSub);
-                    barcodefrmScanner=rscanSub;
-                    barcodeIdentifier="Y";
-                }else{
-                    barcodefrmScanner=event.getBarcodeData();
-                    barcodeIdentifier="N";
+                Toast.makeText(getApplicationContext(), "Please Select at least one Event!", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+
+            v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+            SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
+            time_id = date11.format(new Date());
+
+            imgcount = 0;
+            for (int value : imgcountarr)
+                if (value == 1)
+                    imgcount++;
+
+
+            eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
+            if (eventcode1.contains("DELIVERED") || eventcode1.contains("Delivered"))
+                handleDeliveryCase(flagfor, tablecount);
+
+            else if ((eventcode1.equals("NA")))
+                handleNACase(flagfor, tablecount);
+            else if ((eventcode1.equals("MR")))
+                handleMRCase(flagfor, tablecount);
+
+            else if ((eventcode1.equals("SD")) || (eventcode1.equals("NT")))
+                handleSDAndNTCase(flagfor, tablecount);
+
+            else if (((!eventcode1.equals("DELIVERED")) || (waybill != null)))
+                handleOtherCases(flagfor, tablecount);
+
+        });
+    }
+
+    private void handleOtherCases(boolean flagfor, int tablecount) {
+        eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
+        if ((evspinner.getSelectedItemPosition() != 0 && imgcount >= 1 && resulttab.getChildCount() > 0)) {
+            db = new DatabaseHandler(getBaseContext());
+            //open localdatabase in a read mode
+            sqldb = db.getReadableDatabase();
+            String Condition = "(";
+            for (int i = 0; i < tablecount; i++) {
+                waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                System.out.println(waybilltxt.getText().toString());
+                if (Condition != "(") {
+                    Condition = Condition + ",'" + waybilltxt.getText().toString() + "'";
+                } else {
+                    Condition = Condition + "'" + waybilltxt.getText().toString() + "'";
+                }
+                //wbillsub=waybilltxt.getText().toString();
+            }
+            Condition = Condition + ")";
+            System.out.println(Condition);
+            Cursor cc1 = sqldb.rawQuery("SELECT Callstatus,Waybill FROM deliverydata WHERE Callstatus=1 AND Waybill IN " + Condition, null);
+            int count = cc1.getCount();
+
+            if ((count > 0 && FlagDeliveryMode.equals("NRML")) || !FlagDeliveryMode.equals("NRML")) {
+                //take runsheet code
+                Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
+                int c = rbc.getCount();
+                System.out.println("c strst are:" + c + "flagmode:" + FlagDeliveryMode);
+                if (c > 0) {
+                    rbc.moveToFirst();
+                    runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
+                }
+                rbc.close();
+                SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                date_time = date1.format(new Date());
+
+
+                gps = new GPSTracker(mContext, StartDeliveryActivity.this);
+
+                // check if GPS enabled
+                if (gps.canGetLocation()) {
+
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+                    lati = String.valueOf(latitude);
+                    longti = String.valueOf(longitude);
+                } else {
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
+                // get prompts view
+
+
+                //clear the localdatabase old data
+                sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
+
+
+                for (int i = 0; i < tablecount; i++) {
+                    waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                    System.out.println(waybilltxt.getText().toString());
+                    wbillsub = waybilltxt.getText().toString();
+                    //save all data to local database-wbilldata
+                    sqldb = db.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put("ID", time_id);
+                    values.put("Drivercode", drivercode);
+                    values.put("Waybill", wbillsub);
+                    values.put("Runsheetcode", runsheet);
+                    values.put("Eventcode", eventcode1);
+                    values.put("Latitude", latitude);
+                    values.put("Longtitude", longitude);
+                    values.put("Date_Time", date_time);
+
+                    values.put("TransferStatus", "0");
+
+
+                    sqldb.insertOrThrow("wbilldata", null, values);
+
+                    List<String> list = new ArrayList<String>();
+                    //   File f = new File(DirectoryPath);
+                    //  f.mkdirs();
+                    File sdCardRoot = Environment.getExternalStorageDirectory();
+                    File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
+                    for (File f : yourDir.listFiles()) {
+                        if (f.isFile())
+                            if (f.getName().contains(wbillsub)) {
+                                list.add(yourDir + "/" + f.getName());
+                            }
+
+                    }
+                    //select all values in the table and check count
+                    Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + wbillsub + "'", null);
+                    int ccount = cc.getCount();
+                    sqldb = db.getWritableDatabase();
+
+                    if (ccount > 0) {
+                        sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + wbillsub + "'");
+                    } else {
+                        //save all data to local database-wbilldata
+
+
+                        //clear the localdatabase old data
+                        sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode <> '" + drivercode + "'");
+
+                        String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
+
+                                + "VALUES ('" + drivercode + "','"
+                                + wbillsub + "','" + list + "',0)";
+                        sqldb.execSQL(sql);
+                    }
+
+                    SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                    date_time = date112.format(new Date());
+
+                    DBWAYBILLIST.add(wbillsub);
+                    DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+
+
+                }
+                if (isNetworkConnected()) {
+                    if (FlagDeliveryMode.equals("RTN")) {
+                        waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    } else if (FlagDeliveryMode.equals("ACK")) {
+                        waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                        System.out.println("ack list diff:" + waynillist);
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    } else {
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    }
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(), "You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
                 }
 
-                System.out.print("waybill barcode is"+barcodefrmScanner);
-
-                if(barcodefrmScanner != null){
-
-                    System.out.print("waybill barcode is"+barcodefrmScanner);
-                    //       ScannerData = pData;
-                    //      waybill = ScannerData.GetData();
-                    waybill=barcodefrmScanner;
-                    // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
-
-                    //  System.out.print("scannerdata is:"+ScannerData.GetData()+ "waybill is"+waybill);
+                for (int i = 0; i < resulttab.getChildCount(); i++) {
+                    if (deliverystatus != null) {
+                        if (deliverystatus.contains("True")) {
 
 
-                    if(Check_ValidWaybill(barcodefrmScanner)==true)
-                    {
-                        System.out.println(" StartDeliveryactivity ID : ");
-                        // System.out.println(R.id.WC_Frame);
-                        //  System.out.println(" value for pdata is : ");
-                        //  System.out.println(pData);
+                            sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                            sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
 
-                        // if(Build.MODEL.contains("SM-N"))
-                        {
-                 /* lp = new LayoutParams(340,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                                lp.setMargins(0, 10, 40, 0);
-                                System.out.println("called smn barcode data received");
-                                lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                                lp.setMargins(15, 2, 95, 2);*/
+                            if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
+                                sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                            } else {
+                                sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                            }
+                            flagfor = true;
 
-                            lp = new LayoutParams(200,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                            lp.setMargins(0, 5, 70, 0);
+                            System.out.println("WABILL FOR UPADTE:" + wbillsub);
+                        } else {
 
-                            _activity.runOnUiThread(new Runnable(){
-                                @Override
-                                public void run(){
-                                    if(waybill!=null){
-                                        //String contents = wbill;
-                                        wbill = waybill;
-                                        wbilldata1=waybill;
-                                        System.out.println(" value for waybill in barcode : "+wbilldata1);
+                            Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
+                            return;
 
-                                        // _activity.ScannerExecutions();
-                                        SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-                                        time_id=date11.format(new Date());
+                        }
+                    }
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Make call before Submission", Toast.LENGTH_LONG).show();
+            }
 
-                                        if(delvryflag==true){
-                                            //  System.out.println("delvryflag on bar: " + delvryflag);
-                                            new UserNotifyTrack(wbilldata1).execute();
-                                        }else{
-                                            new details(wbilldata1).execute();
-                                        }
+
+            if (flagfor) {
+                Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+                imgcount = 0;
+                waynillist = new ArrayList<String>();
+                waynillist.clear();
+                System.out.println("waynill after submit:" + waynillist);
+                DBWAYBILLIST.clear();
+                for (int i = 0; i < imgcountarr.length; i++) {
+
+                    imgcountarr[i] = 0;
+
+                }
+                for (int i = count1; i >= 0; i--) {
+                    resulttab.removeAllViews();
+
+                }
+                counttxt.setText(String.valueOf((resulttab.getChildCount())));
+                // codsum.setText(String.valueOf(resulttab.getChildCount()));
+                summ = 0;
+                codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+                //	tvScanResults.setText("");
+                img1.setImageResource(R.drawable.camera);
+                img2.setImageResource(R.drawable.camera);
+                img3.setImageResource(R.drawable.camera);
+                img4.setImageResource(R.drawable.camera);
+                img5.setImageResource(R.drawable.camera);
+                img6.setImageResource(R.drawable.camera);
+                recivetxt.setText("");
+                recieve_name = "";
+                evspinner.setSelection(0);
+                signimage.setImageDrawable(null);
+                openDialog();
+
+            }
+
+        } else if ((resulttab.getChildCount()) <= 0) {
+
+            Toast.makeText(getApplicationContext(), "Pls scan AWB",
+                    Toast.LENGTH_LONG).show();
+        } else if (evspinner.getSelectedItemPosition() == 0) {
+            Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
+                    Toast.LENGTH_LONG).show();
+        } else if (imgcount < 1) {
+            Toast.makeText(getApplicationContext(), "Pls take a pic of minimum 1",
+                    Toast.LENGTH_LONG).show();
+        }
+        db.close();
+
+        if (flagfor) {
+            Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+            waynillist = new ArrayList<String>();
+            waynillist.clear();
+            System.out.println("waynill after submit:" + waynillist);
+            DBWAYBILLIST.clear();
+            summ = 0;
+            codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+            // openDialog();
+        }
+    }
+
+    private void handleSDAndNTCase(boolean flagfor, int tablecount) {
+        eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
+        db = new DatabaseHandler(getBaseContext());
+        //open localdatabase in a read mode
+        sqldb = db.getReadableDatabase();
+        if (evspinner.getSelectedItemPosition() != 0 && (resulttab.getChildCount()) > 0) {
+            //System.out.println("Stage1");
+
+            //ask for comment
+            if (recivetxt.getText().length() <= 0) {
+                //System.out.println("Stage-commnt");
+                LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
+                View promptsView = li.inflate(R.layout.prompt_layout1, null);
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        StartDeliveryActivity.this);
+
+                // set prompts.xml to alertdialog builder
+                alertDialogBuilder.setView(promptsView);
+
+                final EditText userInput = (EditText) promptsView
+                        .findViewById(R.id.editTextDialogUserInput);
+
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // get user input and set it to result
+                                        // edit text
+
+                                        recivetxt.setText(userInput.getText());
+
+                                        eventnote = recivetxt.getText().toString();
                                     }
-                                    // wbilldata1=contents;
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
 
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                flagfor = false;
+                // show it
+                alertDialog.show();
+            }//comment statement end
+
+            else {
+                //System.out.println("Stage2");
+                //take runsheet code
+                Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
+                int c = rbc.getCount();
+
+                if (c > 0) {
+                    rbc.moveToFirst();
+                    runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
+                }
+                rbc.close();
+                SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                date_time = date1.format(new Date());
+
+
+                gps = new GPSTracker(mContext, StartDeliveryActivity.this);
+
+                // check if GPS enabled
+                if (gps.canGetLocation()) {
+
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+                    lati = String.valueOf(latitude);
+                    longti = String.valueOf(longitude);
+                } else {
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
+                // get prompts view
+
+
+                //clear the localdatabase old data
+                sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
+
+                System.out.println("Stage3");
+                int ff = 0;
+                for (int i = 0; i < tablecount; i++) {
+                    //System.out.println("Stage4");
+
+                    waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                    System.out.println(waybilltxt.getText().toString());
+                    wbillsub = waybilltxt.getText().toString();
+                    //save all data to local database-wbilldata
+                    sqldb = db.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put("ID", time_id);
+                    values.put("Drivercode", drivercode);
+                    values.put("Waybill", wbillsub);
+                    values.put("Runsheetcode", runsheet);
+                    values.put("Eventcode", eventcode1);
+                    values.put("Latitude", latitude);
+                    values.put("Longtitude", longitude);
+                    values.put("Date_Time", date_time);
+
+                    values.put("TransferStatus", "0");
+
+
+                    sqldb.insertOrThrow("wbilldata", null, values);
+
+                    List<String> list = new ArrayList<String>();
+
+                    File sdCardRoot = Environment.getExternalStorageDirectory();
+                    File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
+                    for (File f : yourDir.listFiles()) {
+                        if (f.isFile())
+                            if (f.getName().contains(wbillsub)) {
+                                list.add(yourDir + "/" + f.getName());
+                            }
+
+                    }
+
+                    SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                    date_time = date112.format(new Date());
+
+
+                    DBWAYBILLIST.add(wbillsub);
+                    DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+
+                }//end-for loop
+                if (isNetworkConnected()) {
+                    if (FlagDeliveryMode.equals("RTN")) {
+                        waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    } else if (FlagDeliveryMode.equals("ACK")) {
+                        waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                        System.out.println("ack list SD:" + waynillist);
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    } else {
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    }
+                } else {
+                    //Toast.makeText(getApplicationContext(), "subitted sucesfully", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "NOT APPROVED TO UPDATE", Toast.LENGTH_LONG).show();
+                }
+                for (int i = 0; i < tablecount; i++) {
+                    //  sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
+                    //  sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
+                    //  sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + wbillsub + "'");
+                    if (deliverystatus == null) {
+                        return;
+                    }
+                    if (deliverystatus.equals("True")) {
+                        //System.out.println("Stage5");
+                        sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                        sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                        sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                        sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                        //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
+                        sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                        sqldb.execSQL("UPDATE deliverydata SET ApprovalStatus='APPROVED' WHERE Waybill='" + waynillist.get(i) + "'");
+                        //Log.e("Eventcode", eventcode1);
+
+                        if (eventcode1.equals("SD") || eventcode1.equals("MR") || eventcode1.equals("DELIVERED")) {
+                            //System.out.println("stage-mr/sd/delivered");
+                            sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                        } else {
+                            //System.out.println("stage");
+                            sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                        }
+                        flagfor = true;
+                        ff = 1;
+                        //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+
+                    } else if (deliverystatus.equals("REQ")) {
+                        sqldb.execSQL("UPDATE deliverydata SET WC_Status='A', ApprovalStatus='REQ', Attempt_Status=0 WHERE Waybill='" + waynillist.get(i) + "'");
+
+                        //System.out.println("REQ");
+                        flagfor = false;
+                        ff = 2;
+                    } else {
+                        flagfor = false;
+                        ff = 0;
+
+                        Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
+                        return;
+
+                    }
+                }
+
+                if ((flagfor) && (ff == 1)) {
+                    //System.out.println("Stage8");
+                    Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+                    waynillist = new ArrayList<String>();
+                    waynillist.clear();
+                    System.out.println("waynill after submit:" + waynillist);
+                    DBWAYBILLIST.clear();
+                    imgcount = 0;
+                    for (int i = 0; i < imgcountarr.length; i++) {
+
+                        imgcountarr[i] = 0;
+
+                    }
+                    for (int i = count1; i >= 0; i--) {
+                        resulttab.removeAllViews();
+
+                    }
+                    counttxt.setText(String.valueOf(resulttab.getChildCount()));
+                    // codsum.setText(String.valueOf("Total COD:"+resulttab.getChildCount()));
+                    summ = 0;
+                    codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+                    //	tvScanResults.setText("");
+                    img1.setImageResource(R.drawable.camera);
+                    img2.setImageResource(R.drawable.camera);
+                    img3.setImageResource(R.drawable.camera);
+                    img4.setImageResource(R.drawable.camera);
+                    img5.setImageResource(R.drawable.camera);
+                    img6.setImageResource(R.drawable.camera);
+                    recivetxt.setText("");
+                    recieve_name = "";
+                    evspinner.setSelection(0);
+                    signimage.setImageDrawable(null);
+                    openDialog();
+
+                }
+                //if(flagfor)
+                //{
+                //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+                //}
+                else if (!(flagfor) && (ff == 2)) {
+                    //System.out.println("Stage9");
+                    Toast.makeText(getApplicationContext(), "NOT APPROVED TO UPDATE", Toast.LENGTH_LONG).show();
+                } else if (!(flagfor) && (ff == 0)) {
+                    //System.out.println("Stage9");
+                    Toast.makeText(getApplicationContext(), "Check Connection", Toast.LENGTH_LONG).show();
+                }
+            }
+        } else if ((resulttab.getChildCount()) <= 0) {
+
+            Toast.makeText(getApplicationContext(), "Pls scan AWB",
+                    Toast.LENGTH_LONG).show();
+        } else if (evspinner.getSelectedItemPosition() == 0) {
+            Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
+                    Toast.LENGTH_LONG).show();
+        }
+        /*else if (imgcount<1)
+        {
+            Toast.makeText(getApplicationContext(),"Pls take a pic of minimum 1",
+                    Toast.LENGTH_LONG).show();
+        }*/
+        db.close();
+    }
+
+    private void handleMRCase(boolean flagfor, int tablecount) {
+        eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
+        db = new DatabaseHandler(getBaseContext());
+        //open localdatabase in a read mode
+        sqldb = db.getReadableDatabase();
+        if (evspinner.getSelectedItemPosition() != 0 && imgcount >= 1 && (resulttab.getChildCount()) > 0) {
+            //System.out.println("Stage1");
+
+            //ask for comment
+            if (recivetxt.getText().length() <= 0) {
+
+                LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
+                View promptsView = li.inflate(R.layout.prompt_layout1, null);
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        StartDeliveryActivity.this);
+
+                // set prompts.xml to alertdialog builder
+                alertDialogBuilder.setView(promptsView);
+
+                final EditText userInput = (EditText) promptsView
+                        .findViewById(R.id.editTextDialogUserInput);
+
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                (dialog, id) -> {
+
+                                    recivetxt.setText(userInput.getText());
+
+                                    eventnote = recivetxt.getText().toString();
+                                })
+                        .setNegativeButton("Cancel",
+                                (dialog, id) -> dialog.cancel());
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                flagfor = false;
+                // show it
+                alertDialog.show();
+            }//comment statement end
+
+            else {
+
+                //take runsheet code
+                Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
+                int c = rbc.getCount();
+
+                if (c > 0) {
+                    rbc.moveToFirst();
+                    runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
+                }
+                rbc.close();
+                SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                date_time = date1.format(new Date());
+
+
+                gps = new GPSTracker(mContext, StartDeliveryActivity.this);
+
+                // check if GPS enabled
+                if (gps.canGetLocation()) {
+
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+                    lati = String.valueOf(latitude);
+                    longti = String.valueOf(longitude);
+                } else {
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
+                // get prompts view
+
+
+                //clear the localdatabase old data
+                sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
+
+                System.out.println("Stage3");
+                for (int i = 0; i < tablecount; i++) {
+                    //System.out.println("Stage4");
+
+                    waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                    System.out.println(waybilltxt.getText().toString());
+                    wbillsub = waybilltxt.getText().toString();
+                    //save all data to local database-wbilldata
+                    sqldb = db.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put("ID", time_id);
+                    values.put("Drivercode", drivercode);
+                    values.put("Waybill", wbillsub);
+                    values.put("Runsheetcode", runsheet);
+                    values.put("Eventcode", eventcode1);
+                    values.put("Latitude", latitude);
+                    values.put("Longtitude", longitude);
+                    values.put("Date_Time", date_time);
+                    values.put("TransferStatus", "0");
+
+
+                    sqldb.insertOrThrow("wbilldata", null, values);
+
+                    List<String> list = new ArrayList<String>();
+                    //   File f = new File(DirectoryPath);
+                    //  f.mkdirs();
+                    File sdCardRoot = Environment.getExternalStorageDirectory();
+                    File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
+                    for (File f : yourDir.listFiles()) {
+                        if (f.isFile())
+                            //Ak 3sept18
+                            //if (f.getName().contains(wbillsub)) {
+                            if (f.getName().contains(waynillist.get(i))) {
+                                list.add(yourDir + "/" + f.getName());
+                            }
+
+                    }
+
+
+                    //select all values in the table and check count
+                    Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + waynillist.get(i) + "'", null);
+                    int ccount = cc.getCount();
+                    sqldb = db.getWritableDatabase();
+
+                    if (ccount > 0) {
+                        sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                    } else {
+                        //save all data to local database-wbilldata
+
+
+                        //clear the localdatabase old data
+                        sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode <> '" + drivercode + "'");
+
+                        String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
+
+                                + "VALUES ('" + drivercode + "','"
+                                + wbillsub + "','" + list + "',0)";
+                        sqldb.execSQL(sql);
+
+
+                    }
+
+
+                    //select all values in the table and check count
+
+                    SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                    date_time = date112.format(new Date());
+
+                    //Temp Commnt
+                    DBWAYBILLIST.add(wbillsub);
+                    DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                    System.out.println("delvry stts 3" + wbillsub + "DBBWA" + DBWAYBILLIST);
+
+
+                }//end-for loop
+                //  DBWAYBILLIST
+                if (isNetworkConnected()) {
+                    if (FlagDeliveryMode.equals("RTN")) {
+                        waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    } else if (FlagDeliveryMode.equals("ACK")) {
+                        waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                        System.out.println("ack list mr:" + waynillist);
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    } else {
+                        deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                    }
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(), "You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+                for (int i = 0; i < tablecount; i++) {
+                    sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                    sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                    sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                    if (deliverystatus != null) {
+
+                        if (deliverystatus.contains("True")) {
+
+                            sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                            sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
+
+                            //Log.e("Eventcode", eventcode1);
+
+                            if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
+                                //System.out.println("stage-mr/sd/delivered");
+                                sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                            } else {
+                                //System.out.println("stage");
+                                sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                            }
+                            flagfor = true;
+
+                            //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+
+                        } else {
+
+                            flagfor = false;
+
+                            Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
+
+                        }
+                    } else {
+                        flagfor = false;
+
+                        Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
+                    }
+
+                }
+                System.out.println("flag val:" + flagfor);
+                if (flagfor) {
+                    //System.out.println("Stage8");
+                    Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+                    waynillist = new ArrayList<String>();
+                    waynillist.clear();
+                    System.out.println("waynill after submit:" + waynillist);
+                    DBWAYBILLIST.clear();
+                    imgcount = 0;
+                    for (int i = 0; i < imgcountarr.length; i++) {
+
+                        imgcountarr[i] = 0;
+
+                    }
+                    for (int i = count1; i >= 0; i--) {
+                        resulttab.removeAllViews();
+
+                    }
+                    counttxt.setText(String.valueOf(resulttab.getChildCount()));
+                    //  codsum.setText(String.valueOf("Total COD:"+resulttab.getChildCount()));
+                    summ = 0;
+                    codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+                    // codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+                    //	tvScanResults.setText("");
+                    img1.setImageResource(R.drawable.camera);
+                    img2.setImageResource(R.drawable.camera);
+                    img3.setImageResource(R.drawable.camera);
+                    img4.setImageResource(R.drawable.camera);
+                    img5.setImageResource(R.drawable.camera);
+                    img6.setImageResource(R.drawable.camera);
+                    recivetxt.setText("");
+                    recieve_name = "";
+                    evspinner.setSelection(0);
+                    signimage.setImageDrawable(null);
+                    openDialog();
+                }
+
+            }
+        } else if ((resulttab.getChildCount()) <= 0) {
+
+            Toast.makeText(getApplicationContext(), "Pls scan AWB",
+                    Toast.LENGTH_LONG).show();
+        } else if (evspinner.getSelectedItemPosition() == 0) {
+            Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
+                    Toast.LENGTH_LONG).show();
+        } else if (imgcount < 1) {
+            Toast.makeText(getApplicationContext(), "Pls take a pic of minimum 1",
+                    Toast.LENGTH_LONG).show();
+        }
+        db.close();
+    }
+
+    private void handleNACase(boolean flagfor, int tablecount) {
+        if (evspinner.getSelectedItemPosition() != 0 && imgcount >= 1 && (resulttab.getChildCount()) > 0) {
+            eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
+            db = new DatabaseHandler(getBaseContext());
+            //open localdatabase in a read mode
+            sqldb = db.getReadableDatabase();
+            String Condition = "(";
+
+            for (int i = 0; i < tablecount; i++) {
+                waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                System.out.println(waybilltxt.getText().toString());
+                if (Condition != "(") {
+                    Condition = Condition + ",'" + waybilltxt.getText().toString() + "'";
+                } else {
+                    Condition = Condition + "'" + waybilltxt.getText().toString() + "'";
+                }
+                //wbillsub=waybilltxt.getText().toString();
+            }
+            Condition = Condition + ")";
+            System.out.println(Condition);
+            Cursor cc1 = sqldb.rawQuery("SELECT Callstatus,Waybill FROM deliverydata WHERE Callstatus=1 AND Waybill IN " + Condition, null);
+            int count = cc1.getCount();
+            //check the call status
+            if ((count > 0 && FlagDeliveryMode.equals("NRML")) || !FlagDeliveryMode.equals("NRML")) {
+                //ask for comment
+                if (recivetxt.getText().length() <= 0) {
+                    LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
+                    View promptsView = li.inflate(R.layout.prompt_layout1, null);
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                            StartDeliveryActivity.this);
+
+                    // set prompts.xml to alertdialog builder
+                    alertDialogBuilder.setView(promptsView);
+
+                    final EditText userInput = (EditText) promptsView
+                            .findViewById(R.id.editTextDialogUserInput);
+
+                    // set dialog message
+                    alertDialogBuilder
+                            .setCancelable(false)
+                            .setPositiveButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // get user input and set it to result
+                                            // edit text
+
+                                            recivetxt.setText(userInput.getText());
+
+                                            eventnote = recivetxt.getText().toString();
+                                        }
+                                    })
+                            .setNegativeButton("Cancel",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                    // create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    flagfor = false;
+                    // show it
+                    alertDialog.show();
+                }//comment statement end
+
+                else {
+                    //take runsheet code
+                    Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
+                    int c = rbc.getCount();
+
+                    if (c > 0) {
+                        rbc.moveToFirst();
+                        runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
+                    }
+                    rbc.close();
+                    SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                    date_time = date1.format(new Date());
+
+
+                    gps = new GPSTracker(mContext, StartDeliveryActivity.this);
+
+                    // check if GPS enabled
+                    if (gps.canGetLocation()) {
+
+                        latitude = gps.getLatitude();
+                        longitude = gps.getLongitude();
+                        lati = String.valueOf(latitude);
+                        longti = String.valueOf(longitude);
+                    } else {
+                        // can't get location
+                        // GPS or Network is not enabled
+                        // Ask user to enable GPS/network in settings
+                        gps.showSettingsAlert();
+                    }
+                    // get prompts view
+
+
+                    //clear the localdatabase old data
+                    sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
+
+
+                    for (int i = 0; i < tablecount; i++) {
+                        waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                        System.out.println(waybilltxt.getText().toString() + "wbillsub");
+                        wbillsub = waybilltxt.getText().toString();
+                        //save all data to local database-wbilldata
+                        sqldb = db.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put("ID", time_id);
+                        values.put("Drivercode", drivercode);
+                        values.put("Waybill", wbillsub);
+                        values.put("Runsheetcode", runsheet);
+                        values.put("Eventcode", eventcode1);
+                        values.put("Latitude", latitude);
+                        values.put("Longtitude", longitude);
+                        values.put("Date_Time", date_time);
+
+                        values.put("TransferStatus", "0");
+
+
+                        sqldb.insertOrThrow("wbilldata", null, values);
+
+                        List<String> list = new ArrayList<String>();
+                        //   File f = new File(DirectoryPath);
+                        //  f.mkdirs();
+                        File sdCardRoot = Environment.getExternalStorageDirectory();
+                        File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
+                        System.out.println("f.getName:" + yourDir.list().toString() + "fil aary" + yourDir.listFiles().toString());
+                        for (File f : yourDir.listFiles()) {
+                            System.out.println("f.getName:" + f.listFiles());
+
+                            if (f.isFile())
+                                if (f.getName().contains(waybilltxt.getText().toString())) {
+
+                                    System.out.println("f.getName:" + f.getName());
+                                    list.add(yourDir + "/" + f.getName());
+                                    // System.out.println("list inside lloop is:"+wbillsub+"list"+list);
                                 }
-                            });
 
                         }
 
 
+                        System.out.println("wbillsub img na track is:" + wbillsub + "list" + list);
+
+                        //select all values in the table and check count
+                        Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + wbillsub + "'", null);
+                        int ccount = cc.getCount();
+                        sqldb = db.getWritableDatabase();
+                        System.out.println("wbillsub img na track is:" + list);
+                        if (ccount > 0) {
+                            sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + wbillsub + "'");
+                        } else {
+                            //save all data to local database-wbilldata
 
 
+                            //clear the localdatabase old data
+                            sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode <> '" + drivercode + "'");
+
+                            String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
+
+                                    + "VALUES ('" + drivercode + "','"
+                                    + wbillsub + "','" + list + "',0)";
+                            sqldb.execSQL(sql);
+
+
+                        }
+
+
+                        SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+                        date_time = date112.format(new Date());
+
+
+                        DBWAYBILLIST.add(wbillsub);
+                        DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+
+
+                        if (FlagDeliveryMode.equals("RTN")) {
+                            waynillist = DBWAYBILLIST;
+                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                        }
                     }
-                    else
-                    {
+                    if (isNetworkConnected()) {
+                        if (FlagDeliveryMode.equals("RTN")) {
+                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                        } else if (FlagDeliveryMode.equals("ACK")) {
+                            waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                            System.out.println("ack list na:" + waynillist);
+                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                        } else {
 
-                        _activity.runOnUiThread(new Runnable(){
-                            @Override
-                            public void run(){
+                            deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+                        }
+                    }/*else{
 
-                                Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "You are in Offline mode.Please sync the awbs to deliver them", Toast.LENGTH_LONG).show();
+
+                    }*/
+                   /* if (deliverystatus == null) {
+                        Toast.makeText(getApplicationContext(), "Please Try again", Toast.LENGTH_LONG).show();
+                        // return;
+                    }*/
+                    for (int i = 0; i < tablecount; i++) {
+                        //   sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
+                        //  sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
+                        //  sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + wbillsub + "'");
+
+                        System.out.println("deliverystatus" + deliverystatus);
+                        if (deliverystatus != null) {
+                            if (deliverystatus.contains("True")) {
+
+                                sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                                sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                                sqldb.execSQL("UPDATE wbilldata SET Event_note='" + eventnote + "' WHERE Waybill='" + waynillist.get(i) + "'");
+
+
+                                sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                                //sqldb.execSQL("UPDATE deliverydata SET WC_Status='C' WHERE Waybill='"+wbillsub+"'");
+                                sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
+
+                                //Log.e("Eventcode", eventcode1);
+
+                                if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
+                                    //sqldb.execSQL("UPDATE wbilldata SET Event_note='"+eventnote+"' WHERE Waybill='"+wbillsub+"'");
+                                    //System.out.println("stage-mr/sd/delivered");
+                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                                } else {
+                                    //sqldb.execSQL("UPDATE wbilldata SET Event_note='"+eventnote+"' WHERE Waybill='"+wbillsub+"'");
+                                    //System.out.println("stage");
+                                    sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                                }
+                                flagfor = true;
+
+                                //	Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+
+                            } else {
+                                Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
+                            }
+
+                        } else {
+
+                            Toast toast = Toast.makeText(getApplicationContext(), "You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+
+                        }
+                    }
+                }
+            }//end if call condition
+            else {
+                Toast.makeText(getApplicationContext(), "Make call before Submission", Toast.LENGTH_LONG).show();
+            }
+
+
+            if (flagfor) {
+                //Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+                imgcount = 0;
+                for (int i = 0; i < imgcountarr.length; i++) {
+
+                    imgcountarr[i] = 0;
+
+                }
+                for (int i = count1; i >= 0; i--) {
+                    resulttab.removeAllViews();
+
+                }
+                counttxt.setText(String.valueOf(resulttab.getChildCount()));
+                waynillist = new ArrayList<String>();
+                waynillist.clear();
+                System.out.println("waynill after submit:" + waynillist);
+                DBWAYBILLIST.clear();
+                //	tvScanResults.setText("");
+                img1.setImageResource(R.drawable.camera);
+                img2.setImageResource(R.drawable.camera);
+                img3.setImageResource(R.drawable.camera);
+                img4.setImageResource(R.drawable.camera);
+                img5.setImageResource(R.drawable.camera);
+                img6.setImageResource(R.drawable.camera);
+                recivetxt.setText("");
+                // recieve_name="";
+                evspinner.setSelection(0);
+                signimage.setImageDrawable(null);
+
+            }
+
+        } else if ((resulttab.getChildCount()) <= 0) {
+
+            Toast.makeText(getApplicationContext(), "Pls scan AWB",
+                    Toast.LENGTH_LONG).show();
+        } else if (evspinner.getSelectedItemPosition() == 0) {
+            Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
+                    Toast.LENGTH_LONG).show();
+        } else if (imgcount < 1) {
+            Toast.makeText(getApplicationContext(), "Pls take a pic of minimum 1",
+                    Toast.LENGTH_LONG).show();
+        }
+        db.close();
+
+        if (flagfor) {
+            Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+            waynillist = new ArrayList<String>();
+            waynillist.clear();
+            waynillist.isEmpty();
+            summ = 0;
+            codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+            openDialog();
+
+        }
+    }
+
+    private void handleDeliveryCase(boolean flagfor, int tablecount) {
+        if ((!FlagcodAmt && summ > 0) && FlagDeliveryMode.equals("NRML")) {
+            Toast.makeText(getApplicationContext(), "Please collect COD Amount", Toast.LENGTH_LONG).show();
+            return;
+        } else {
+            if (cbAtcltd.isChecked()) {
+                IsCODCollectedstats = "Y";
+            } else if (cbCOD.isChecked()) {
+                IsCODCollectedstats = "N";
+            } else
+                IsCODCollectedstats = "NA";
+        }
+
+        // Event Change as per the Delivery Mode for DELIVERED EVENT Only
+        eventcode1 = String.valueOf(eventcode[evspinner.getSelectedItemPosition()]);
+        System.out.println("FlagDeliveryMode are:" + FlagDeliveryMode);
+        if (FlagDeliveryMode.equals("NRML")) eventcode1 = "DELIVERED";
+        else if (FlagDeliveryMode.equals("ACK")) eventcode1 = "ACKC";
+        else if (FlagDeliveryMode.equals("RTN")) eventcode1 = "RTC";
+
+
+        if (evspinner.getSelectedItemPosition() != 0 && (resulttab.getChildCount()) > 0 || waybill != null) {
+            System.out.println("ignimage befr getDrawable" + signimage.getDrawable());
+            if (signimage.getDrawable() == null) {
+                openSignDialog();
+            } else {
+                sumbitActionAfterSigned(flagfor, tablecount);
+            }
+        } else if ((resulttab.getChildCount()) <= 0) {
+
+            Toast.makeText(getApplicationContext(), "Pls scan AWB",
+                    Toast.LENGTH_LONG).show();
+        } else if (evspinner.getSelectedItemPosition() == 0) {
+            Toast.makeText(getApplicationContext(), "Pls select event from dropdownlist",
+                    Toast.LENGTH_LONG).show();
+        }
+        db.close();
+    }
+
+    private void sumbitActionAfterSigned(boolean flagfor, int tablecount) {
+        db = new DatabaseHandler(getBaseContext());
+        //open localdatabase in a read mode
+        sqldb = db.getReadableDatabase();
+        //take runsheet code
+        Cursor rbc = sqldb.rawQuery("SELECT * FROM logindata WHERE Username='" + drivercode + "'", null);
+        int c = rbc.getCount();
+
+        if (c > 0) {
+            rbc.moveToFirst();
+            runsheet = rbc.getString(rbc.getColumnIndex("Runsheetcode"));
+        }
+        rbc.close();
+        SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+        date_time = date1.format(new Date());
+
+
+        gps = new GPSTracker(mContext, StartDeliveryActivity.this);
+
+        // check if GPS enabled
+        if (gps.canGetLocation()) {
+
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+            lati = String.valueOf(latitude);
+            longti = String.valueOf(longitude);
+
+        } else {
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
+        // get prompts view
+
+
+        //clear the localdatabase old data
+        sqldb.execSQL("DELETE FROM wbilldata WHERE Drivercode <> '" + drivercode + "'");
+
+
+        for (int i = 0; i < tablecount; i++) {
+            waybilltxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+            System.out.println(waybilltxt.getText().toString());
+            wbillsub = waybilltxt.getText().toString();
+            sqldb = db.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("ID", time_id);
+            values.put("Drivercode", drivercode);
+            values.put("Waybill", wbillsub);
+            values.put("Runsheetcode", runsheet);
+            values.put("Eventcode", eventcode1);
+            values.put("Latitude", latitude);
+            values.put("Longtitude", longitude);
+            values.put("Date_Time", date_time);
+            values.put("TransferStatus", "0");
+
+
+            sqldb.insertOrThrow("wbilldata", null, values);
+
+            List<String> list = new ArrayList<String>();
+            File sdCardRoot = Environment.getExternalStorageDirectory();
+            File yourDir = new File(sdCardRoot, "Postaplus/Wbill_ackimage");
+            System.out.println("yourDir outimg track is:" + yourDir);
+            for (File f : yourDir.listFiles()) {
+                if (f.isFile())
+                    if (f.getName().contains(wbillsub)) {
+                        System.out.println("yourDir img track is:" + yourDir + "/" + f.getName());
+                        list.add(yourDir + "/" + f.getName());
+                    }
+
+            }
+
+            Cursor cc = sqldb.rawQuery("SELECT * FROM wbillimagesdata WHERE Waybill='" + wbillsub + "'", null);
+            int ccount = cc.getCount();
+            sqldb = db.getWritableDatabase();
+
+            if (ccount > 0) {
+                sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + wbillsub + "'");
+            } else {
+
+                sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode<>'" + drivercode + "'");
+
+                String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
+
+                        + "VALUES ('" + drivercode + "','"
+                        + wbillsub + "','" + list + "',0)";
+                sqldb.execSQL(sql);
+
+
+            }
+            SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+            date_time = date112.format(new Date());
+
+            DBWAYBILLIST.add(wbillsub);
+            DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+
+
+        }
+        if (isNetworkConnected()) {
+            if (FlagDeliveryMode.equals("RTN")) {
+                waynillist = DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
+                deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+            } else if (FlagDeliveryMode.equals("ACK")) {
+                waynillist = DBWAYBILLIST;
+                System.out.println("ack list:" + waynillist);
+                deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+            } else {
+                System.out.println("waynillist nrml list:" + waynillist);
+                deliverystatus = WebService.SET_DELIVERY(recieve_name, drivercode, waynillist, eventcode1, lati, longti, date_time, eventnote, FlagDeliveryMode, IsCODCollectedstats, barcodeIdentifier);
+            }
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), "You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            //resulttab.removeAllViewsInLayout();
+
+        }
+
+        for (int i = 0; i < tablecount; i++) {
+            // sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', IsCollectedCOD = '" + IsCODCollectedstats + "', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + wbillsub + "'");
+            // sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + wbillsub + "'");
+            //  sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + wbillsub + "'");
+
+            //ak CPMNT
+          /*  sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', IsCollectedCOD = '" + IsCODCollectedstats + "', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
+            sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
+            sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
+            sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");*/
+
+
+            System.out.println("deliverystatus are:" + deliverystatus + "wbillsub:" + wbillsub + "tabcnt in delv" + tablecount + "waylist" + waynillist.get(i));
+            if (deliverystatus != null) {
+                if (deliverystatus.contains("True")) {
+
+
+                    sqldb.execSQL("UPDATE deliverydata SET WC_Status='C', IsCollectedCOD = '" + IsCODCollectedstats + "', BarcodeIdentifier = '" + barcodeIdentifier + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                    sqldb.execSQL("UPDATE wbilldata SET Eventcode='" + eventcode1 + "' WHERE Waybill='" + waynillist.get(i) + "'");
+                    sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
+
+                    sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
+
+
+                    sqldb.execSQL("UPDATE wbilldata SET TransferStatus=1 WHERE Waybill='" + waynillist.get(i) + "'");
+
+                    // sqldb.execSQL("UPDATE deliverydata SET Attempt_Status=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                    System.out.println("WC_Status for awb" + "wbillsub updt" + wbillsub);
+                    //Log.e("Eventcode", eventcode1);
+
+                    if (eventcode1.contains("SD") || eventcode1.contains("MR") || eventcode1.contains("DELIVERED")) {
+                        //System.out.println("stage-mr/sd/delivered");
+                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=1 WHERE Waybill='" + waynillist.get(i) + "'");
+                    } else {
+
+                        sqldb.execSQL("UPDATE deliverydata SET StopDelivery=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                    }
+                    flagfor = true;
+
+                } else {
+                    Toast.makeText(getApplicationContext(), deliverystatus, Toast.LENGTH_LONG).show();
+                    sqldb.execSQL("UPDATE wbilldata SET TransferStatus=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                    // sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
+
+                }
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(), "You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+                sqldb.execSQL("UPDATE wbilldata SET TransferStatus=0 WHERE Waybill='" + waynillist.get(i) + "'");
+                sqldb.execSQL("UPDATE wbilldata SET Reciever_Name='" + recieve_name + "' WHERE Waybill='" + waynillist.get(i) + "'");
+
+            }
+
+            //  System.out.println("wbillsub updted delv"+wbillsub);
+
+        }
+
+
+        if (flagfor) {
+            Toast.makeText(getApplicationContext(), "Submitted Successfully", Toast.LENGTH_LONG).show();
+
+            //     isActivityActiveFlag=true;
+
+            //Reset Flag COD Amnt;
+            FlagcodAmt = false;
+            cbCOD.setChecked(false);
+            cbAtcltd.setChecked(false);
+            waynillist = new ArrayList<String>();
+            waynillist.clear();
+            System.out.println("waynill after submit:" + waynillist);
+            DBWAYBILLIST.clear();
+            imgcount = 0;
+            //Clear image main counter here
+            for (int i = 0; i < imgcountarr.length; i++) {
+
+                imgcountarr[i] = 0;
+
+            }
+            for (int i = count1; i >= 0; i--) {
+                System.out.println("values in result tab is:" + resulttab);
+                resulttab.removeAllViews();
+
+            }
+            int ct = (resulttab.getChildCount());
+            System.out.println("value for count text on clicking view" + (ct - 1));
+            counttxt.setText(String.valueOf(resulttab.getChildCount()));
+            summ = 0;
+            codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+            //	tvScanResults.setText("");
+            img.setImageResource(R.drawable.camera);
+            imag.setImageResource(R.drawable.camera);
+            imag1.setImageResource(R.drawable.camera);
+            imag2.setImageResource(R.drawable.camera);
+            imag3.setImageResource(R.drawable.camera);
+            imag4.setImageResource(R.drawable.camera);
+            recivetxt.setText("");
+            recieve_name = "";
+            evspinner.setSelection(0);
+            signimage.setImageDrawable(null);
+
+            openDialog();
+        }
+    }
+
+    private void openSignDialog() {
+        boolean flagfor;
+        LayoutInflater li = LayoutInflater.from(StartDeliveryActivity.this);
+        View promptsView = li.inflate(R.layout.prompt_layout, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                StartDeliveryActivity.this);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView.findViewById(R.id.editTextDialogUserInput);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        (dialog, id) -> {
+                            // get user input and set it to result
+                            // edit text
+                            Intent i = new Intent(StartDeliveryActivity.this, CaptureSignature.class);
+                            startActivityForResult(i, 0);
+                            System.out.println("ignimage after getDrawable" + signimage.getDrawable());
+
+                            recivetxt.setText(userInput.getText());
+
+                            recieve_name = recivetxt.getText().toString();
+                            System.out.println("recieve_name after getDrawable" + recieve_name);
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
                             }
                         });
-                    }
-                }
-                else
-                {
-                    _activity.runOnUiThread(new Runnable(){
-                        @Override
-                        public void run(){
 
-                            Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            }
-        });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        flagfor = false;
+        // show it
+        alertDialog.show();
     }
-
-
-    @Override
-    public void onFailureEvent(BarcodeFailureEvent barcodeFailureEvent) {
-
-    }
-
-    @Override
-    public void onTriggerEvent(TriggerStateChangeEvent triggerStateChangeEvent) {
-
-    }
-
-
 
     @Override
     public void onPause() {
@@ -3118,161 +2200,368 @@ public class StartDeliveryActivity extends MasterActivity
         if (!isActivityActiveFlag) isActivityActiveFlag = false;
         _activity = this;
 
-
-        //new KDCTask().execute();
-       /* System.out.println("StartDeliveryOnResume - KDCTask Status : " + KDCTaskExecutable.getStatus());
-        if (!KDCTaskExecutable.getStatus().equals(AsyncTask.Status.RUNNING) && !KDCTaskExecutable.getStatus().equals(AsyncTask.Status.FINISHED)) {
-            //KDCTaskExecutable.cancel(false);
-            KDCTaskExecutable.execute();
-        }
-*/
-		/*tsd = new Thread(){
-			@Override
-			public void run(){
-				_kdcReader= new KDCReader(MasterActivity.ScannerDevice, _activity, _activity, null, null, null, _activity, false);
-			}
-		};
-		tsd.start();*/
-        /*if(ThrKdc!=null)
-            ThrKdc.run();
-        else{
-            ThrKdc = new Thread(){
-                @Override
-                public void run(){
-                    _kdcReader= new KDCReader(MasterActivity.ScannerDevice, _activity, _activity, null, null, null, _activity, false);
-                 *//*   _kdcReader.EnableBluetoothAutoPowerOn(false);
-                    _kdcReader.EnableAutoReconnect(false);
-                    _kdcReader.EnableBluetoothWakeupNull(false);*//*
-                    _kdcReader.EnableBluetoothWakeupNull(true);
-                }
-            };
-            ThrKdc.start();
-        }*/
-        System.out.println("Resume activate in startdeliveryactivity");
     }
 
-    /*  @Override
-      public void onStop() {
-          super.onStop();
-          //    isActivityActiveFlag=false;
-         // barcodeReader.release();
-      }
-  */
-  /*  @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        int action = event.getAction();
-        int keyCode = event.getKeyCode();
-        System.out.println("keycode"+keyCode+"keyevent"+action);
+    private void backClickAction(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+        FlagDeliveryMode = "ACK";
+        imgdelv.setImageResource(R.drawable.del);
+        imgack.setImageResource(R.drawable.ackdchk);
+        imgrtn.setImageResource(R.drawable.return1);
 
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
+        img1.setVisibility(View.VISIBLE);
+        img.setVisibility(View.INVISIBLE);
+        img2.setVisibility(View.VISIBLE);
+        imag.setVisibility(View.INVISIBLE);
+        img3.setVisibility(View.VISIBLE);
+        imag1.setVisibility(View.INVISIBLE);
+        img4.setVisibility(View.VISIBLE);
+        imag2.setVisibility(View.INVISIBLE);
+        img5.setVisibility(View.VISIBLE);
+        imag3.setVisibility(View.INVISIBLE);
+        img6.setVisibility(View.VISIBLE);
+        imag4.setVisibility(View.INVISIBLE);
 
-                if (action == KeyEvent.ACTION_DOWN) {
-                    DonotInterruptKDCScan = true;
-                    Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                    intent.putExtra("SCAN_MODE", "SCAN_MODE");
-                    startActivityForResult(intent, SCANNER_REQUEST_CODE);
-                    Flagcam = 1;
 
-                }
+        if (Flagspin == 1) Flagspin = 0;
 
-                return true;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
+        ac = (Spinner) findViewById(R.id.eventspinner);
+        ac.setSelection(0);
 
-                if (action == KeyEvent.ACTION_DOWN) {
-                    DonotInterruptKDCScan = true;
-                    Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                    intent.putExtra("SCAN_MODE", "SCAN_MODE");
-                    startActivityForResult(intent, SCANNER_REQUEST_CODE);
-                    Flagcam = 1;
-                }
-
-                return true;
-            default:
-                return super.dispatchKeyEvent(event);
+        db = new DatabaseHandler(getBaseContext());
+        //open localdatabase in a read mode
+        sqldb = db.getReadableDatabase();
+        System.out.println("value of flagspin in ack is:" + Flagspin);
+        if (Flagspin == 0) {
+            System.out.println("flagspin in ack for shipper called");
+            //Spinner Load with Shipper
+            ac.setAdapter(Spinner_Load(spinnervalue_Shipper));
         }
 
-    }
-*/
-    //Return scan result
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-        System.out.println("value on activity result while click camerabutton" + requestCode + resultCode + intent);
-        System.out.println("Value on ImagwIntent : " + ImageIntent);
-        System.out.println("Value of ReseltTab ActivityResultTab : " + resulttab);
-
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
-            // System.out.println("Intent Value on requestcode 0 : " + intent.getExtras() + "dc" + RESULT_OK);
-            System.out.println("Intent Value on requestcode 0 : " + intent);
-            if (intent != null) {
+        ac.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (FlagspinnerValue.equals(spinnervalue_Shipper))
+                    resulttab.removeAllViews();
+                else
+                    return;
 
 
-                photo1 = (Bitmap) intent.getExtras().get("data");
-                System.out.println("photo1 Value on requestcode 0t : " + photo1.getByteCount());
-                System.out.println("photo1 mediastore vale Value on requestcode 0t : " + MediaStore.EXTRA_OUTPUT);
-                System.out.println("photo1 uriimage vale Value on requestcode 0t : " + uriSavedImage);
-                //img1.setImageURI(uriSavedImage);
-                //getApplicationContext().getContentResolver().delete(intent.getData(), null, null);
-                System.out.println("Value on wbilldata1 in on activity result : " + wbilldata1);
-             /*   Bitmap b = BitmapFactory.decodeByteArray(
-                        intent.getByteArrayExtra(MediaStore.EXTRA_OUTPUT), 0,
-                        intent.getByteArrayExtra(MediaStore.EXTRA_OUTPUT).length);*/
-                //    System.out.println("bitmap value on request code 0 : " + b);
-                SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-                String time_id1 = date11.format(new Date());
-                int tablecount = (resulttab.getChildCount());
-                for (int i = 0; i < tablecount; i++) {
-                    TextView TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                    System.out.println("TableWaybill "+TableWaybill.getText().toString()+"wbill"+wbill);
+                String label = parent.getItemAtPosition(position).toString();
+                System.out.println("SELECTED SPINNER IS" + label);
+                sqldb = db.getReadableDatabase();
+                Cursor cAck = sqldb.rawQuery("SELECT * FROM deliverydata WHERE ShipperName='" + label + "' AND AWBIdentifier='" + FlagDeliveryMode + "' AND WC_Status = 'A'", null);
+                int ackCount = cAck.getCount();
 
-                    File ImageFile = new File(imagefile, TableWaybill.getText().toString() + "_" + time_id1 + "_001.PNG");
-                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+                Log.e("StartDelivery", "Record Count " + ackCount);
 
-                    //imagesignfile = new File(imagefile, TableWaybill.getText().toString() + "_" + "sign.jpg");
-                    FileOutputStream out;
-                    try {
-                        out = new FileOutputStream(ImageFile);
-                        photo1.compress(Bitmap.CompressFormat.PNG,100, out);
 
-                    } catch (FileNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                //System.out.println("stage3");
+                wbillarr = new String[ackCount];
+                System.out.println("waybill count" + wbillarr);
+                consr = new String[ackCount];
+                arear = new String[ackCount];
+                phoner = new String[ackCount];
+                compnyr = new String[ackCount];
+                civilidr = new String[ackCount];
+                stopdelarr = new int[ackCount];
+                //	cAck.moveToFirst();
+                cAck.moveToFirst();
+                for (int i = 0; i < ackCount; i++) {
+                    ackwablist = new ArrayList<String>();
+                    TableRow tack = new TableRow(StartDeliveryActivity.this);
 
-                  /*  TextView TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                    System.out.println("tablewaybill on request code 0 : " + TableWaybill.getText().toString());
-                uriSavedImage = Uri.fromFile(new File(imagefile, TableWaybill.getText().toString() + "_" + time_id + "_001.PNG"));
+                    lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                    tack.setId((resulttab.getChildCount()));
+                    lp.setMargins(15, 2, 95, 2);
+                    tack.setLayoutParams(lp);
+                    //  lp.setMargins(0, 10, 40, 0);
 
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);*/
+                    deltxt = new TextView(StartDeliveryActivity.this);
+                    deltxt.setLayoutParams(lp);
+                    deltxt.setText("ACK");
+
+                    final TextView waybilltxt = new TextView(StartDeliveryActivity.this);
+                    waybilltxt.setLayoutParams(lp);
+                    waybilltxt.setText(cAck.getString(cAck.getColumnIndex("Waybill")));
+                    //added need to ask-       wbilldata1=cAck.getString(cAck.getColumnIndex("Waybill"));
+                    final TextView cnametxt = new TextView(StartDeliveryActivity.this);
+                    cnametxt.setLayoutParams(lp);
+                    cnametxt.setText(cAck.getString(cAck.getColumnIndex("Consignee")));
+
+
+                    final TextView phonetxt = new TextView(StartDeliveryActivity.this);
+                    phonetxt.setLayoutParams(lp);
+                    phonetxt.setText(cAck.getString(cAck.getColumnIndex("Telephone")));
+                    callphone = phonetxt.getText().toString();
+
+                    final TextView codtxt = new TextView(StartDeliveryActivity.this);
+                    codtxt.setLayoutParams(lp);
+                    //   codtxt.setText(cAck.getString(cAck.getColumnIndex("Amount")));
+                    codtxt.setText("0.000");
+
+                    tack.addView(deltxt);
+                    tack.addView(waybilltxt);
+                    tack.addView(cnametxt);
+                    tack.addView(codtxt);
+                    tack.addView(phonetxt);
+                    //c1.moveToNext();
+
+                    resulttab.addView(tack, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+                    cAck.moveToNext();
+                    //           }
+                    //     cAck.close();
                 }
-                System.out.println("intent getdata Value on requestcode 0t : " + intent.getData());
-//commented by ak 3mar18
-                //  getApplicationContext().getContentResolver().delete(intent.getData(), null, null);
+                cAck.close();
 
-                img1.setImageResource(R.drawable.postlogoapp);
-                imgcountarr[1] = 1;
-                System.out.println("Requestcode0 saved success : ");
-                // ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                //image1 = new File(imagefile,  wbilldata1+"_"+time_id+"_001.PNG");
-				/*FileOutputStream out;
-				try {
-					//out = new FileOutputStream(image1);
-				//	photo1.compress(Bitmap.CompressFormat.PNG, 100, out);
-
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					Log.e("File error-Startdelivery", e.getMessage().toString());
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
-
-                //	imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+                //Spinner Load with Events
+                if (Flagspin == 1) {
+                    ac.setAdapter(Spinner_Load(spinnervalue_Events));
+                    Flagspin = 0;
+                } else {
+                    Flagspin = 1;
+                }
 
 
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+                if (FlagspinnerValue.equals(spinnervalue_Shipper))
+                    resulttab.removeAllViews();
+                else
+                    return;
+            }
+        });
+
+        db.close();
+    }
+
+    private void cleanClickAction(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+        _activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = count1; i >= 0; i--) {
+                    resulttab.removeAllViews();
+                    summ = 0;
+                    codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
+                    System.out.println("value for resulttab after clearing" + resulttab);
+
+                }
+                counttxt.setText(String.valueOf(resulttab.getChildCount()));
+
+                img.setImageResource(R.drawable.camera);
+                imag.setImageResource(R.drawable.camera);
+                imag1.setImageResource(R.drawable.camera);
+                imag2.setImageResource(R.drawable.camera);
+                imag3.setImageResource(R.drawable.camera);
+                imag4.setImageResource(R.drawable.camera);
+                recivetxt.setText("");
+                evspinner.setSelection(0);
+                signimage.setImageDrawable(null);
+                imgcount = 0;
+                ImageIntent = null;
+                waynillist = new ArrayList<String>();
+                waynillist.clear();
+
+                Intent i = new Intent(StartDeliveryActivity.this, StartDeliveryActivity.class);
+                i.putExtra("routecode", route);
+                i.putExtra("routename", routen);
+                startActivity(i);
+            }
+
+        });
+    }
+
+    @Override
+    public void onBarcodeEvent(final BarcodeReadEvent event) {
+        // TODO Auto-generated method stub
+        _activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String barcodeData = event.getBarcodeData();
+                String timestamp = event.getTimestamp();
+                // update UI to reflect the data
+
+                System.out.println("barcodeData is:" + barcodeData);
+
+
+                if (event.getBarcodeData().contains("R")) {
+                    String rscan = event.getBarcodeData();
+                    String rscanSub = rscan.substring(1);
+                    System.out.println("pdata value in da aftersub is:" + rscanSub);
+                    barcodefrmScanner = rscanSub;
+                    barcodeIdentifier = "Y";
+                } else {
+                    barcodefrmScanner = event.getBarcodeData();
+                    barcodeIdentifier = "N";
+                }
+
+                System.out.print("waybill barcode is" + barcodefrmScanner);
+
+                if (barcodefrmScanner != null) {
+
+                    waybill = barcodefrmScanner;
+
+                    if (Check_ValidWaybill(barcodefrmScanner)) {
+                        {
+
+
+                            lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                            lp.setMargins(0, 5, 70, 0);
+
+                            _activity.runOnUiThread(() -> {
+                                if (waybill != null) {
+                                    wbill = waybill;
+                                    wbilldata1 = waybill;
+
+                                    SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
+                                    time_id = date11.format(new Date());
+
+                                    if (delvryflag) {
+                                        new UserNotifyTrack(wbilldata1).execute();
+                                    } else {
+                                        new details(wbilldata1).execute();
+                                    }
+                                }
+                                // wbilldata1=contents;
+
+                            });
+
+                        }
+
+
+                    } else {
+
+                        _activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                } else {
+                    _activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onFailureEvent(BarcodeFailureEvent barcodeFailureEvent) {
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            if (barcodeReader != null) {
+                barcodeReader.release();
+                barcodeReader.removeBarcodeListener(_activity);
+            }
+            Intent intent = new Intent(StartDeliveryActivity.this, HomeActivity.class);
+            intent.putExtra("route", route);
+            intent.putExtra("route1", routen);
+
+            startActivity(intent);
+            _activity.finish();
+
+
+        }
+        return false;
+    }
+
+    protected ArrayAdapter Spinner_Load(String Type) {
+
+
+        db = new DatabaseHandler(getBaseContext());
+        //open localdatabase in a read mode
+        sqldb = db.getReadableDatabase();
+
+        ArrayAdapter<String> adapter = null;
+
+        if (Type.equals(spinnervalue_Events)) {
+            System.out.println("events called");
+            //select all values from eventtable and populate it in the spinner
+            Cursor c1 = sqldb.rawQuery("SELECT '-1' AS EVENTCODE,'' AS EVENTDESC UNION SELECT EVENTCODE,EVENTDESC  FROM eventdata ORDER BY EVENTDESC ASC", null);
+            int count = c1.getCount();
+
+
+            eventcode = new String[count];
+            eventname = new String[count];
+            //System.out.println("stage3");
+            c1.moveToFirst();
+
+            for (int i = 0; i < count; i++) {
+
+                eventname[i] = c1.getString(c1.getColumnIndex("EVENTDESC"));
+                eventcode[i] = c1.getString(c1.getColumnIndex("EVENTCODE"));
+                // System.out.println("i="+i+eventname[i]);
+                c1.moveToNext();
+            }
+
+            //Collections.sort(eventname);
+            adapter = new ArrayAdapter<String>(StartDeliveryActivity.this, android.R.layout.simple_spinner_item, eventname);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            FlagspinnerValue = spinnervalue_Events;
+
+            // closing connection
+            c1.close();
+
+        } else if (Type.equals(spinnervalue_Shipper)) {
+            System.out.println("shipper called -- " + FlagDeliveryMode);
+            //select all values from eventtable and populate it in the spinner
+            Cursor cur = sqldb.rawQuery("SELECT '' AS ShipperName UNION SELECT DISTINCT ShipperName FROM deliverydata WHERE AWBIdentifier='" + FlagDeliveryMode + "' AND WC_Status = 'A' ORDER BY ShipperName ASC", null);
+            int count = cur.getCount();
+            //	int rows = c1.getCount();
+            shiprNme = new String[count];
+            System.out.println("shippername count" + shiprNme);
+            cur.moveToFirst();
+            for (int i = 0; i < count; i++) {
+                shiprNme[i] = cur.getString(cur.getColumnIndex("ShipperName"));
+                System.out.println("shippername in loop:" + shiprNme[i]);
+
+                cur.moveToNext();
+            }
+            cur.close();
+
+            //Collections.sort(eventname);
+            adapter = new ArrayAdapter<String>(StartDeliveryActivity.this, android.R.layout.simple_spinner_item, shiprNme);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            //sh.setAdapter(adapter);
+            FlagspinnerValue = spinnervalue_Shipper;
+
+        }
+        db.close();
+        return adapter;
+    }
+
+    @Override
+    public void onTriggerEvent(TriggerStateChangeEvent triggerStateChangeEvent) {
+
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            handleFirstImageCaptured(intent);
         } else if (requestCode == 1 && resultCode == RESULT_OK) {
             if (intent != null) {
                 SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
@@ -3298,77 +2587,9 @@ public class StartDeliveryActivity extends MasterActivity
                         e.printStackTrace();
                     }
                 }
-               /* photo2 = (Bitmap) intent.getExtras().get("data");
-                System.out.println("Photo1 value on Requestcode0 : " +photo2);
-                SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-                String time_id1=date11.format(new Date());
-                int tablecount = (resulttab.getChildCount());
-                for (int i = 0; i < tablecount; i++) {
-                    TextView TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
 
-                    File ImageFile = new File(imagefile, TableWaybill.getText().toString() + "_" + time_id1 + "_002.PNG");
-                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-
-                    //imagesignfile = new File(imagefile, TableWaybill.getText().toString() + "_" + "sign.jpg");
-                    FileOutputStream out;
-                    try {
-                        out = new FileOutputStream(ImageFile);
-                        photo2.compress(Bitmap.CompressFormat.PNG, 100, out);
-
-                    } catch (FileNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                }*/
-              /*  String storageDir = Environment.getExternalStorageDirectory()+"/Postaplus/Wbill_ackimage/";
-                String fileName =wbilldata1+"_"+time_id1+"_002.PNG";
-                File imageFile= new File(storageDir+fileName);
-                try {
-                    OutputStream output = new FileOutputStream(imageFile);
-                    System.out.println("output is"+output);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-*/
-              //ak COMMENTED 25MAR 2019
-             /*   Uri takenPhotoUri2 = getPhotoFileUri(wbilldata1 + "_" + time_id1 + "_002.PNG");
-                System.out.println("takenPhotoUri2 is" + takenPhotoUri2.getPath());
-
-                if (takenPhotoUri2 != null) {
-                    // System.out.println("imageStream2 is"+imageStream2);
-                    //  Bitmap photo2 = BitmapFactory.decodeStream(imageStream2);
-                    System.out.println("photo2 BEFR is : " + decodeFile(takenPhotoUri2.getPath()));
-
-                    Bitmap takenImage2 = BitmapFactory.decodeFile(takenPhotoUri2.getPath());
-                    System.out.println("photo2 AFR is : " + takenImage2);
-
-                    filePath2 = takenPhotoUri2.getPath();
-                    System.out.println("filePath2 iz" + filePath2);
-
-                    byte[] data2 = null;
-                    try {
-                        data2 = filePath2.getBytes("UTF-8");
-                        System.out.println("data2=" + data2);
-
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-
-                }
-*/
-
-                //  getApplicationContext().getContentResolver().delete(intent.getData(), null, null);
-                //  getCacheDir().delete();
                 img2.setImageResource(R.drawable.postlogoapp);
-                // imgcountarr[2] = 2;
                 imgcountarr[1] = 1;
-                // System.out.println("Requestcode0 saved success : ");
-                //  getApplicationContext().getContentResolver().delete(intent.getData(), null, null);
-                // getBaseContext().getContentResolver().delete(intent.getData(), null, null);
-
 
             }
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
@@ -3448,10 +2669,7 @@ public class StartDeliveryActivity extends MasterActivity
                     }
 
 */
-                }
-
-                // imgcountarr[3] = 3;
-
+            }
 
 
         } else if (requestCode == 3 && resultCode == RESULT_OK) {
@@ -3479,59 +2697,13 @@ public class StartDeliveryActivity extends MasterActivity
                     }
                 }
                 img4.setImageResource(R.drawable.postlogoapp);
-                // imgcountarr[2] = 2;
                 imgcountarr[1] = 1;
-               /* getApplicationContext().getContentResolver().delete(intent.getData(), null, null);*/
-//ak 2019 MAR 25
-             /*   Uri takenPhotoUri4 = getPhotoFileUri(wbilldata1 + "_" + time_id1 + "_004.PNG");
-                System.out.println("takenPhotoUri4 is" + takenPhotoUri4.getPath());
-                // by this point we have the camera photo on disk
-                // Bitmap takenImage4 = BitmapFactory.decodeFile(takenPhotoUri4.getPath().replace("file://",""));
-                // System.out.println("takenImage4 is"+takenImage4);
-               *//* InputStream imageStream4 = null;
-                try {
-                    imageStream4 = getContentResolver().openInputStream(takenPhotoUri4);
 
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }*//*
-                if (takenPhotoUri4 != null) {
-
-                    // Bitmap photo4 = BitmapFactory.decodeStream(imageStream4);
-                    System.out.println("photo4 befrv iz" + decodeFile(takenPhotoUri4.getPath()));
-                    Bitmap photo4 = decodeFile(takenPhotoUri4.getPath());
-                    System.out.println("photo4 iz" + decodeFile(takenPhotoUri4.getPath()));
-                   *//* ByteArrayOutputStream bao4 = new ByteArrayOutputStream();
-                    photo4.compress(Bitmap.CompressFormat.PNG, 100, bao4);
-                    byte[] ba4 = bao4.toByteArray();
-                    System.out.println("ba4 is : " +ba4);*//*
-
-                    filePath4 = takenPhotoUri4.getPath();
-                    System.out.println("filePath4 iz" + filePath4);
-
-
-                    byte[] data4 = null;
-                    try {
-                        data4 = filePath4.getBytes("UTF-8");
-                        System.out.println("data4=" + data4);
-
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-
-                }*/
             }
-            // imgcountarr[4] = 4;
-            //getCacheDir().delete();
-
         } else if (requestCode == 4 && resultCode == RESULT_OK) {
             if (intent != null) {
                 SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
                 String time_id1 = date11.format(new Date());
-
-
 
 
                 photo5 = (Bitmap) intent.getExtras().get("data");
@@ -3554,102 +2726,25 @@ public class StartDeliveryActivity extends MasterActivity
                     }
                 }
 
-               /* photo5 = (Bitmap) intent.getExtras().get("data");
-                System.out.println("Photo1 value on Requestcode0 : " +photo5);
-
-                SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-                String time_id1=date11.format(new Date());
-                int tablecount = (resulttab.getChildCount());
-                for (int i = 0; i < tablecount; i++) {
-                    TextView TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-
-                    File ImageFile = new File(imagefile, TableWaybill.getText().toString() + "_" + time_id1 + "_005.PNG");
-                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-
-                    //imagesignfile = new File(imagefile, TableWaybill.getText().toString() + "_" + "sign.jpg");
-                    FileOutputStream out;
-                    try {
-                        out = new FileOutputStream(ImageFile);
-                        photo5.compress(Bitmap.CompressFormat.PNG, 100, out);
-
-                    } catch (FileNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                }
-
-                getApplicationContext().getContentResolver().delete(intent.getData(), null, null);
-            }*/
-
-         /* ak COMMENTED 25MAR 2019
-
-
-              Uri takenPhotoUri5 = getPhotoFileUri(wbilldata1 + "_" + time_id1 + "_005.PNG");
-                System.out.println("takenPhotoUri5 is" + takenPhotoUri5.getPath());
-                // by this point we have the camera photo on disk
-                //   Bitmap takenImage5 = BitmapFactory.decodeFile(takenPhotoUri5.getPath().replace("file://",""));
-                //   System.out.println("takenImage5 is"+takenImage5);
-              *//*  InputStream imageStream5 = null;
-                try {
-                    imageStream5 = getContentResolver().openInputStream(takenPhotoUri5);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }*//*
-                if (takenPhotoUri5 != null) {
-
-                    // Bitmap photo5 = BitmapFactory.decodeStream(imageStream5);
-                    System.out.println("photo5 befr iz:" + decodeFile(takenPhotoUri5.getPath()));
-                    Bitmap photo5 = decodeFile(takenPhotoUri5.getPath().replace("file://", ""));
-                    System.out.println("photo5 aftr iz:" + photo5);
-                   *//* ByteArrayOutputStream bao5 = new ByteArrayOutputStream();
-                    photo5.compress(Bitmap.CompressFormat.PNG, 100, bao5);
-                    byte[] ba5 = bao5.toByteArray();
-                    System.out.println("ba5 is : " +ba5);*//*
-
-                    filePath5 = takenPhotoUri5.getPath();
-                    System.out.println("filePath5 iz" + filePath5);
-
-
-                    byte[] data5 = null;
-                    try {
-                        data5 = filePath5.getBytes("UTF-8");
-                        System.out.println("data5=" + data5);
-
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-
-                }*/
-
             }
 
             img5.setImageResource(R.drawable.postlogoapp);
 
             imgcountarr[1] = 1;
-            //  imgcountarr[5] = 5;
-            //getCacheDir().delete();
         } else if (requestCode == 5 && resultCode == RESULT_OK) {
             if (intent != null) {
 
                 SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
                 String time_id1 = date11.format(new Date());
-               photo6 = (Bitmap) intent.getExtras().get("data");
-                System.out.println("Photo1 value on Requestcode0 : " +photo6);
+                photo6 = (Bitmap) intent.getExtras().get("data");
+                System.out.println("Photo1 value on Requestcode0 : " + photo6);
 
-               /* SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-                String time_id1=date11.format(new Date());*/
+
                 int tablecount = (resulttab.getChildCount());
                 for (int i = 0; i < tablecount; i++) {
                     TextView TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
 
                     File ImageFile = new File(imagefile, TableWaybill.getText().toString() + "_" + time_id1 + "_006.PNG");
-                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-
-                    //imagesignfile = new File(imagefile, TableWaybill.getText().toString() + "_" + "sign.jpg");
                     FileOutputStream out;
                     try {
                         out = new FileOutputStream(ImageFile);
@@ -3663,61 +2758,16 @@ public class StartDeliveryActivity extends MasterActivity
                 }
 
 
-              //  getApplicationContext().getContentResolver().delete(intent.getData(), null, null);
-
             }
-            //aK COOMNET 25MAR19
-               /* Uri takenPhotoUri6 = getPhotoFileUri(wbilldata1 + "_" + time_id1 + "_005.PNG");
-                System.out.println("takenPhotoUri6 is" + takenPhotoUri6.getPath());
-                // by this point we have the camera photo on disk
-                //  Bitmap takenImage6 = BitmapFactory.decodeFile(takenPhotoUri6.getPath().replace("file://",""));
-                // System.out.println("takenImage6 is"+takenImage6);
-             *//*   InputStream imageStream6 = null;
-                try {
-                    imageStream6 = getContentResolver().openInputStream(takenPhotoUri6);
 
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }*//*
-                if (takenPhotoUri6 != null) {
-
-                    // Bitmap photo6 = BitmapFactory.decodeStream(imageStream6);
-                    System.out.println("photo6  BEFR iz:" + decodeFile(takenPhotoUri6.getPath()));
-                    Bitmap photo6 = decodeFile(takenPhotoUri6.getPath().replace("file://", ""));
-                    System.out.println("photo6 AFTRR iz:" + photo6);
-                   *//* ByteArrayOutputStream bao6 = new ByteArrayOutputStream();
-                    photo6.compress(Bitmap.CompressFormat.PNG, 100, bao6);
-                    byte[] ba6 = bao6.toByteArray();
-                    System.out.println("ba6 is : " +ba6);*//*
-
-                    filePath6 = takenPhotoUri6.getPath();
-                    System.out.println("filePath6 iz" + filePath6);
-
-
-                    byte[] data6 = null;
-                    try {
-                        data6 = filePath6.getBytes("UTF-8");
-                        System.out.println("data6=" + data6);
-
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-
-                }
-            }                    }*/
-
-            //  imgcountarr[6] = 6;
-            //getCacheDir().delete();
             img6.setImageResource(R.drawable.postlogoapp);
 
             imgcountarr[1] = 1;
-        }else if (resultCode == 11) {
+        } else if (resultCode == 11) {
             Bitmap b = BitmapFactory.decodeByteArray(
                     intent.getByteArrayExtra("byteArray"), 0,
                     intent.getByteArrayExtra("byteArray").length);
             signimage.setImageBitmap(b);
-            // getApplicationContext().getContentResolver().delete(intent.getData(), null, null);
-            // Log.d("camera ---- > ", "" + data.getExtras().get("data"));
             int tablecount = (resulttab.getChildCount());
             for (int i = 0; i < tablecount; i++) {
                 TextView TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
@@ -3742,21 +2792,192 @@ public class StartDeliveryActivity extends MasterActivity
 
     }
 
+    protected void handleFirstImageCaptured(Intent intent) {
+        if (intent != null) {
+            photo1 = (Bitmap) intent.getExtras().get("data");
+            SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
+            String time_id1 = date11.format(new Date());
+            int tablecount = (resulttab.getChildCount());
+            for (int i = 0; i < tablecount; i++) {
+                TextView TableWaybill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                File ImageFile = new File(imagefile, TableWaybill.getText().toString() + "_" + time_id1 + "_001.PNG");
+                FileOutputStream out;
+                try {
+                    out = new FileOutputStream(ImageFile);
+                    photo1.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            img1.setImageResource(R.drawable.postlogoapp);
+            imgcountarr[1] = 1;
+        }
+    }
+
+    public void openDialog() {
+        final Dialog dialog = new Dialog(StartDeliveryActivity.this); // Context, this, etc.
+        dialog.setContentView(R.layout.dialog);
+        dialog.setTitle("Select your choice");
+        dialog.setCanceledOnTouchOutside(false);
+        // dialog.setCancelable(false);
+        delvryflag = true;
+
+        final Button Pickupaction = (Button) dialog.findViewById(R.id.pckupaction);
+        final Button Deliveryaction = (Button) dialog.findViewById(R.id.deliveryaction);
+        final Button btncancel = (Button) dialog.findViewById(R.id.btncancel);
+
+        // scannningtable =(TableLayout)dialog.findViewById(R.id.scannningtable);
+        resulttabledialog = (TableLayout) dialog.findViewById(R.id.resulttabledialog);
+        textchoose = (TextView) dialog.findViewById(R.id.textchoose);
+        textalert = (TextView) dialog.findViewById(R.id.textalert);
+        final Button confirmaction = (Button) dialog.findViewById(R.id.confirmaction);
+        //  scannningtable.setVisibility(View.GONE);
+
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                int action = event.getAction();
+                int keyCodes = event.getKeyCode();
+                System.out.println("keycode" + keyCodes + "keyevent" + action);
+
+                switch (keyCodes) {
+                    case KeyEvent.KEYCODE_VOLUME_UP:
+
+                        if (action == KeyEvent.ACTION_DOWN) {
+                            DonotInterruptKDCScan = true;
+                            delvryflag = true;
+                            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                            intent.putExtra("SCAN_MODE", "SCAN_MODE");
+                            startActivityForResult(intent, SCANNER_REQUEST_CODE);
+                            Flagcam = 1;
+
+                        }
+
+                        return true;
+                    case KeyEvent.KEYCODE_VOLUME_DOWN:
+
+                        if (action == KeyEvent.ACTION_DOWN) {
+                            DonotInterruptKDCScan = true;
+                            delvryflag = true;
+                            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                            intent.putExtra("SCAN_MODE", "SCAN_MODE");
+                            startActivityForResult(intent, SCANNER_REQUEST_CODE);
+                            Flagcam = 1;
+                        }
+
+                        return true;
+                    default:
+                        return StartDeliveryActivity.super.dispatchKeyEvent(event);
+                }
+
+            }
+        });
+
+        Pickupaction.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Do your code here
+                dialog.dismiss();
+                delvryflag = false;
+
+
+                if (_kdcReader != null) _kdcReader.Disconnect();
+                if (ThrKdc != null) ThrKdc.interrupt();
+                //KDCTaskExecutable.cancel(true);
+
+                Intent int1 = new Intent(StartDeliveryActivity.this, PickupActivity.class);
+                int1.putExtra("routecode", route);
+                int1.putExtra("routename", routen);
+
+                //startActivity(new Intent(int1));
+                // new code
+                startActivity(new Intent(int1));
+                StartDeliveryActivity.this.finish();
+            }
+        });
+
+        btncancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Do your code here
+                dialog.dismiss();
+                delvryflag = false;
+
+                if (!isActivityActiveFlag) {
+                    // Toast.makeText(getApplicationContext(), "Please wait for scanner to connect",
+                    //       Toast.LENGTH_LONG).show();
+
+                } else {
+                    if (_kdcReader != null) _kdcReader.Disconnect();
+                    if (ThrKdc != null) ThrKdc.interrupt();
+                    //KDCTaskExecutable.cancel(true);
+                }
+                Intent int1 = new Intent(StartDeliveryActivity.this, HomeActivity.class);
+                int1.putExtra("routecode", route);
+                int1.putExtra("routename", routen);
+
+                //startActivity(new Intent(int1));
+                // new code
+                startActivity(new Intent(int1));
+                StartDeliveryActivity.this.finish();
+            }
+        });
+
+        confirmaction.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Do your code
+                if (resulttabledialog.getChildCount() == 0) {
+                    Toast.makeText(getApplicationContext(), "Please Scan Awb!",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                delvryflag = false;
+                dialog.dismiss();
+
+            }
+        });
+        Deliveryaction.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.setTitle("Please Select");
+                confirmaction.setVisibility(View.VISIBLE);
+                btncancel.setVisibility(View.VISIBLE);
+                Pickupaction.setVisibility(View.GONE);
+                Deliveryaction.setVisibility(View.GONE);
+                textalert.setVisibility(View.VISIBLE);
+
+
+            }
+        });
+
+        dialog.show();
+    }
+
+    private boolean isExternalStorageAvailable() {
+        String state = Environment.getExternalStorageState();
+        return state.equals(Environment.MEDIA_MOUNTED);
+    }
+
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return ni != null;
+    }
+
     public class details extends AsyncTask<Void, Void, String> {
 
 
+        String Taskdetailswabill = "";
 
-        String Taskdetailswabill="";
         public details(String TakWaybill) {
             super();
             Taskdetailswabill = TakWaybill;
-            System.out.println("Taskdetailswabill pre execute:" + Taskdetailswabill);
         }
+
         public void onPreExecute() {
             Pb.setVisibility(View.VISIBLE);
-            // super.onPreExecute();
-            // waynillist=new ArrayList<String>();
-            // waynillist.clear();
             tr = new TableRow(StartDeliveryActivity.this);
 
             if (Build.MODEL.contains("SM-N")) {
@@ -3771,47 +2992,17 @@ public class StartDeliveryActivity extends MasterActivity
                 lp.setMargins(0, 10, 40, 0); */
 
             } else {
-                lp = new LayoutParams(200,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
                 tr.setLayoutParams(lp);
                 //lp.setMargins(0, 20, 5, 0);
-                lp.setMargins(0,20,70, 0);
+                lp.setMargins(0, 20, 70, 0);
 
             }
         }
 
         @Override
         protected String doInBackground(Void... params) {
-              /*  db = new DatabaseHandler(getBaseContext());
-                //open localdatabase in a read mode
-                sqldb = db.getReadableDatabase();
-                //select all values in the table and check count
-
-                Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "'  ", null);
-                //AND AWBIdentifier = '"+ FlagDeliveryMode  +"'
-                flag = 0;
-                if (c1.getCount() > 0) {
-                    c1.moveToFirst();
-                    wbill = c1.getString(c1.getColumnIndex("Waybill"));
-                    cons = c1.getString(c1.getColumnIndex("Consignee"));
-                    phonedb = c1.getString(c1.getColumnIndex("Telephone"));
-                    area = c1.getString(c1.getColumnIndex("Area"));
-                    company = c1.getString(c1.getColumnIndex("Company"));
-                    civilid = c1.getString(c1.getColumnIndex("CivilID"));
-                    stopdeliver = c1.getInt(c1.getColumnIndex("StopDelivery"));
-                    Log.e("StartDelivery","AWBIDENTIFIER : "+c1.getInt(c1.getColumnIndex("AWBIdentifier")));
-                    Log.e("StartDelivery","Amount : " +c1.getString(c1.getColumnIndex("Amount")));
-
-                } else {
-                    //c2.moveToFirst();\
-                    //	System.out.println("Scanned Wbill not in delivery");
-
-                    flag = 1;
-
-                }
-                c1.close();
-
-                db.close();*/
             System.out.println("waybill data 1 in start delivery activity" + wbilldata1);
             System.out.println("flag delivery mode in start delivery activity" + FlagDeliveryMode);
             return "";
@@ -3827,10 +3018,8 @@ public class StartDeliveryActivity extends MasterActivity
             Pb.setVisibility(View.INVISIBLE);
             db = new DatabaseHandler(getBaseContext());
 
-            //open localdatabase in a read mode
             sqldb = db.getReadableDatabase();
-         //   Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + Taskdetailswabill + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' ", null);
-            Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + Taskdetailswabill + "' AND AWBIdentifier= '" + FlagDeliveryMode  + "' AND WC_Status <> 'P' ", null);
+            Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + Taskdetailswabill + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' AND WC_Status <> 'P' ", null);
 
             count1 = c2.getCount();
             //System.out.println("stage");
@@ -3844,7 +3033,7 @@ public class StartDeliveryActivity extends MasterActivity
             stopdelarr = new int[count1];
             codAmnt = new String[count1];
 
-            System.out.println("wbillarr start delv:" + wbillarr.toString()+"codAmnt:"+codAmnt);
+            System.out.println("wbillarr start delv:" + wbillarr.toString() + "codAmnt:" + codAmnt);
 			/*	for (int i = count1; i >=0; i--) {
 					resulttab.removeAllViews();
 
@@ -3887,34 +3076,19 @@ public class StartDeliveryActivity extends MasterActivity
                         }
                     });
 
-                    cbAtcltd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
+                    cbAtcltd.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                        if (isChecked) {
 
-                                cbCOD.setEnabled(false);
-                                FlagcodAmt = true;
+                            cbCOD.setEnabled(false);
+                            FlagcodAmt = true;
 
-                            } else {
+                        } else {
 
-                                cbCOD.setEnabled(true);
-                                FlagcodAmt = false;
-                            }
+                            cbCOD.setEnabled(true);
+                            FlagcodAmt = false;
                         }
                     });
 
-
-                  /*  if (isNetworkConnected()) {
-                        String CODResponse = WebService.CHECK_WAYBILL_COD_STATUS(wbillarr[i]);
-                        System.out.println("CODResponse" + CODResponse);
-                        CODamnt=CODResponse;
-                        System.out.println("CODamnt" + CODamnt);
-                       *//* if (CODResponse.equals("PAID")) {
-                            codAmnt[i] = "0.000";
-                        }*//*
-                    }
-
-*/
                     if (isNetworkConnected()) {
                         String CODResponse = WebService.CHECK_WAYBILL_COD_STATUS(wbillarr[i]);
 
@@ -3925,26 +3099,18 @@ public class StartDeliveryActivity extends MasterActivity
                             return;
                         }
                         System.out.println("CODResponse" + CODResponse);
-                        CODamnt=CODResponse;
+                        CODamnt = CODResponse;
                         System.out.println("CODamnt" + CODamnt);
-                       /* if (CODResponse.equals("PAID")) {
-                            codAmnt[i] = "0.000";
-                        }*/
-                    }else {
-                        CODamnt= String.valueOf(codAmnt[i]);
+
+                    } else {
+                        CODamnt = String.valueOf(codAmnt[i]);
                         System.out.println("codAmntss" + String.valueOf(codAmnt[i]));
                     }
-                    //System.out.println("i="+i+wbillarr[i]+" "+consr[i]+" "+arear[i]+" "+phoner[i]+" "+compnyr[i]+" "+civilidr[i]+" "+stopdelarr[i]);
                     if (ApprvalStatus == null) ApprvalStatus = "";
                     if (stopdelarr[i] == 0 || (stopdelarr[i] == 1 && ApprvalStatus.equals("APPROVED") && Attemptstatus.equals("0"))) {
                         Pb.setVisibility(View.VISIBLE);
                         tr = new TableRow(StartDeliveryActivity.this);
 
-						/*	if ((getResources().getConfiguration().screenLayout & 
-							    Configuration.SCREENLAYOUT_SIZE_MASK) ==
-							        Configuration.SCREENLAYOUT_SIZE_NORMAL) 
-						{
-							    // on a large screen device ...*/
 
                         if (Build.MODEL.contains("SM-N")) {
                             System.out.println("called smn postexecute");
@@ -3953,11 +3119,6 @@ public class StartDeliveryActivity extends MasterActivity
                             lp.setMargins(15, 2, 95, 2);
                             tr.setLayoutParams(lp);
 
-                    /*        lp = new LayoutParams(340, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                            tr.setId((resulttab.getChildCount()));
-                            tr.setLayoutParams(lp);
-                            lp.setMargins(0, 10, 40, 0); */
-                            //	wp = new LayoutParams(340,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
                         } else {
                             lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -3972,52 +3133,29 @@ public class StartDeliveryActivity extends MasterActivity
 
                         final TextView waybilltxt = new TextView(StartDeliveryActivity.this);
                         waybilltxt.setLayoutParams(lp);
-                        //waybilltxt.setText(wbillarr[i]);
                         waybilltxt.setText(Taskdetailswabill);
                         waybilltxt.setTextColor(Color.parseColor("#0000EE"));
                         waybilltxt.setPaintFlags(waybilltxt.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                        System.out.println("wbillarr[i] are:" + wbillarr[i]+"Taskdetailswabill are"+Taskdetailswabill);
-
-					/*	for (int j=0;j<wbillarr[i].length();j++) {
-							for (int k = j + 1; k < wbillarr[i].length(); k++) {
-								if (k != j && wbillarr[k] == wbillarr[j])
-								{
-									waybilltxt.setText(wbillarr[k]);
-								}
-							}
-						}*/
 
 
-                        waybilltxt.setOnClickListener(new OnClickListener() {
+                        waybilltxt.setOnClickListener(v -> {
+                            phoneFlag = 1;
+                            DonotInterruptKDCScan = true;
 
-                            @Override
-                            public void onClick(View v) {
-                                phoneFlag = 1;
-                                DonotInterruptKDCScan = true;
+                            v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
 
-                                v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+                            Intent int1 = new Intent(StartDeliveryActivity.this, WaybillAdressActivity.class);
 
-                                Intent int1 = new Intent(StartDeliveryActivity.this, WaybillAdressActivity.class);
+                            int1.putExtra("wbillno", waybilltxt.getText().toString());
 
-                                int1.putExtra("wbillno", waybilltxt.getText().toString());
 
-                                //int1.putExtra("accno",acname);
-                                //int1.putExtra("routecode",route);
-                                //int1.putExtra("routename",routen);
+                            startActivity(new Intent(int1));
 
-                                startActivity(new Intent(int1));
-
-                            }
                         });
-                        System.out.println("value of wbill after execution is");
-                        System.out.println(wbill);
 
-                        //waynillist.add(wbill);
                         waynillist.add(Taskdetailswabill);
 
                         waynillist = new ArrayList<String>(new LinkedHashSet<String>(waynillist));
-                        System.out.println("fresh waylis0"+waynillist);
-// Declaring and initialisation of table rows
                         final TextView cnametxt = new TextView(StartDeliveryActivity.this);
                         cnametxt.setLayoutParams(lp);
                         cnametxt.setText(consr[i]);
@@ -4030,9 +3168,7 @@ public class StartDeliveryActivity extends MasterActivity
 
                         final TextView codtxt = new TextView(StartDeliveryActivity.this);
                         codtxt.setLayoutParams(lp);
-                        //  codtxt.setText(codAmnt[i]);
                         codtxt.setText(CODamnt);
-                        //	System.out.println(callphone.substring(3, 11));
 
 
                         phonetxt.setOnClickListener(new OnClickListener() {
@@ -4045,36 +3181,19 @@ public class StartDeliveryActivity extends MasterActivity
                                     System.out.println("KDCReader on phone listener While Pause" + DonotInterruptKDCScan);
                                     gps = new GPSTracker(mContext, StartDeliveryActivity.this);
 
-                                    // check if GPS enabled
                                     if (gps.canGetLocation()) {
 
                                         latitude = gps.getLatitude();
                                         longitude = gps.getLongitude();
                                         lat = String.valueOf(latitude);
                                         longt = String.valueOf(longitude);
-                                        // \n is for new line
-                                        //  Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
                                     } else {
-                                        // can't get location
-                                        // GPS or Network is not enabled
-                                        // Ask user to enable GPS/network in settings
                                         gps.showSettingsAlert();
                                     }
                                     db = new DatabaseHandler(getBaseContext());
-                                    //open localdatabase in a read mode
                                     sqldb = db.getReadableDatabase();
 
-									
-									
-								/*	Cursor rbc = sqldb.rawQuery("SELECT DRIVERNAME FROM courierdetails WHERE DRIVERCODE='"+drivercode+"'", null);
-									int c=rbc.getCount();
-									String drivername=null;
-									if(c>0)
-									{
-										rbc.moveToFirst();
-										drivername=rbc.getString(rbc.getColumnIndex("DRIVERNAME"));
-									}
-									rbc.close();*/
+
                                     SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
                                     date_time = date1.format(new Date());
                                     int flag = 0;
@@ -4087,11 +3206,9 @@ public class StartDeliveryActivity extends MasterActivity
                                         wbill[i] = waybilltxt1.getText().toString();
 
 
-                                        //calststus = WebService.setcallstatus(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt, MasterActivity.METHOD_NAME39);
-                                        //  calststus = WebService.SET_AWB_EVENT(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt);
-                                        if(isNetworkConnected()){
+                                        if (isNetworkConnected()) {
                                             calststus = WebService.SET_AWB_EVENT(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt);
-                                        }else {
+                                        } else {
                                             Toast.makeText(getBaseContext(), "Call status cannot update now, Sync on network connectivity ", Toast.LENGTH_LONG).show();
                                         }
                                         sqldb.execSQL("UPDATE deliverydata SET Callstatus=1 WHERE Waybill='" + wbill[i] + "'");
@@ -4099,7 +3216,6 @@ public class StartDeliveryActivity extends MasterActivity
 
                                         if (calststus) {
                                             flag = 1;
-                                            System.out.println("Latitude and longitude is" + latitude + "longi" + longitude + "waybill is" + wbill[i]);
                                             sqldb.execSQL("UPDATE deliverydata SET SyncCallstatus=1,Latitude='" + latitude + "',Longtitude='" + longitude + "'WHERE Waybill='" + wbill[i] + "'");
                                         } else {
                                             flag = 0;
@@ -4110,19 +3226,12 @@ public class StartDeliveryActivity extends MasterActivity
                                     }
                                     if (flag == 1) {
                                         Toast.makeText(getBaseContext(), "Done", Toast.LENGTH_LONG).show();
-                                        //    isActivityActiveFlag=true;
                                     } else {
                                         Toast.makeText(getBaseContext(), "Call status cannot update now ", Toast.LENGTH_LONG).show();
                                     }
-                                    //System.out.println("Latitude="+latitude+",Longtitude="+longitude+"WHERE Waybill="+waybilltxt.getText().toString());
 
                                     db.close();
-                                    //	phone1=callphone.substring(callphone.lastIndexOf(' ') + 8);
-                                    //phone1=callphone.substring(3, 11);
-                                    // set the data
                                     String uri = "tel:" + callphone;
-                                    System.out.println("phone number is:" + callphone);
-
                                     PhoneStateChangeListener phoneListener = new PhoneStateChangeListener();
                                     TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
                                     telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
@@ -4151,9 +3260,6 @@ public class StartDeliveryActivity extends MasterActivity
                         tr.addView(phonetxt);
                         c2.moveToNext();
 
-                        //    resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                        //	int ct=(resulttab.getChildCount());
-                        //	System.out.println("value for count text in post execute:"+(ct-1));
                         if (resulttab.getChildCount() == 0) {
                             resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                         } else {
@@ -4173,7 +3279,6 @@ public class StartDeliveryActivity extends MasterActivity
                                     flagdup = true;
 
 
-
                                 } else if (Taskdetailswabill.equals(wb)) {
                                     flagdup = false;
                                     System.out.println(flagdup);
@@ -4183,9 +3288,7 @@ public class StartDeliveryActivity extends MasterActivity
                                 }
 
                             }
-                            if (flagdup)
-
-                            {
+                            if (flagdup) {
 
                                 resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                             } else {
@@ -4203,22 +3306,16 @@ public class StartDeliveryActivity extends MasterActivity
                         TextView third = (TextView) tr.getChildAt(3);
                         String thirdtext = third.getText().toString();
 
-                            summ = summ + Float.parseFloat(thirdtext);
+                        summ = summ + Float.parseFloat(thirdtext);
 
-                        System.out.println("sum of cod" + summ);
-                      //  codsum.setText(String.valueOf("Total COD:" + summ));
                         codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
                         System.out.println("value for table row:" + tr);
                         tr.setOnClickListener(new OnClickListener() {
 
                             @Override
                             public void onClick(View v) {
-                                //	public boolean onLongClick(View v) {
                                 tr1 = (TableRow) v; //assign selected TableRow gobally
                                 openContextMenu(v);
-                                //	return1 true;
-                                //	}
-                                //System.out.println("Rowid:"+rowid+",v.getID:"+v.getId());
 
                                 if (rowid != v.getId()) {
                                     rowid = v.getId();
@@ -4228,8 +3325,6 @@ public class StartDeliveryActivity extends MasterActivity
 
                                     resulttab.removeViewAt(v.getId());
                                     waynillist.remove(v.getId());
-                                    //		int ct=(resulttab.getChildCount());
-                                    //		System.out.println("value for count text in tr listener:"+(ct-1));
                                     counttxt.setText(String.valueOf(resulttab.getChildCount()));
                                     TextView third = (TextView) tr1.getChildAt(3);
                                     String thirdtext = third.getText().toString();
@@ -4260,16 +3355,7 @@ public class StartDeliveryActivity extends MasterActivity
                     }
                 }
             } else {
-           /* int countS=0;
-            //open localdatabase in a read mode
-            sqldb = db.getReadableDatabase();
-            Cursor cStop = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "' AND StopDelivery=1", null);
-            countS = c2.getCount();
-            if(countS>0) {
-                Toast.makeText(getApplicationContext(),"Not in Delivery", Toast.LENGTH_LONG).show();
-                return;
-            }c
-            cStop.close();*/
+
 
                 String DelMode = "";
                 if (FlagDeliveryMode.equals("NRML")) DelMode = "Delivery";
@@ -4290,203 +3376,27 @@ public class StartDeliveryActivity extends MasterActivity
             db.close();
             Pb.setVisibility(View.INVISIBLE);
 
-         /*   String wba;
-            for (int j = 0; j < resulttab.getChildCount(); j++) {
 
-                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(j)).getChildAt(1);
-                wba = wbill.getText().toString();
-
-                System.out.println("waybillaw number is:" + wbilldata1);
-                System.out.println("waybilawl int wb number is:" + wba);
-
-                // waynillist.add(wb);
-                System.out.println("waynillist  is" + waynillist.size());
-                System.out.println("waynillist is" + waynillist);
-                waynillist.add(wbilldata1);
-            }*/
-            System.out.println("waynillist are:" + waynillist);
-            System.out.println("DBWAYBILL val is" + DBWAYBILLIST);
         }
     }
-
-
-
-    public static boolean Check_ValidWaybill(String s) {
-
-        if (s.length() == 10 || s.length() == 12) {
-            return StringUtils.isNumeric(s) == true;
-        } else if (s.length() == 18) {
-            return StringUtils.isAlphanumeric(s) == true;
-        }
-        return false;
-    }
-
-
-    public void openDialog() {
-        final Dialog dialog = new Dialog(StartDeliveryActivity.this); // Context, this, etc.
-        dialog.setContentView(R.layout.dialog);
-        dialog.setTitle("Select your choice");
-        dialog.setCanceledOnTouchOutside(false);
-        // dialog.setCancelable(false);
-        delvryflag=true;
-
-        final Button Pickupaction = (Button) dialog.findViewById(R.id.pckupaction);
-        final Button Deliveryaction = (Button) dialog.findViewById(R.id.deliveryaction);
-        final Button btncancel =(Button)dialog.findViewById(R.id.btncancel);
-
-        // scannningtable =(TableLayout)dialog.findViewById(R.id.scannningtable);
-        resulttabledialog =(TableLayout)dialog.findViewById(R.id.resulttabledialog);
-        textchoose =(TextView)dialog.findViewById(R.id.textchoose);
-        textalert=(TextView)dialog.findViewById(R.id.textalert);
-        final Button confirmaction=(Button)dialog.findViewById(R.id.confirmaction);
-        //  scannningtable.setVisibility(View.GONE);
-
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey (DialogInterface dialog, int keyCode, KeyEvent event) {
-                int action = event.getAction();
-                int keyCodes = event.getKeyCode();
-                System.out.println("keycode"+keyCodes+"keyevent"+action);
-
-                switch (keyCodes) {
-                    case KeyEvent.KEYCODE_VOLUME_UP:
-
-                        if (action == KeyEvent.ACTION_DOWN) {
-                            DonotInterruptKDCScan = true;
-                            delvryflag=true;
-                            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                            intent.putExtra("SCAN_MODE", "SCAN_MODE");
-                            startActivityForResult(intent, SCANNER_REQUEST_CODE);
-                            Flagcam = 1;
-
-                        }
-
-                        return true;
-                    case KeyEvent.KEYCODE_VOLUME_DOWN:
-
-                        if (action == KeyEvent.ACTION_DOWN) {
-                            DonotInterruptKDCScan = true;
-                            delvryflag=true;
-                            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                            intent.putExtra("SCAN_MODE", "SCAN_MODE");
-                            startActivityForResult(intent, SCANNER_REQUEST_CODE);
-                            Flagcam = 1;
-                        }
-
-                        return true;
-                    default:
-                        return StartDeliveryActivity.super.dispatchKeyEvent(event);
-                }
-
-            }
-        });
-
-        Pickupaction.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Do your code here
-                dialog.dismiss();
-                delvryflag=false;
-
-
-                if (_kdcReader != null) _kdcReader.Disconnect();
-                if (ThrKdc != null) ThrKdc.interrupt();
-                //KDCTaskExecutable.cancel(true);
-
-                Intent int1 = new Intent(StartDeliveryActivity.this,PickupActivity.class);
-                int1.putExtra("routecode",route);
-                int1.putExtra("routename",routen);
-
-                //startActivity(new Intent(int1));
-                // new code
-                startActivity(new Intent(int1));
-                StartDeliveryActivity.this.finish();
-            }
-        });
-
-        btncancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Do your code here
-                dialog.dismiss();
-                delvryflag=false;
-
-                if (!isActivityActiveFlag) {
-                    // Toast.makeText(getApplicationContext(), "Please wait for scanner to connect",
-                    //       Toast.LENGTH_LONG).show();
-
-                } else {
-                    if (_kdcReader != null) _kdcReader.Disconnect();
-                    if (ThrKdc != null) ThrKdc.interrupt();
-                    //KDCTaskExecutable.cancel(true);
-                }
-                Intent int1 = new Intent(StartDeliveryActivity.this,HomeActivity.class);
-                int1.putExtra("routecode",route);
-                int1.putExtra("routename",routen);
-
-                //startActivity(new Intent(int1));
-                // new code
-                startActivity(new Intent(int1));
-                StartDeliveryActivity.this.finish();
-            }
-        });
-
-        confirmaction.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Do your code
-                if(resulttabledialog.getChildCount()==0){
-                    Toast.makeText(getApplicationContext(),"Please Scan Awb!",
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                delvryflag=false;
-                dialog.dismiss();
-
-            }
-        });
-        Deliveryaction.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Do your code here
-                //  delvryflag=true;
-                dialog.setTitle("Please Select");
-                confirmaction.setVisibility(View.VISIBLE);
-                btncancel.setVisibility(View.VISIBLE);
-                Pickupaction.setVisibility(View.GONE);
-                Deliveryaction.setVisibility(View.GONE);
-                textalert.setVisibility(View.VISIBLE);
-
-
-            }
-        });
-
-        dialog.show();
-    }
-
-// Courier Location tracking function
 
     public class UserNotifyTrack extends AsyncTask<Void, Void, String> {
 
-        String Taskdialwabill="";
+        String Taskdialwabill = "";
+
         public UserNotifyTrack(String TakWaybill) {
             super();
             Taskdialwabill = TakWaybill;
-            System.out.println("Taskdialwabill pre execute:" + Taskdialwabill);
         }
 
         public void onPreExecute() {
 
-            // super.onPreExecute();
 
             trdialog = new TableRow(StartDeliveryActivity.this);
 
             if (Build.MODEL.contains("SM-N")) {
 
-				/*	lp = new LayoutParams(420,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-					tr.setLayoutParams(lp);
-					lp.setMargins(0, 10, 40, 0);*/
                 lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 lp.setMargins(18, 2, 95, 2);
                 trdialog.setLayoutParams(lp);
@@ -4497,72 +3407,49 @@ public class StartDeliveryActivity extends MasterActivity
                 trdialog.setLayoutParams(lp);
                 lp.setMargins(0, 5, 70, 0);
             }
-            System.out.println("trdialog async:" + trdialog);
         }
 
         @Override
         protected String doInBackground(Void... arg0) {
-            // usernotytrack();
             return "";
         }
 
         @Override
         public void onPostExecute(String res) {
-            //response=null;
-            System.out.println("UserNotyTrackResp on post:" + UserNotyTrackResp);
-
             try {
-                System.out.println("UserNotyTrackResp notfytrck1:" + UserNotyTrackResp);
-
-
                 db = new DatabaseHandler(getBaseContext());
-                System.out.println("db dialog:" + db);
-                //open localdatabase in a read mode
-                //open localdatabase in a read mode
                 sqldb = db.getReadableDatabase();
-                //   Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbill + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' ", null);
-
-                Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + Taskdialwabill+ "' ", null);
-                // Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + Taskdialwabill+ "' AND Attemptstatus='0'", null);
-
+                Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + Taskdialwabill + "' ", null);
                 count1 = c2.getCount();
-                //System.out.println("stage");
                 c2.moveToFirst();
                 wbillarr = new String[count1];
-
                 stopdelarr = new int[count1];
-
-                System.out.println("wbillarr start delv:" + wbillarr.toString()+"c2.getCount()"+c2.getCount() );
-
                 if (c2.getCount() > 0) {
-
-
                     for (int i = 0; i < count1; i++) {
-                        //System.out.println("stage3");
                         wbillarr[i] = c2.getString(c2.getColumnIndex("Waybill"));
 
                         stopdelarr[i] = c2.getInt(c2.getColumnIndex("StopDelivery"));
-                        laststats=c2.getString(c2.getColumnIndex("WC_Status"));
+                        laststats = c2.getString(c2.getColumnIndex("WC_Status"));
 
                         ApprvalStatus = c2.getString(c2.getColumnIndex("ApprovalStatus"));
                         Attemptstatus = c2.getString(c2.getColumnIndex("Attempt_Status"));
 
-                        System.out.println("approval status is:" + ApprvalStatus + "Stopdlv : " + stopdelarr[i] + " Attpmpt " + Attemptstatus+"laststats"+laststats);
-                        if(laststats.equals("C")) laststats = "DELIVERED";
-                        else if(laststats.equals("A")) laststats = "WC";
-                        System.out.println("laststats delv:" + laststats );
+                        System.out.println("approval status is:" + ApprvalStatus + "Stopdlv : " + stopdelarr[i] + " Attpmpt " + Attemptstatus + "laststats" + laststats);
+                        if (laststats.equals("C")) laststats = "DELIVERED";
+                        else if (laststats.equals("A")) laststats = "WC";
+                        System.out.println("laststats delv:" + laststats);
 
                         //System.out.println("i="+i+wbillarr[i]+" "+consr[i]+" "+arear[i]+" "+phoner[i]+" "+compnyr[i]+" "+civilidr[i]+" "+stopdelarr[i]);
                         if (ApprvalStatus == null) ApprvalStatus = "";
                         //if (stopdelarr[i] == 0 || (stopdelarr[i] == 1 && ApprvalStatus.equals("APPROVED") && Attemptstatus.equals("0"))) {
 
 
-                     if (stopdelarr[i] == 0 || (stopdelarr[i] == 1 && ApprvalStatus.equals("APPROVED") && Attemptstatus.equals("0"))) {
+                        if (stopdelarr[i] == 0 || (stopdelarr[i] == 1 && ApprvalStatus.equals("APPROVED") && Attemptstatus.equals("0"))) {
 
-                       //  if (wbillarr[i] != null &&  !laststats.equals("DELIVERED")) {
+                            //  if (wbillarr[i] != null &&  !laststats.equals("DELIVERED")) {
                             System.out.println("Taskdialwabill delv:" + Taskdialwabill + "wbarr" + wbillarr[i]);
 
-                            if(resulttabledialog.getChildCount()>0) {
+                            if (resulttabledialog.getChildCount() > 0) {
                                 TextView wbillres = null;
                                 for (int k = 0; k < resulttabledialog.getChildCount(); k++) {
                                     wbillres = (TextView) ((TableRow) resulttabledialog.getChildAt(k)).getChildAt(0);
@@ -4607,8 +3494,7 @@ public class StartDeliveryActivity extends MasterActivity
                             }
 
 
-
-                        }  else {
+                        } else {
 
 
                             Toast.makeText(_activity, "Already Delivered", Toast.LENGTH_LONG).show();
@@ -4625,30 +3511,24 @@ public class StartDeliveryActivity extends MasterActivity
                     db.close();
 
 
-                }else{
-                    Log.e("cdcv","12");
+                } else {
+                    Log.e("cdcv", "12");
                     Toast.makeText(StartDeliveryActivity.this, "Not in your Runsheet!",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
 
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
     }
 
-
     public class details1 extends AsyncTask<Void, Void, String> {
-
-
 
 
         public void onPreExecute() {
             Pb.setVisibility(View.VISIBLE);
-            // super.onPreExecute();
-            // waynillist=new ArrayList<String>();
-            // waynillist.clear();
             tr = new TableRow(StartDeliveryActivity.this);
 
             if (Build.MODEL.contains("SM-N")) {
@@ -4672,36 +3552,7 @@ public class StartDeliveryActivity extends MasterActivity
 
         @Override
         protected String doInBackground(Void... params) {
-          /*  db = new DatabaseHandler(getBaseContext());
-            //open localdatabase in a read mode
-            sqldb = db.getReadableDatabase();
-            //select all values in the table and check count
 
-            Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "'  ", null);
-            //AND AWBIdentifier = '"+ FlagDeliveryMode  +"'
-            flag = 0;
-            if (c1.getCount() > 0) {
-                c1.moveToFirst();
-                wbill = c1.getString(c1.getColumnIndex("Waybill"));
-                cons = c1.getString(c1.getColumnIndex("Consignee"));
-                phonedb = c1.getString(c1.getColumnIndex("Telephone"));
-                area = c1.getString(c1.getColumnIndex("Area"));
-                company = c1.getString(c1.getColumnIndex("Company"));
-                civilid = c1.getString(c1.getColumnIndex("CivilID"));
-                stopdeliver = c1.getInt(c1.getColumnIndex("StopDelivery"));
-                Log.e("StartDelivery","AWBIDENTIFIER : "+c1.getInt(c1.getColumnIndex("AWBIdentifier")));
-                Log.e("StartDelivery","Amount : " +c1.getString(c1.getColumnIndex("Amount")));
-
-            } else {
-                //c2.moveToFirst();\
-                //	System.out.println("Scanned Wbill not in delivery");
-
-                flag = 1;
-
-            }
-            c1.close();
-
-            db.close();*/
             System.out.println("waybill data 1 in start delivery activity" + wbilldata1);
             System.out.println("flag delivery mode in start delivery activity" + FlagDeliveryMode);
             return "";
@@ -4717,13 +3568,10 @@ public class StartDeliveryActivity extends MasterActivity
             Pb.setVisibility(View.INVISIBLE);
             db = new DatabaseHandler(getBaseContext());
 
-            //open localdatabase in a read mode
             sqldb = db.getReadableDatabase();
-          //  Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' ", null);
-            Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "' AND AWBIdentifier= '" + FlagDeliveryMode  + "' AND WC_Status <> 'P' ", null);
+            Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' AND WC_Status <> 'P' ", null);
 
             count1 = c2.getCount();
-            //System.out.println("stage");
             c2.moveToFirst();
             wbillarr = new String[count1];
             consr = new String[count1];
@@ -4734,14 +3582,6 @@ public class StartDeliveryActivity extends MasterActivity
             stopdelarr = new int[count1];
             codAmnt = new String[count1];
 
-            System.out.println("wbillarr start delv:" + wbillarr.toString()+"codAmnt:"+codAmnt);
-			/*	for (int i = count1; i >=0; i--) {
-					resulttab.removeAllViews();
-
-				}*/
-
-            //     Log.e("StartDelivery","AWBIDENTIFIER : "+c2.getInt(c2.getColumnIndex("AWBIdentifier")));
-            //    Log.e("StartDelivery","Amount : " +c2.getString(c2.getColumnIndex("Amount")));
 
             if (c2.getCount() > 0) {
 
@@ -4804,13 +3644,13 @@ public class StartDeliveryActivity extends MasterActivity
                             return;
                         }
                         System.out.println("CODResponse" + CODResponse);
-                        CODamnt=CODResponse;
+                        CODamnt = CODResponse;
                         System.out.println("CODamnt" + CODamnt);
                        /* if (CODResponse.equals("PAID")) {
                             codAmnt[i] = "0.000";
                         }*/
-                    }else{
-                        CODamnt= String.valueOf(codAmnt[i]);
+                    } else {
+                        CODamnt = String.valueOf(codAmnt[i]);
                         System.out.println("codAmnt are" + String.valueOf(codAmnt[i]));
                     }
                     //System.out.println("i="+i+wbillarr[i]+" "+consr[i]+" "+arear[i]+" "+phoner[i]+" "+compnyr[i]+" "+civilidr[i]+" "+stopdelarr[i]);
@@ -4852,7 +3692,6 @@ public class StartDeliveryActivity extends MasterActivity
                         final TextView waybilltxt = new TextView(StartDeliveryActivity.this);
                         waybilltxt.setLayoutParams(lp);
                         waybilltxt.setText(wbillarr[i]);
-                        //waybilltxt.setText(Taskdetailswabill);
                         waybilltxt.setTextColor(Color.parseColor("#0000EE"));
                         waybilltxt.setPaintFlags(waybilltxt.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                         System.out.println("wbillarr[i] are:" + wbillarr[i]);
@@ -4892,10 +3731,9 @@ public class StartDeliveryActivity extends MasterActivity
                         System.out.println(wbill);
 
                         waynillist.add(wbill);
-                        //waynillist.add(Taskdetailswabill);
 
                         waynillist = new ArrayList<String>(new LinkedHashSet<String>(waynillist));
-                        System.out.println("fresh waylis0"+waynillist);
+                        System.out.println("fresh waylis0" + waynillist);
 // Declaring and initialisation of table rows
                         final TextView cnametxt = new TextView(StartDeliveryActivity.this);
                         cnametxt.setLayoutParams(lp);
@@ -5026,9 +3864,6 @@ public class StartDeliveryActivity extends MasterActivity
                         tr.addView(phonetxt);
                         c2.moveToNext();
 
-                        //    resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                        //	int ct=(resulttab.getChildCount());
-                        //	System.out.println("value for count text in post execute:"+(ct-1));
                         if (resulttab.getChildCount() == 0) {
                             resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                         } else {
@@ -5049,7 +3884,6 @@ public class StartDeliveryActivity extends MasterActivity
                                     flagdup = true;
 
 
-
                                 } else if (wbilldata1.equals(wb)) {
                                     flagdup = false;
                                     System.out.println(flagdup);
@@ -5059,9 +3893,7 @@ public class StartDeliveryActivity extends MasterActivity
                                 }
 
                             }
-                            if (flagdup)
-
-                            {
+                            if (flagdup) {
 
                                 resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                             } else {
@@ -5080,7 +3912,7 @@ public class StartDeliveryActivity extends MasterActivity
                         String thirdtext = third.getText().toString();
                         summ = summ + Float.parseFloat(thirdtext);
                         System.out.println("sum of cod" + summ);
-                       // codsum.setText(String.valueOf("Total COD:" + summ));
+                        // codsum.setText(String.valueOf("Total COD:" + summ));
                         codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
                         System.out.println("value for table row:" + tr);
                         tr.setOnClickListener(new OnClickListener() {
@@ -5109,7 +3941,7 @@ public class StartDeliveryActivity extends MasterActivity
                                     String thirdtext = third.getText().toString();
                                     summ = summ - Float.parseFloat(thirdtext);
                                     System.out.println("sum of cod" + summ);
-                                 //  codsum.setText(String.valueOf("Total COD:" + summ));
+                                    //  codsum.setText(String.valueOf("Total COD:" + summ));
                                     codsum.setText(String.valueOf("Total COD:" + String.format("%.3f", summ)));
                                     Toast.makeText(getApplicationContext(), "Row deleted successfully", Toast.LENGTH_LONG).show();
                                     rowid = -1;
@@ -5135,131 +3967,23 @@ public class StartDeliveryActivity extends MasterActivity
                     }
                 }
             } else {
-           /* int countS=0;
-            //open localdatabase in a read mode
-            sqldb = db.getReadableDatabase();
-            Cursor cStop = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "' AND StopDelivery=1", null);
-            countS = c2.getCount();
-            if(countS>0) {
-                Toast.makeText(getApplicationContext(),"Not in Delivery", Toast.LENGTH_LONG).show();
-                return;
-            }c
-            cStop.close();*/
+
 
                 String DelMode = "";
                 if (FlagDeliveryMode.equals("NRML")) DelMode = "Delivery";
                 if (FlagDeliveryMode.equals("ACK")) DelMode = "ACK Delivery";
                 if (FlagDeliveryMode.equals("RTN")) DelMode = "Return Delivery";
-
-
-
                 Toast.makeText(getApplicationContext(), "Not in " + DelMode,
                         Toast.LENGTH_LONG).show();
             }
             db.close();
-
             if (flag == 1) {
                 Toast.makeText(getApplicationContext(), "Scanned f in delivery",
                         Toast.LENGTH_LONG).show();
             }
-
             c2.close();
             db.close();
             Pb.setVisibility(View.INVISIBLE);
-
-         /*   String wba;
-            for (int j = 0; j < resulttab.getChildCount(); j++) {
-
-                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(j)).getChildAt(1);
-                wba = wbill.getText().toString();
-
-                System.out.println("waybillaw number is:" + wbilldata1);
-                System.out.println("waybilawl int wb number is:" + wba);
-
-                // waynillist.add(wb);
-                System.out.println("waynillist  is" + waynillist.size());
-                System.out.println("waynillist is" + waynillist);
-                waynillist.add(wbilldata1);
-            }*/
-            System.out.println("waynillist are:" + waynillist);
-            System.out.println("DBWAYBILL val is" + DBWAYBILLIST);
         }
-    }
-
-
-    public Uri getPhotoFileUri(String fileName) {
-        File mediaStorageDir = null;
-        // Only continue if the SD Card is mounted
-        if (isExternalStorageAvailable()) {
-            // Get safe storage directory for photos
-            // Use `getExternalFilesDir` on Context to access package-specific directories.
-            // This way, we don't need to request external read/write runtime permissions.
-            mediaStorageDir = new File(
-                    Environment.getExternalStorageDirectory(), "Postaplus/Wbill_ackimage");
-
-            // Create the storage directory if it does not exist
-            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-                //  Log.e(APP_TAG, "failed to create directory");
-            }
-
-            // Return the file target for the photo based on filename
-            System.out.println(" fil is:" + fileName);
-
-            return Uri.fromFile(new File(mediaStorageDir.getPath() + File.separator + fileName));
-        }
-        //return null;
-        return Uri.fromFile(new File(mediaStorageDir.getPath() + File.separator + fileName));
-    }
-
-    // Returns true if external storage for photos is available
-    private boolean isExternalStorageAvailable() {
-        String state = Environment.getExternalStorageState();
-        return state.equals(Environment.MEDIA_MOUNTED);
-    }
-
-    public Bitmap decodeFile(String path) {
-        try {
-            // Decode image size
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(path, o);
-            // The new size we want to scale to
-            final int REQUIRED_SIZE = 70;
-            System.out.println("BitmapFactory2.decodeFile iz" + BitmapFactory.decodeFile(path, o));
-            // Find the correct scale value. It should be the power of
-            // 2.
-            int scale = 1;
-            while (o.outWidth / scale / 2 >= REQUIRED_SIZE
-                    && o.outHeight / scale / 2 >= REQUIRED_SIZE)
-                scale *= 2;
-
-            // Decode with inSampleSize
-            BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize = scale;
-            System.out.println("BitmapFactory.decodeFile iz" + BitmapFactory.decodeFile(path, o2));
-            return BitmapFactory.decodeFile(path, o2);
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getAbsolutePath(Uri uri) {
-        String[] projection = {MediaStore.MediaColumns.DATA};
-
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } else
-            return null;
-    }
-
-    public boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni != null;
     }
 }

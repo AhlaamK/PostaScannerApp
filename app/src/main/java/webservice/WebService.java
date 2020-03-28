@@ -566,7 +566,7 @@ public class WebService {
 
             System.out.println("Waybill in webserv:" + waybill + "Cust:" + custname);
             if (custname == null) {
-                jsonobj.put("CUSTNAME", custname = null);
+                jsonobj.put("CUSTNAME", null);
             } else {
                 jsonobj.put("CUSTNAME", custname);
             }
@@ -977,89 +977,7 @@ public class WebService {
 
         } else return null;
     }
-    /// Need to check waybillbackimg wen aplication runs
-  /*  public static Boolean SET_WAYBILLACK_IMG( String waybill ,String rstno ,String eventid,byte[] bytearray ,String drivercode, String imgtyp ){
 
-        String encoded1=null;
-
-        if(bytearray!=null) {
-
-            encoded1 = Base64.encodeToString(bytearray,Base64.DEFAULT);
-
-
-        } else encoded1 = null;
-
-        System.out.println("Valuebitmap aftr enc kb:"+bytearray.length/1024);
-
-      //  System.out.println("Value encoded1:"+encoded1);
-        Log.e("enc",encoded1);
-        System.out.println("ss"+drivercode+"eventid "+eventid+"imgtyp"+imgtyp+"rstno"+rstno+"waybill"+waybill);
-       SET_WAYBILLACK_IMG_Request requestobj = new SET_WAYBILLACK_IMG_Request();
-
-        requestobj.setDRIVERCODE(drivercode);
-        requestobj.setEVNTID(eventid);
-        requestobj.setIMG(encoded1);
-        requestobj.setIMGTYPE(imgtyp);
-        requestobj.setRSTNO(rstno);
-        requestobj.setWAYBILL(waybill);
-
-
-        ResponseEntity<?> response = JsonService.jsonpostreqImg("SET_WAYBILLACK_IMG",requestobj,StringResponse.class);
-         StringResponse ResponsePostReq = (StringResponse) response.getBody();
-         Log.e("Response Actual: ", ResponsePostReq.getd());
-         return Boolean.valueOf(ResponsePostReq.getd());
-
-        //return null;
-    }*/
-    /// Need to check odofuelimg wen aplication runs
-  /*  public static Boolean SET_ODO_FUEL_IMAGE(String id, byte[] bytearray1,String odotype, byte[] bytearray2 ,String type ){
-        String encoded2=null;
-        String encoded1=null;
-
-        if(bytearray1!=null) {
-
-            encoded1 = Base64.encodeToString(bytearray1,Base64.DEFAULT);
-        } else encoded1=null;
-         if(bytearray2!=null) {
-
-          encoded2 = Base64.encodeToString(bytearray2,Base64.DEFAULT);
-
-      } else encoded2=null;
-        System.out.println("Value of byte array1 kb"+(bytearray1.length)/1024+ "and 2 kb is"+(bytearray2.length)/1024);
-       // System.out.println("Value of encoded1 1"+encoded1+ "and encoded2 is"+encoded2);
-       // if(encoded2==null)return1 true;
-
-      *//*  Map<String,String> map = new HashMap<String,String>();
-        //map.toSingleValueMap();
-        map.put("ID",id);
-        map.put("IMAGE1",encoded1);
-        map.put("TYPE",type);
-        map.put("IMAGE2",encoded2);
-        map.put("ODOTYPE",odotype);
-*//*
-
-        SET_ODO_FUEL_IMAGE_Request requestobj = new SET_ODO_FUEL_IMAGE_Request();
-
-        requestobj.setID(id);
-        requestobj.setIMAGE1(encoded1);
-        requestobj.setTYPE(type);
-        requestobj.setIMAGE2(encoded2);
-        requestobj.setODOTYPE(odotype);
-
-
-
-        ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreqodoImg("SET_ODO_FUEL_IMAGE",requestobj,StringResponse.class);
-        System.out.println("ResponsePostReq is:"+ResponsePostReq);
-        StringResponse ActResp = (StringResponse) ResponsePostReq.getBody();
-
-
-
-        Log.e("SETODOFUELIMG/succ", ActResp.getd());
-      *//*  if(ResponseJson.equals("true")) return true;
-        else return false;*//*
-        return Boolean.valueOf(ActResp.getd());
-
-    }*/
 
     public static CheckTranswaybill CHECK_TRANSWAYBILL(String drivercode, String waybill) {
 
@@ -1268,7 +1186,6 @@ public class WebService {
         ResponseEntity<?> ResponsePostReq = JsonService.jsonpostreq("SET_WC", map, webservice.JsonFuncClasses.OpenRst.class);
         if (ResponsePostReq != null) {
             System.out.println("ResponsePostReq wc is:" + ResponsePostReq);
-            // OpenRst ActResp = (OpenRst) ResponsePostReq.getBody();
             webservice.JsonFuncClasses.OpenRst ActResp = (webservice.JsonFuncClasses.OpenRst) ResponsePostReq.getBody();
 
             OpenRst ResponseClass = new OpenRst();
@@ -1277,32 +1194,7 @@ public class WebService {
             ResponseClass.RSTNO = ActResp.getd().RSTNO;
             ResponseClass.RTNO = ActResp.getd().RTNO;
             System.out.println("ResponseClass wc is:" + ResponseClass + "ResponseClass rst" + ResponseClass.RSTNO);
-      /*  OpenRst RunsheetCode=null;
-        if(ResponseClass.ERRMSG!="False")
-            RunsheetCode = GET_OPENRST(drcode);
-        else RunsheetCode = null;
-        System.out.println("RunsheetCode wc is:"+RunsheetCode);*/
-
             return ResponseClass;
-
-
-       /* OpenRst RunsheetCode=null;
-        String ResultData = SoapService.soapResult(XMLData);
-        if(ResultData==null){
-            RunsheetCode = GET_OPENRST(drcode);
-            if(RunsheetCode.RSTNO.equals("NA")&&RunsheetCode.ACKNO.equals("NA")&&RunsheetCode.RTNO.equals("NA")) ResultData = SoapService.soapResult(XMLData);
-            else return RunsheetCode;
-        }
-        if(ResultData==null)  ResultData = SoapService.soapResult(XMLData);
-        if(ResultData==null) return null;
-
-        Log.e("ResultData is",ResultData);
-
-        String Results = XMLParser.setwcParser(ResultData);
-        if(ResultData!="False") RunsheetCode = GET_OPENRST(drcode);
-        else RunsheetCode = null;
-        Log.e("GetEvents/END", "Success");
-        return RunsheetCode;*/
         } else return null;
     }
 
@@ -1335,7 +1227,6 @@ public class WebService {
 
         byte[] bytearray = null;
         ByteArrayOutputStream baos = null;
-        System.out.println("Valuebitmap on kb:" + bitmap.getByteCount() / 1024);
         if (bitmap != null) {
             baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);

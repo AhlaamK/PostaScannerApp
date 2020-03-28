@@ -23,4 +23,7 @@ public class ScanWaybillDt {
     public String AWBIdentifier=null;
     public String Last_Status=null;
     public String ShipperName=null;
+
+
+
 }

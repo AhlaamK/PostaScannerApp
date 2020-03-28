@@ -21,4 +21,6 @@ public class CheckValidWaybill {
     public String Address = null;
     public String ShipperName = null;
     public String WAYBILLIdentifier = null;
+
+
 }
