@@ -135,7 +135,6 @@ public class JsonService {
 
             Log.e("ExecutePost/Conn","Connection Pass");
 
-            //connection.setRequestMethod("POST");
             //connection.setRequestProperty("Content-Type","text/xml;charset=UTF-8");
             connection.setRequestProperty("Content-Type","application/json");
            // connection.setRequestProperty("Content-Length", "" + Integer.toString(urlParameters.getBytes().length));
@@ -274,7 +273,6 @@ public class JsonService {
 
             String url1 = url + MethodName;
 
-            Log.e("POST REQUEST CALLED",url1);
          /*   SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
             factory.setBufferRequestBody(false);
 
@@ -289,12 +287,7 @@ public class JsonService {
 
 
 
-           //HttpEntity<?> request = new HttpEntity<>(requestobj);
-            //System.out.println("request img sync : "+request.getBody()+"\n"+" - heardesr: "+request.getHeaders());
-            //ResponseEntity<?> response = restTemplate.postForEntity( url1, request , responseclasstype);
-           // ResponseEntity<?> response  =restTemplate.exchange(url, HttpMethod.POST, request, String.class);
             ResponseEntity<?> response = restTemplate.postForEntity( url1,requestobj, responseclasstype);
-          //  ResponseEntity<?> response = restTemplate.exchange( url1,HttpMethod.POST, request, responseclasstype);
             Log.e("Response Entity :", response.toString());
             System.out.println("response imgsync :"+response.toString()+" - resp0: "+response.getBody());
             return response;
@@ -315,7 +308,6 @@ public class JsonService {
 
             String url1 = url + MethodName;
 
-            Log.e("POST REQUEST CALLED",url1);
 
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter());

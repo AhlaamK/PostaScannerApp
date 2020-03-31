@@ -546,7 +546,24 @@ public class WebService {
         return ActResp.getd();
 
     }*/
+  public static String resendOtp(String driverCode,List waybill) throws JSONException {
+      JSONObject jsonobj = new JSONObject();
+      jsonobj.put("WAYBILL", new JSONArray(waybill));
+      jsonobj.put("DRIVERCODE",driverCode);
+      JSONObject reset_customer_otp = JsonService.jsonnewpostreq(url, "RESET_CUSTOMER_OTP", jsonobj);
+      JSONObject json = new JSONObject(String.valueOf(reset_customer_otp));
+      return json.getString("d");
+  }
+  public static String otpVerification(String driverCode, String otp,List waybill) throws JSONException {
+      JSONObject jsonobj = new JSONObject();
+      jsonobj.put("WAYBILL", new JSONArray(waybill));
+      jsonobj.put("OTPCODE",otp);
+      jsonobj.put("DRIVERCODE",driverCode);
+      JSONObject verify_customer_otp = JsonService.jsonnewpostreq(url, "VERIFY_CUSTOMER_OTP", jsonobj);
+      JSONObject json = new JSONObject(String.valueOf(verify_customer_otp));
+      return json.getString("d");
 
+  }
     public static String SET_DELIVERY(String custname, String drivercode,List waybill, String eventtype, String latitude, String longitude,String datetime, String eventnote, String AWBIdentifier, String IsCODCollected, String barcodeIdentifier){
 
         JSONObject jsonobj = new JSONObject();
