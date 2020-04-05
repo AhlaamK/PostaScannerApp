@@ -418,14 +418,7 @@ public class Delivery_wc_fragment extends Fragment
 								lp.setMargins(15, 2, 65, 2);
 								tr.setLayoutParams(lp);
 
-						/*	//	lp = new LayoutParams(485,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-							lp = new LayoutParams(LayoutParams.WRAP_CONTENT);
-							//	tr.setId((resulttab.getChildCount() - 1));
-							tr.setLayoutParams(lp);
-							lp.setMargins(0, 10, 150, 0); */
-						/*		TableRow row= new TableRow(this.getActivity());
-								TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-								row.setLayoutParams(lp);*/
+
 
 							} else {
 								System.out.println("Called phone normal oncreateview");
@@ -690,12 +683,7 @@ public class Delivery_wc_fragment extends Fragment
 
 									if (Build.MODEL.contains("SM-N")) {
 
-							/*	//	lp = new LayoutParams(485,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-								lp = new LayoutParams(LayoutParams.WRAP_CONTENT);
-								tr.setId((resulttab.getChildCount()));
-								tr.setLayoutParams(lp);
-								//	lp.setMargins(0, 10, 40, 0);
-								lp.setMargins(0, 10, 150, 0); */
+
 
 
 										lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -1018,15 +1006,8 @@ public class Delivery_wc_fragment extends Fragment
 						tr.setLayoutParams(lp);
 
 
-					/*	lp = new LayoutParams(150,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-					//	lp = new LayoutParams(LayoutParams.WRAP_CONTENT);
 
-						// tr.setId((resulttab.getChildCount() - 1));
-						tr.setLayoutParams(lp);
-						lp.setMargins(0, 10, 150, 0); */
-      /*  TableRow row= new TableRow(this.getActivity());
-        TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-        row.setLayoutParams(lp);*/
+
 
 					} else {
 						System.out.println("Called phone normal onresume");
@@ -1205,11 +1186,7 @@ public class Delivery_wc_fragment extends Fragment
 			if(Build.MODEL.contains("SM-N"))
 			{
 				System.out.println("Called phone note5 preexecute");
-			/*	//		lp = new LayoutParams(400,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-				lp = new LayoutParams(LayoutParams.WRAP_CONTENT);
-				tr.setLayoutParams(lp);
-				//	lp.setMargins(0, 10, 40, 0);
-				lp.setMargins(0, 10, 150, 0); */
+
 
 
 				lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -1223,10 +1200,7 @@ public class Delivery_wc_fragment extends Fragment
 			else
 			{
 				System.out.println("Called phone normal preexecute");
-				/*lp = new LayoutParams(150,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-				tr.setLayoutParams(lp);
-				lp.setMargins(0, 20, 10, 0);*/
 				lp = new LayoutParams(282,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 				tr.setLayoutParams(lp);
 				lp.setMargins(0, 20, 37, 0);

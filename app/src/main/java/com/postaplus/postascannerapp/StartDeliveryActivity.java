@@ -584,7 +584,6 @@ public class StartDeliveryActivity extends MasterActivity
                             tack.setId((resulttab.getChildCount()));
                             lp.setMargins(15, 2, 95, 2);
                             tack.setLayoutParams(lp);
-                            //  lp.setMargins(0, 10, 40, 0);
 
                             deltxt = new TextView(StartDeliveryActivity.this);
                             deltxt.setLayoutParams(lp);
@@ -753,7 +752,6 @@ public class StartDeliveryActivity extends MasterActivity
                             tack.setId((resulttab.getChildCount()));
                             lp.setMargins(15, 2, 95, 2);
                             tack.setLayoutParams(lp);
-                            //  lp.setMargins(0, 10, 40, 0);
 
                             deltxt = new TextView(StartDeliveryActivity.this);
                             deltxt.setLayoutParams(lp);
@@ -2147,7 +2145,7 @@ public class StartDeliveryActivity extends MasterActivity
                     waybill = barcodefrmScanner;
 
 
-                    if (Utils.checkValidWaybill(barcodefrmScanner)) {
+                    if (Utils.checkValidWaybillForDelivery(barcodefrmScanner)) {
 
 
                         lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -2952,10 +2950,7 @@ public class StartDeliveryActivity extends MasterActivity
                 lp.setMargins(15, 2, 95, 2);
                 tr.setLayoutParams(lp);
 
-            /*    lp = new LayoutParams(340,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-                tr.setLayoutParams(lp);
-                lp.setMargins(0, 10, 40, 0); */
 
             } else {
                 lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -3133,10 +3128,7 @@ public class StartDeliveryActivity extends MasterActivity
                             lp.setMargins(15, 2, 95, 2);
                             tr.setLayoutParams(lp);
 
-                    /*        lp = new LayoutParams(340, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                            tr.setId((resulttab.getChildCount()));
-                            tr.setLayoutParams(lp);
-                            lp.setMargins(0, 10, 40, 0); */
+
                             //	wp = new LayoutParams(340,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
                         } else {
@@ -3490,10 +3482,7 @@ public class StartDeliveryActivity extends MasterActivity
 
             if (Build.MODEL.contains("SM-N")) {
 
-				/*	lp = new LayoutParams(420,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-					tr.setLayoutParams(lp);
-					lp.setMargins(0, 10, 40, 0);*/
                 lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 lp.setMargins(18, 2, 95, 2);
                 trdialog.setLayoutParams(lp);
@@ -3633,7 +3622,7 @@ public class StartDeliveryActivity extends MasterActivity
 
                 } else {
                     Log.e("cdcv", "12");
-                    Toast.makeText(StartDeliveryActivity.this, "Not in your Runsheet!",
+                    Toast.makeText(StartDeliveryActivity.this, "Not in your R unsheet!",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -3660,10 +3649,7 @@ public class StartDeliveryActivity extends MasterActivity
                 lp.setMargins(15, 2, 95, 2);
                 tr.setLayoutParams(lp);
 
-            /*    lp = new LayoutParams(340,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-                tr.setLayoutParams(lp);
-                lp.setMargins(0, 10, 40, 0); */
 
             } else {
                 lp = new LayoutParams(150, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -3793,11 +3779,7 @@ public class StartDeliveryActivity extends MasterActivity
                             lp.setMargins(15, 2, 95, 2);
                             tr.setLayoutParams(lp);
 
-                    /*        lp = new LayoutParams(340, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                            tr.setId((resulttab.getChildCount()));
-                            tr.setLayoutParams(lp);
-                            lp.setMargins(0, 10, 40, 0); */
-                            //	wp = new LayoutParams(340,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
 
                         } else {
                             lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);

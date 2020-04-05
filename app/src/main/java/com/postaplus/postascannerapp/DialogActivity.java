@@ -310,7 +310,7 @@ public class DialogActivity extends Activity implements View.OnClickListener ,Ba
                     waybill = barcodeData;
                     // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
                     System.out.println("barcodeData waybill is:" + waybill);
-                    if (Utils.checkValidWaybill(waybill) == true) {
+                    if (Utils.checkValidWaybillForDelivery(waybill) == true) {
 
                         System.out.println("diaalog ID : ");
                         // System.out.println(R.id.WC_Frame);

@@ -35,7 +35,7 @@ public class OtpActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_otp);
         initViews();
-        if(getIntent()!=null && getIntent().getExtras()!=null){
+        if (getIntent() != null && getIntent().getExtras() != null) {
             waybill = (List<String>) getIntent().getExtras().getSerializable("wayBillList");
             driverCode = getIntent().getExtras().getString("drivercode");
         }
@@ -85,8 +85,8 @@ public class OtpActivity extends Activity {
 
     private void verifyAction(String otp) {
         try {
-            String result = WebService.otpVerification(driverCode,otp,waybill);
-            if(result.contains("TRUE"))
+            String result = WebService.otpVerification(driverCode, otp, waybill);
+            if (result.contains("TRUE"))
                 verifiedSucceed();
             else
                 verifiedFailed(result);
@@ -95,10 +95,11 @@ public class OtpActivity extends Activity {
         }
 
     }
-    private void resendOtp(){
+
+    private void resendOtp() {
         try {
-            String result = WebService.resendOtp(driverCode,waybill);
-            if(result.contains("TRUE"))
+            String result = WebService.resendOtp(driverCode, waybill);
+            if (result.contains("TRUE"))
                 startDownCounter();
             else
                 verifiedFailed(result);
@@ -108,21 +109,26 @@ public class OtpActivity extends Activity {
         }
 
     }
+
     public String checkDigit(int number) {
         return number <= 9 ? "0" + number : String.valueOf(number);
     }
+
     private void verifiedFailed(String result) {
-        Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
         counterDownFinished(true, View.INVISIBLE);
 
     }
+
     private void counterDownFinished(boolean isResendButtonEnabled, int invisible) {
         resendOtpButton.setEnabled(isResendButtonEnabled);
         counterTextView.setVisibility(invisible);
     }
-    public void verifiedSucceed(){
-           Intent intent = new Intent();
-           setResult(12, intent);
-           finish();
+
+    public void verifiedSucceed() {
+        Toast.makeText(getApplicationContext(), "OTP Verified", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent();
+        setResult(12, intent);
+        finish();
     }
 }
