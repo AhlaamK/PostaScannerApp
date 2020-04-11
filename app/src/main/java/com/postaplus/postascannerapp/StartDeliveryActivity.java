@@ -2145,7 +2145,7 @@ public class StartDeliveryActivity extends MasterActivity
                     waybill = barcodefrmScanner;
 
 
-                    if (Utils.checkValidWaybillForDelivery(barcodefrmScanner)) {
+                    if (Utils.checkValidWaybill(barcodefrmScanner)) {
 
 
                         lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);

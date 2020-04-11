@@ -65,66 +65,61 @@ import static com.postaplus.postascannerapp.HomeActivity.barcodeReader;
 
 public class PickupUpdateActivity extends MasterActivity
         implements BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
+    static final byte[] TYPE_BT_OOB = "application/vnd.bluetooth.ep.oob".getBytes();
+    //KDC Parameters
+    //
+    public static String WaybillFromScanner = "";
+    public static String KDCScannerCallFrom = "";
+    static boolean errored = false;
+    static boolean DonotInterruptKDCScan = true;
+    public int SCANNER_REQUEST_CODE = 123;
+    public String chkdata = "";
+    public String wbill;
+    //KDCTask KDCTaskExecutable = new KDCTask();
+    public boolean isActivityActiveFlag = false;
+    public ProgressDialog mProgressDialog;
     GPSTracker gps;
     int rowid = -1;
     double latitude, longitude;
     int pickflag;
-    TextView username, picknotxt, accnotxt, wbilltxt, paytxt, amounttxt, servicetxt, deltxt, payidtxt, serviceidtxt, counttxt, tagtxt,waybilldialog;
+    TextView username, picknotxt, accnotxt, wbilltxt, paytxt, amounttxt, servicetxt, deltxt, payidtxt, serviceidtxt, counttxt, tagtxt, waybilldialog;
     EditText amountedt;
     Button back, scan, pickup, finishbtn;
     String drivercode, route, routen, waybill, waybillCam, pickupno, service, paytype, amount, serviceId, serviceType, payId, accountname, date_time, payIde, serviceIde;
     String[] serviceTypearr, serviceIdarr, payTypearr, payIdarr, wbilltabarr, amounttabarr, servicetabarr, paytabarr, remarkcode, remarkdesc;
     int count, count1, tablecount;
     Spinner servicespinner, paytypespinner, pickupremksspinner;
-
     TableLayout resulttab;
     TableRow tr;
     int i = 0;
     LayoutParams lp;
-    static boolean errored = false;
     boolean flag = false;
     boolean mastreflag = false;
     String pick_status, pickstts, newpickStatus;
-    public int SCANNER_REQUEST_CODE = 123;
-    //KDC Parameters
-    //
-    public static String WaybillFromScanner = "";
-    public static String KDCScannerCallFrom = "";
-
     Resources _resources;
     BluetoothDevice _btDevice = null;
-    static final byte[] TYPE_BT_OOB = "application/vnd.bluetooth.ep.oob".getBytes();
     Button _btnScan = null;
-
     //BluetoothDevice _btDevice;
     PickupUpdateActivity _activity;
     KDCData ScannerData;
     KDCReader _kdcReader;
-    public String chkdata = "";
-    public String wbill;
     View rootView;
     //public PickupUpdateActivity MYActivity;
     Context mContext;
     Thread ThrKdc;
     String pickupfinishresponse, dvrcode, selectedspinner, label;
-    //KDCTask KDCTaskExecutable = new KDCTask();
-    public boolean isActivityActiveFlag = false;
-    static boolean DonotInterruptKDCScan = true;
     String status = "PU";
     ProgressBar pb;
-    public ProgressDialog mProgressDialog;
-
     setPickUpDt[] setpkpdtRequest;
     int Flagcam = 0;
     int countN = 0;
     ProgressDialog pd;
     boolean processClick;
-    private long lastClickTime = 0;
     AsyncTask pickupTask;
     int minteger = 0;
     int intmax = 99, intmin = 1;
     Button decrease, increase;
-    CheckBox cbmps,cbReference;
+    CheckBox cbmps, cbReference;
     LinearLayout tagcounter;
     int tagvalue;
     TextView masterawbtxt;
@@ -145,17 +140,16 @@ public class PickupUpdateActivity extends MasterActivity
     boolean createflag = false;
     String Scanrwabill;
     String ErrMesageRef;
-
     TableLayout resulttabledialog;
-    boolean delvryflag=false;
-    TextView textchoose,textalert;
-
+    boolean delvryflag = false;
+    TextView textchoose, textalert;
     String ApprvalStatus, Attemptstatus;
     TableRow trdialog;
     String UserNotyTrackResp;
     String laststats;
-    String[]  wbillarr;
+    String[] wbillarr;
     int[] stopdelarr;
+    private long lastClickTime = 0;
 
     public void ScannerExecutions() {
         System.out.println(" pdata new value in chkdata is ");
@@ -215,7 +209,7 @@ public class PickupUpdateActivity extends MasterActivity
 
     public void onCreate(Bundle savedInstanceState) {
 
-        Log.e("SpinOnCreate","OnCreateCalled");
+        Log.e("SpinOnCreate", "OnCreateCalled");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pickup_update);
@@ -255,7 +249,7 @@ public class PickupUpdateActivity extends MasterActivity
         //mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         //mProgressDialog.setCancelable(false);
         cbmps = (CheckBox) findViewById(R.id.cbmps);
-        cbReference = (CheckBox)findViewById(R.id.cbReference);
+        cbReference = (CheckBox) findViewById(R.id.cbReference);
         tagcounter = (LinearLayout) findViewById(R.id.tagcounter);
         tagcounter.setVisibility(View.GONE);
         pickupno = getIntent().getExtras().getString("pickno");
@@ -460,7 +454,7 @@ public class PickupUpdateActivity extends MasterActivity
                 DonotInterruptKDCScan = false;
                 // moveTaskToBack(true);
                 //_activity.finishActivity(0);
-              //  barcodeReader.close();
+                //  barcodeReader.close();
 
                 barcodeReader.removeBarcodeListener(_activity);
                 barcodeReader.release();
@@ -468,13 +462,13 @@ public class PickupUpdateActivity extends MasterActivity
                 int1.putExtra("route", route);
                 int1.putExtra("route1", routen);
                 startActivity(new Intent(int1));*/
-                System.out.println("_Actv is:"+_activity);
+                System.out.println("_Actv is:" + _activity);
                /* SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_activity);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("HoneywellFlag", "0");
                 editor.commit();*/
                 PickupUpdateActivity.this.finish();
-               // startActivity(new Intent(_activity, PickupActivity.class));
+                // startActivity(new Intent(_activity, PickupActivity.class));
 
 
             }
@@ -940,7 +934,7 @@ public class PickupUpdateActivity extends MasterActivity
                         picknotxt.setText("");
                         accnotxt.setText("");
                         //	pb.setVisibility(View.INVISIBLE);
-                      //  _activity.finishActivity(0);
+                        //  _activity.finishActivity(0);
                        /* Intent int1 = new Intent(_activity, PickupActivity.class);
 
                         int1.putExtra("route", route);
@@ -1007,34 +1001,6 @@ public class PickupUpdateActivity extends MasterActivity
         return ni != null;
     }
 
-    private class pickupTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            System.out.println("pickup status update on pickup result preexecute");
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            //pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
-            pick_status = WebService.SET_PICKUPDETAILS(drivercode, pickupno);
-            System.out.println("pickup status update on pickup background finished" + pick_status);
-
-            return pick_status;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-
-            System.out.println("pickup status update on pickup result postexctve" + s);
-            pick_status = s;
-            super.onPostExecute(s);
-        }
-
-
-    }
-
     public void increaseInteger(View view) {
         minteger = minteger + 1;
 
@@ -1048,6 +1014,7 @@ public class PickupUpdateActivity extends MasterActivity
         //display(minteger);
 
     }
+
     @Override
     public void onBarcodeEvent(final BarcodeReadEvent event) {
 
@@ -1058,7 +1025,7 @@ public class PickupUpdateActivity extends MasterActivity
             public void run() {
                 if (event != null) {
                     wbill = event.getBarcodeData();
-                    if(cbReference.isChecked()){
+                    if (cbReference.isChecked()) {
                         _activity.runOnUiThread(new Runnable() {
                                                     @Override
                                                     public void run() {
@@ -1078,35 +1045,18 @@ public class PickupUpdateActivity extends MasterActivity
                                                                     Toast.makeText(getApplicationContext(), "Please enter Amount", Toast.LENGTH_SHORT).show();
                                                                     return;
                                                                 }
-                                                                System.out.println(" PickupUpdateactivity barcode wbill : " + wbill);
-
-                                                                System.out.println(" PickupUpdateactivity barcode wbill : " + wbill);
-                                                                //	String Masterbill = masterawbtxt.getText().toString();
-                                                                System.out.println(" masterawbtxt barcode wbill : " + masterawbtxt.getText().toString());
                                                                 String mastbill = "";
                                                                 if (cbmps.isChecked() && masterawbtxt.getText().toString().equals("")) {
                                                                     masterawbtxt.setText(wbill);
                                                                     mastbill = wbill;
 
-                                                                    // masterawbtxt.setText(wbill);
-                                                                    Log.e("blck1", "1");
 
                                                                 } else if (cbmps.isChecked() && !masterawbtxt.getText().toString().equals("")) {
-
                                                                     mastbill = masterawbtxt.getText().toString();
-
-                                                                    Log.e("blck2", "2");
                                                                 } else if (!cbmps.isChecked()) {
                                                                     mastbill = "";
-                                                                    Log.e("blck3", "3");
                                                                 }
-
-                                                                System.out.println("wbill on barcode:" + wbill + "mastbill on barcode:" + mastbill);
-
-
                                                                 new checkreferencewaybill(wbill, mastbill).execute();
-
-
                                                             }
                                                         }
 
@@ -1120,7 +1070,7 @@ public class PickupUpdateActivity extends MasterActivity
                                                 }
                         );
 
-                    }else if(!cbReference.isChecked()){
+                    } else if (!cbReference.isChecked()) {
                         // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
 
                         if (Utils.checkValidWaybill(event.getBarcodeData()) == true) {
@@ -1219,6 +1169,7 @@ public class PickupUpdateActivity extends MasterActivity
 
 
     }
+
     @Override
     public void onFailureEvent(BarcodeFailureEvent barcodeFailureEvent) {
 
@@ -1227,409 +1178,6 @@ public class PickupUpdateActivity extends MasterActivity
     @Override
     public void onTriggerEvent(TriggerStateChangeEvent triggerStateChangeEvent) {
 
-    }
-
-    public class checkpickpwaybill extends AsyncTask<Void, Void, String> {
-        //String response = "";
-        String Taskwabill = "";
-        String TaskMasterwabill = "";
-        CheckValidPickupWaybill CheckVPWaybillResp = null;
-
-        public checkpickpwaybill(String TakWaybill, String Mastrwabill) {
-            super();
-            Taskwabill = TakWaybill;
-            TaskMasterwabill = Mastrwabill;
-            System.out.println("TaskMasterwabill onchckp" + TaskMasterwabill + "maaswreng" + masterawbtxt.getText().toString());
-
-        }
-
-        public void onPreExecute() {
-            Pb.setVisibility(View.VISIBLE);
-            Pickpflag = false;
-            System.out.println("taskwaybill prexecute:" + Taskwabill);
-            // super.onPreExecute();
-            if (cbmps.isChecked()) {
-                cbmps.setEnabled(false);
-                cbmps.setChecked(true);
-            }
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-            CheckVPWaybillResp = checkwaybill(Taskwabill, TaskMasterwabill);
-
-            return "";
-        }
-
-        @Override
-        public void onPostExecute(String res) {
-            //response=null;
-            System.out.println("CheckVPWaybillResp pos: " + CheckVPWaybillResp.ErrMsg);
-            if (CheckVPWaybillResp == null) {
-                Pb.setVisibility(View.INVISIBLE);
-                cbmps.setEnabled(true);
-                Toast.makeText(PickupUpdateActivity.this, "Please Try again!",
-                        Toast.LENGTH_LONG).show();
-                return;
-            } else if (CheckVPWaybillResp.ErrMsg != "") {
-                cbmps.setEnabled(true);
-                masterawbtxt.setText("");
-                Toast.makeText(getApplicationContext(), CheckVPWaybillResp.ErrMsg,
-                        Toast.LENGTH_LONG).show();
-                Pb.setVisibility(View.INVISIBLE);
-                return;
-            }
-            if (CheckVPWaybillResp.ErrMsg == null || CheckVPWaybillResp.ErrMsg == "")
-            //	System.out.println("response : " + response.toString());
-            {
-
-                db = new DatabaseHandler(getBaseContext());
-                //open localdatabase in a read mode
-                sqldb = db.getReadableDatabase();
-                Cursor cc = sqldb.rawQuery("SELECT Waybill FROM deliverydata WHERE Waybill='" + Taskwabill + "'", null);
-                int wbcount = cc.getCount();
-                System.out.println("wbcount " + wbcount);
-                if (wbcount > 0) {
-                    Log.e("reached ", "1231");
-                    Toast.makeText(getApplicationContext(), "WayBill with Delivery", Toast.LENGTH_LONG).show();
-                    Pb.setVisibility(View.INVISIBLE);
-                    return;
-                } else
-                    System.out.println("mast onpost:" + TaskMasterwabill);
-                //	masterawbtxt.setText(TaskMasterwabill);
-
-                { 	/*if(cbmps.isChecked() ){
-					cbmps.setEnabled(true);
-				}*/
-									/*if (cbmps.isChecked()) {
-										if(masterawbtxt.getText().toString().equals("")){
-										masterawbtxt.setText(waybill);
-											mastreflag=true;
-											flag=false;
-										}
-										flag=false;
-									} else {*/
-                    //mastreflag=true;
-									/*if(mastreflag==true){
-										masterawbtxt.setText(waybill);
-										mastreflag=false;
-										flag=true;
-									}*/
-
-
-                    //Pb.setVisibility(View.VISIBLE);
-                    tr = new TableRow(PickupUpdateActivity.this);
-                    if (Build.MODEL.contains("SM-N")) {
-                        System.out.println("called smn barcodedatarecieved");
-                        //	lp = new LayoutParams(385,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                        lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                        tr.setId(resulttab.getChildCount());
-                        //lp.setMargins(0, 10, 30, 0);
-                        lp.setMargins(55, 2, 95, 2);
-                        tr.setLayoutParams(lp);
-
-
-                    } else {
-						/*lp = new LayoutParams(150, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-							tr.setId(resulttab.getChildCount());
-							tr.setLayoutParams(lp);
-							lp.setMargins(0, 20, 10, 0);*/
-
-                        lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                        tr.setId(resulttab.getChildCount());
-                        lp.setMargins(0, 20, 100, 0);
-                        tr.setLayoutParams(lp);
-                    }
-
-
-                    deltxt = new TextView(PickupUpdateActivity.this);
-                    deltxt.setLayoutParams(lp);
-                    deltxt.setText("Delete");
-
-                    wbilltxt = new TextView(PickupUpdateActivity.this);
-                    wbilltxt.setLayoutParams(lp);
-                    wbilltxt.setText(Taskwabill);
-
-
-                    paytxt = new TextView(PickupUpdateActivity.this);
-                    paytxt.setLayoutParams(lp);
-                    paytxt.setText(paytype);
-
-                    amounttxt = new TextView(PickupUpdateActivity.this);
-                    amounttxt.setLayoutParams(lp);
-                    amounttxt.setText(amount);
-
-                    servicetxt = new TextView(PickupUpdateActivity.this);
-                    servicetxt.setLayoutParams(lp);
-                    servicetxt.setText(serviceType);
-
-                    payidtxt = new TextView(PickupUpdateActivity.this);
-                    //	payidtxt.setLayoutParams(lp);
-                    payidtxt.setText(payIde);
-                    System.out.println("payid txt is" + payIde);
-
-                    serviceidtxt = new TextView(PickupUpdateActivity.this);
-                    //	serviceidtxt.setLayoutParams(lp);
-                    serviceidtxt.setText(serviceId);
-                    System.out.println("serviceid txt is" + serviceIde);
-
-
-                    // tag added for mps
-                    tagtxt = new TextView(PickupUpdateActivity.this);
-                    tagtxt.setLayoutParams(lp);
-                    //tagtxt.setText(String.valueOf(tagvalue));
-                    System.out.println("tagtxt on chck txt is" + mastrawbstrng);
-                    tagtxt.setText(TaskMasterwabill);
-
-											/*if(cbmps.isChecked()){
-												tagtxt.setText(mastrawbstrng);
-											}else{
-												tagtxt.setText("");
-											}*/
-
-                    System.out.println("value of mastrawbstrng tables" + mastrawbstrng);
-// condition added for MPS
-                    if (cbmps.isChecked() && masterawbtxt.getText().toString().equals("")) {
-
-                        //masterawbtxt.setText(Taskwabill);
-                        //	tagtxt.setText(Taskwabill);
-                        tr.addView(deltxt);
-                        tr.addView(wbilltxt);
-                        tr.addView(paytxt);
-                        tr.addView(amounttxt);
-                        tr.addView(servicetxt);
-                        tr.addView(tagtxt);
-
-
-                        System.out.println("value of wbilltxt in pickup update" + wbilltxt);
-                        System.out.println("value of paytxt in pickup update" + paytxt);
-                        System.out.println("value of amounttxt in pickup update" + amounttxt.getText());
-                        System.out.print(amount);
-                        System.out.println("value of servicetxt in pickup update" + servicetxt);
-
-                        System.out.println("value of tagtext in pickup update" + tagtxt.getText().toString());
-                        countN = resulttab.getChildCount() + 1;
-                        System.out.println("value of counttxt in " + countN);
-                        counttxt.setText(String.valueOf(countN));
-                        System.out.println("value of counttxt in pickup update" + counttxt.getText().toString());
-
-                        if (resulttab.getChildCount() == 0) {
-                            resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                        } else {
-                            //	counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                            //	System.out.println("value of counttxt in pickup update"+counttxt.toString());
-
-                            String wb;
-                            for (int i = 0; i < resulttab.getChildCount(); i++) {
-
-                                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                wb = wbill.getText().toString();
-
-
-                                if (!Taskwabill.equals(wb)) {
-                                    flag = true;
-
-                                } else if (Taskwabill.equals(wb)) {
-                                    flag = false;
-                                    System.out.println(flag);
-
-                                    break;
-
-                                }
-                            }
-                            if (flag) {
-                                resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                            } else {
-                                System.out.println("value of counttxt in else" + countN);
-                                counttxt.setText(String.valueOf(countN - 1));
-                                Toast.makeText(getApplicationContext(), "Duplicate WayBill not allowed,Please Scan again", Toast.LENGTH_LONG).show();
-                            }
-
-                        }
-                        //	masterawbtxt.setText(waybill);
-                    } else if (cbmps.isChecked() && !masterawbtxt.getText().toString().equals("")) {
-                        // Check_mawb();
-//check for mawb
-												/*if(masterawbtxt.getText().toString().equals(waybill)){
-													Toast.makeText(getApplicationContext(), "MasterAWB cannot be scanned",
-															Toast.LENGTH_LONG).show();
-													return ;
-												}else*/
-                        tr.addView(deltxt);
-                        tr.addView(wbilltxt);
-                        tr.addView(paytxt);
-                        tr.addView(amounttxt);
-                        tr.addView(servicetxt);
-                        tr.addView(tagtxt);
-
-
-                        System.out.println("value of wbilltxt in pickup update" + wbilltxt);
-                        System.out.println("value of paytxt in pickup update" + paytxt);
-                        System.out.println("value of amounttxt in pickup update" + amounttxt.getText());
-                        System.out.print(amount);
-                        System.out.println("value of servicetxt in pickup update" + servicetxt);
-
-                        System.out.println("value of tagtext in pickup update" + tagtxt.getText().toString());
-                        countN = resulttab.getChildCount() + 1;
-                        System.out.println("value of counttxt in " + countN);
-                        counttxt.setText(String.valueOf(countN));
-                        System.out.println("value of counttxt in pickup update" + counttxt.getText().toString());
-
-                        if (resulttab.getChildCount() == 0) {
-                            resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                        } else {
-                            //	counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                            //	System.out.println("value of counttxt in pickup update"+counttxt.toString());
-
-                            String wb;
-                            for (int i = 0; i < resulttab.getChildCount(); i++) {
-
-                                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                wb = wbill.getText().toString();
-                                System.out.println("value of wb in wb update" + wb);
-
-                                if (!Taskwabill.equals(wb)) {
-                                    flag = true;
-
-                                } else if (Taskwabill.equals(wb)) {
-                                    flag = false;
-                                    System.out.println(flag);
-
-                                    break;
-
-                                }
-                            }
-                            if (flag) {
-                                resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                            } else {
-                                System.out.println("value of counttxt in else" + countN);
-                                counttxt.setText(String.valueOf(countN - 1));
-                                Toast.makeText(getApplicationContext(), "Duplicate WayBill not allowed,Please Scan again", Toast.LENGTH_LONG).show();
-
-
-                            }
-
-                        }
-                    } else if (!cbmps.isChecked()) {
-                        System.out.println("mastr unc:" + tagtxt.getText().toString() + "waybill:+" + Taskwabill);
-
-												/*if(mastrawbstrng.equals(waybill)){
-													Toast.makeText(getApplicationContext(), "MasterAWB cannot be added",
-															Toast.LENGTH_LONG).show();
-													return ;
-												}else
-*/
-                        tr.addView(deltxt);
-                        tr.addView(wbilltxt);
-                        tr.addView(paytxt);
-                        tr.addView(amounttxt);
-                        tr.addView(servicetxt);
-                        tr.addView(tagtxt);
-
-
-                        System.out.println("value of wbilltxt in pickup update" + wbilltxt);
-                        System.out.println("value of paytxt in pickup update" + paytxt);
-                        System.out.println("value of amounttxt in pickup update" + amounttxt.getText());
-                        System.out.print(amount);
-                        System.out.println("value of servicetxt in pickup update" + servicetxt);
-
-                        System.out.println("value of tagtext in pickup update" + tagtxt.getText());
-                        countN = resulttab.getChildCount() + 1;
-                        System.out.println("value of counttxt in " + countN);
-                        counttxt.setText(String.valueOf(countN));
-                        System.out.println("value of counttxt in pickup update" + counttxt.getText().toString());
-
-                        if (resulttab.getChildCount() == 0) {
-                            resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                        } else {
-                            //	counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                            //	System.out.println("value of counttxt in pickup update"+counttxt.toString());
-
-                            String wb;
-                            for (int i = 0; i < resulttab.getChildCount(); i++) {
-
-                                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
-                                wb = wbill.getText().toString();
-                                System.out.println("wbb s" + wb);
-                                System.out.println("wb:" + wb + "Taskwabillwaybill:+" + Taskwabill);
-                                if (!Taskwabill.equals(wb)) {
-                                    flag = true;
-
-                                } else if (Taskwabill.equals(wb)) {
-                                    flag = false;
-                                    System.out.println(flag);
-
-                                    break;
-
-                                }
-                            }
-                            System.out.println("value of flag in else" + flag);
-                            if (flag) {
-                                resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-                            } else {
-                                System.out.println("value of counttxt in else" + countN);
-                                counttxt.setText(String.valueOf(countN - 1));
-                                Toast.makeText(getApplicationContext(), "Duplicate WayBill not allowed,Please Scan again", Toast.LENGTH_LONG).show();
-                            }
-
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Please select Service and PayType", Toast.LENGTH_LONG).show();
-
-                    }
-
-                    tr.setOnClickListener(new OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-
-                            System.out.println("Rowid:" + rowid + ",v.getID:" + v.getId());
-                            TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(v.getId())).getChildAt(1);
-
-                            String delwb = wbill.getText().toString();
-                            System.out.println("delwb:" + delwb);
-                            System.out.println("wayvill on del:" + delwb);
-                            if (rowid != v.getId()) {
-                                rowid = v.getId();
-                                Toast.makeText(getApplicationContext(), "Press again to delete the row", Toast.LENGTH_LONG).show();
-
-                            } else if (rowid == v.getId()) {
-
-                                resulttab.removeViewAt(v.getId());
-                                counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                                System.out.println("value of counttxt in pickup update delete" + counttxt.getText().toString());
-                                waybill = delwb;
-
-                                System.out.println("value of delwb is:" + delwb);
-                                delwaybillpckp = WebService.SET_DELETE_WAYBILL_PICKUP(drivercode, pickupno, delwb);
-                                Toast.makeText(getApplicationContext(), "Row deleted successfully", Toast.LENGTH_LONG).show();
-                                rowid = -1;
-                                int tabcount = resulttab.getChildCount();
-                                for (int i = 0; i < tabcount; i++) {
-                                    tr = (TableRow) resulttab.getChildAt(i);
-                                    tr.setId(i);
-                                    counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                                    System.out.println("value of counttxt in pickup update delete" + counttxt.getText().toString());
-                                }
-                            }
-
-                        }
-                    });
-                }
-                cc.close();
-                db.close();
-//&&Masterwabill==mastrawbstrng
-                System.out.println("Taskwabill" + Taskwabill + "TaskMasterwabill" + masterawbtxt.getText().toString() + "mas" + masterawbtxt.getText().toString());
-                if (Taskwabill == Scanrwabill || Taskwabill==waybillCam) {
-                    Pickpflag = true;
-                    Pb.setVisibility(View.INVISIBLE);
-                    cbmps.setEnabled(true);
-
-                }
-
-            }
-            //Pb.setVisibility(View.INVISIBLE);
-        }
     }
 
     private CheckValidPickupWaybill checkwaybill(String waybill, String Masterwabill) {
@@ -1897,28 +1445,16 @@ public class PickupUpdateActivity extends MasterActivity
         return true;
     }
 
-
-
-   /* @Override
-    public void onBackPressed() {
-        System.out.println("frag:"+getFragmentManager().getBackStackEntryCount());
-        super.onBackPressed();
-        barcodeReader.removeBarcodeListener(_activity);
-        PickupUpdateActivity.this.finish();
-
-    }*/
-
     @Override
     public void onPause() {
         super.onPause();
-        if(barcodeReader!=null){
-        barcodeReader.removeBarcodeListener(_activity);
-        barcodeReader.release();
-        _activity.finish();
-    }
+        if (barcodeReader != null) {
+            barcodeReader.removeBarcodeListener(_activity);
+            barcodeReader.release();
+            _activity.finish();
+        }
 
     }
-
 
     public void openDialog() {
         final Dialog dialog = new Dialog(PickupUpdateActivity.this); // Context, this, etc.
@@ -1931,26 +1467,26 @@ public class PickupUpdateActivity extends MasterActivity
         final Button Deliveryaction = (Button) dialog.findViewById(R.id.deliveryaction);
 
         // scannningtable =(TableLayout)dialog.findViewById(R.id.scannningtable);
-        resulttabledialog =(TableLayout)dialog.findViewById(R.id.resulttabledialog);
-        textchoose =(TextView)dialog.findViewById(R.id.textchoose);
-        textalert=(TextView)dialog.findViewById(R.id.textalert);
-        final Button confirmaction=(Button)dialog.findViewById(R.id.confirmaction);
-        final Button btncancel =(Button)dialog.findViewById(R.id.btncancel);
+        resulttabledialog = (TableLayout) dialog.findViewById(R.id.resulttabledialog);
+        textchoose = (TextView) dialog.findViewById(R.id.textchoose);
+        textalert = (TextView) dialog.findViewById(R.id.textalert);
+        final Button confirmaction = (Button) dialog.findViewById(R.id.confirmaction);
+        final Button btncancel = (Button) dialog.findViewById(R.id.btncancel);
         //  scannningtable.setVisibility(View.GONE);
 
         dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
-            public boolean onKey (DialogInterface dialog, int keyCode, KeyEvent event) {
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 int action = event.getAction();
                 int keyCodes = event.getKeyCode();
-                System.out.println("keycode"+keyCodes+"keyevent"+action);
+                System.out.println("keycode" + keyCodes + "keyevent" + action);
 
                 switch (keyCodes) {
                     case KeyEvent.KEYCODE_VOLUME_UP:
 
                         if (action == KeyEvent.ACTION_DOWN) {
                             DonotInterruptKDCScan = true;
-                            delvryflag=true;
+                            delvryflag = true;
                             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                             intent.putExtra("SCAN_MODE", "SCAN_MODE");
                             startActivityForResult(intent, SCANNER_REQUEST_CODE);
@@ -1963,7 +1499,7 @@ public class PickupUpdateActivity extends MasterActivity
 
                         if (action == KeyEvent.ACTION_DOWN) {
                             DonotInterruptKDCScan = true;
-                            delvryflag=true;
+                            delvryflag = true;
                             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                             intent.putExtra("SCAN_MODE", "SCAN_MODE");
                             startActivityForResult(intent, SCANNER_REQUEST_CODE);
@@ -1983,13 +1519,13 @@ public class PickupUpdateActivity extends MasterActivity
             public void onClick(View v) {
                 //Do your code here
                 dialog.dismiss();
-                delvryflag=false;
-                if(_kdcReader!=null) _kdcReader.Disconnect();
-                if(ThrKdc!=null)ThrKdc.interrupt();
-               // KDCTaskExecutable.cancel(true);
-                Intent int1 = new Intent(PickupUpdateActivity.this,PickupActivity.class);
-                int1.putExtra("routecode",route);
-                int1.putExtra("routename",routen);
+                delvryflag = false;
+                if (_kdcReader != null) _kdcReader.Disconnect();
+                if (ThrKdc != null) ThrKdc.interrupt();
+                // KDCTaskExecutable.cancel(true);
+                Intent int1 = new Intent(PickupUpdateActivity.this, PickupActivity.class);
+                int1.putExtra("routecode", route);
+                int1.putExtra("routename", routen);
 
                 //startActivity(new Intent(int1));
                 // new code
@@ -2002,19 +1538,19 @@ public class PickupUpdateActivity extends MasterActivity
             @Override
             public void onClick(View v) {
                 //Do your code
-                if(resulttabledialog.getChildCount()==0){
-                    Toast.makeText(getApplicationContext(),"Please Scan Awb!",
+                if (resulttabledialog.getChildCount() == 0) {
+                    Toast.makeText(getApplicationContext(), "Please Scan Awb!",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                delvryflag=false;
-                if(_kdcReader!=null) _kdcReader.Disconnect();
-                if(ThrKdc!=null)ThrKdc.interrupt();
+                delvryflag = false;
+                if (_kdcReader != null) _kdcReader.Disconnect();
+                if (ThrKdc != null) ThrKdc.interrupt();
                 //KDCTaskExecutable.cancel(true);
                 dialog.dismiss();
-                Intent int1 = new Intent(PickupUpdateActivity.this,StartDeliveryActivity.class);
-                int1.putExtra("routecode",route);
-                int1.putExtra("routename",routen);
+                Intent int1 = new Intent(PickupUpdateActivity.this, StartDeliveryActivity.class);
+                int1.putExtra("routecode", route);
+                int1.putExtra("routename", routen);
                 startActivity(int1);
 
             }
@@ -2025,25 +1561,23 @@ public class PickupUpdateActivity extends MasterActivity
             public void onClick(View v) {
                 //Do your code here
                 dialog.dismiss();
-                delvryflag=false;
+                delvryflag = false;
 
-                if(!isActivityActiveFlag)
-                {
-                   // Toast.makeText(getApplicationContext(), "Please wait for scanner to connect",
-                       //     Toast.LENGTH_LONG).show();
+                if (!isActivityActiveFlag) {
+                    // Toast.makeText(getApplicationContext(), "Please wait for scanner to connect",
+                    //     Toast.LENGTH_LONG).show();
 
-                }
-                else{
+                } else {
 
-                    if(_kdcReader!=null) _kdcReader.Disconnect();
-                    if(ThrKdc!=null)ThrKdc.interrupt();
-                   // KDCTaskExecutable.cancel(true);
+                    if (_kdcReader != null) _kdcReader.Disconnect();
+                    if (ThrKdc != null) ThrKdc.interrupt();
+                    // KDCTaskExecutable.cancel(true);
 
 
                 }
-                Intent int1 = new Intent(PickupUpdateActivity.this,HomeActivity.class);
-                int1.putExtra("routecode",route);
-                int1.putExtra("routename",routen);
+                Intent int1 = new Intent(PickupUpdateActivity.this, HomeActivity.class);
+                int1.putExtra("routecode", route);
+                int1.putExtra("routename", routen);
 
                 //startActivity(new Intent(int1));
                 // new code
@@ -2054,7 +1588,7 @@ public class PickupUpdateActivity extends MasterActivity
             @Override
             public void onClick(View v) {
                 //Do your code here
-                delvryflag=true;
+                delvryflag = true;
 
                 dialog.setTitle("Please confirm");
 
@@ -2071,16 +1605,535 @@ public class PickupUpdateActivity extends MasterActivity
         dialog.show();
     }
 
+
+
+   /* @Override
+    public void onBackPressed() {
+        System.out.println("frag:"+getFragmentManager().getBackStackEntryCount());
+        super.onBackPressed();
+        barcodeReader.removeBarcodeListener(_activity);
+        PickupUpdateActivity.this.finish();
+
+    }*/
+
+    private JSONObject checkreferencewaybill(String waybill, String Masterwabill) {
+
+
+        System.out.println("DRIVERCODE:" + drivercode);
+        System.out.println("WAYBILL cam:" + waybill);
+        JSONObject checkValidRefernceResp = null;
+
+        if (drivercode == null || drivercode.equals("") || waybill == null || waybill.equals("")) {
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    Toast.makeText(getApplicationContext(), "Try again! Required Values Blank",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+            return null;
+        }
+
+        flag = false;
+        serviceType = servicespinner.getSelectedItem().toString();
+        paytype = paytypespinner.getSelectedItem().toString();
+        amount = amountedt.getText().toString();
+        mastrawbstrng = masterawbtxt.getText().toString();
+        //serviceId=String.valueOf(serviceIdarr[servicespinner.getSelectedItemPosition()]);
+        //payId=String.valueOf(payIdarr[paytypespinner.getSelectedItemPosition()]);
+        System.out.println("value of service type in pickup update");
+        System.out.println(serviceType);
+        System.out.println("value of paytype in pickup update");
+        System.out.println(paytype);
+        System.out.println("value of amount in pickup update");
+        System.out.println(amount);
+        System.out.println("value of mastrawbstrng in pickup update" + mastrawbstrng);
+
+
+        try {
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+            date_time = sdf.format(new Date());
+            //if(chckvalidpickupwaybilresp_chkwbl == null) return null;
+            checkValidRefernceResp = WebService.Check_ValidPickupReference(drivercode, waybill, usercode = drivercode, Masterwabill, serviceIde, pickupno, payIde, amountedt.getText().toString(), date_time);
+            System.out.println("checkValidRefernceResp are:" + checkValidRefernceResp);
+
+
+            // error1= checkValidRefernceResp.getString("ErrMsg");
+
+
+            ErrMesageRef = checkValidRefernceResp.getString("ErrMsg");
+
+
+
+
+          /*  if (checkValidRefernceResp.ErrMsg == null || checkValidRefernceResp.ErrMsg == "") {
+
+                waybill1 = checkValidRefernceResp.WayBill;
+                rname1 = checkValidRefernceResp.RouteName;
+                cname1 = checkValidRefernceResp.ConsignName;
+                phone = checkValidRefernceResp.PhoneNo;
+                area1 = checkValidRefernceResp.Area;
+                company1 = checkValidRefernceResp.Company;
+                civilid1 = checkValidRefernceResp.CivilId;
+                serial1 = checkValidRefernceResp.Serial;
+                cardtype1 = checkValidRefernceResp.CardType;
+                deldate1 = checkValidRefernceResp.DelDate;
+                deltime1 = checkValidRefernceResp.DelTime;
+                amount1 = checkValidRefernceResp.Amount;
+                adress1 = checkValidRefernceResp.Address;
+                awbidetnfr1 = checkValidRefernceResp.AWBIdentifier;
+                ShiperName = checkValidRefernceResp.ShipperName;
+                attempt1 = checkValidRefernceResp.Attempt;
+                error1 = checkValidRefernceResp.ErrMsg;
+                laststa1 = checkValidRefernceResp.Last_Status;
+
+
+            }*/
+
+
+        } catch (Exception e) {
+        }
+
+        return checkValidRefernceResp;
+    }
+
+    private class pickupTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            System.out.println("pickup status update on pickup result preexecute");
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            //pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
+            pick_status = WebService.SET_PICKUPDETAILS(drivercode, pickupno);
+            System.out.println("pickup status update on pickup background finished" + pick_status);
+
+            return pick_status;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+
+            System.out.println("pickup status update on pickup result postexctve" + s);
+            pick_status = s;
+            super.onPostExecute(s);
+        }
+
+
+    }
+
+    public class checkpickpwaybill extends AsyncTask<Void, Void, String> {
+        //String response = "";
+        String Taskwabill = "";
+        String TaskMasterwabill = "";
+        CheckValidPickupWaybill CheckVPWaybillResp = null;
+
+        public checkpickpwaybill(String TakWaybill, String Mastrwabill) {
+            super();
+            Taskwabill = TakWaybill;
+            TaskMasterwabill = Mastrwabill;
+            System.out.println("TaskMasterwabill onchckp" + TaskMasterwabill + "maaswreng" + masterawbtxt.getText().toString());
+
+        }
+
+        public void onPreExecute() {
+            Pb.setVisibility(View.VISIBLE);
+            Pickpflag = false;
+            System.out.println("taskwaybill prexecute:" + Taskwabill);
+            // super.onPreExecute();
+            if (cbmps.isChecked()) {
+                cbmps.setEnabled(false);
+                cbmps.setChecked(true);
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... arg0) {
+            CheckVPWaybillResp = checkwaybill(Taskwabill, TaskMasterwabill);
+
+            return "";
+        }
+
+        @Override
+        public void onPostExecute(String res) {
+            //response=null;
+            System.out.println("CheckVPWaybillResp pos: " + CheckVPWaybillResp.ErrMsg);
+            if (CheckVPWaybillResp == null) {
+                Pb.setVisibility(View.INVISIBLE);
+                cbmps.setEnabled(true);
+                Toast.makeText(PickupUpdateActivity.this, "Please Try again!",
+                        Toast.LENGTH_LONG).show();
+                return;
+            } else if (CheckVPWaybillResp.ErrMsg != "") {
+                cbmps.setEnabled(true);
+                masterawbtxt.setText("");
+                Toast.makeText(getApplicationContext(), CheckVPWaybillResp.ErrMsg,
+                        Toast.LENGTH_LONG).show();
+                Pb.setVisibility(View.INVISIBLE);
+                return;
+            }
+            if (CheckVPWaybillResp.ErrMsg == null || CheckVPWaybillResp.ErrMsg == "") {
+
+                db = new DatabaseHandler(getBaseContext());
+                //open localdatabase in a read mode
+                sqldb = db.getReadableDatabase();
+                Cursor cc = sqldb.rawQuery("SELECT Waybill FROM deliverydata WHERE Waybill='" + Taskwabill + "'", null);
+                int wbcount = cc.getCount();
+                System.out.println("wbcount " + wbcount);
+                if (wbcount > 0) {
+                    Log.e("reached ", "1231");
+                    Toast.makeText(getApplicationContext(), "WayBill with Delivery", Toast.LENGTH_LONG).show();
+                    Pb.setVisibility(View.INVISIBLE);
+                    return;
+                } else
+                    System.out.println("mast onpost:" + TaskMasterwabill);
+                //	masterawbtxt.setText(TaskMasterwabill);
+
+                { 	/*if(cbmps.isChecked() ){
+					cbmps.setEnabled(true);
+				}*/
+									/*if (cbmps.isChecked()) {
+										if(masterawbtxt.getText().toString().equals("")){
+										masterawbtxt.setText(waybill);
+											mastreflag=true;
+											flag=false;
+										}
+										flag=false;
+									} else {*/
+                    //mastreflag=true;
+									/*if(mastreflag==true){
+										masterawbtxt.setText(waybill);
+										mastreflag=false;
+										flag=true;
+									}*/
+
+
+                    //Pb.setVisibility(View.VISIBLE);
+                    tr = new TableRow(PickupUpdateActivity.this);
+                    if (Build.MODEL.contains("SM-N")) {
+                        System.out.println("called smn barcodedatarecieved");
+                        //	lp = new LayoutParams(385,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                        lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                        tr.setId(resulttab.getChildCount());
+                        //lp.setMargins(0, 10, 30, 0);
+                        lp.setMargins(55, 2, 95, 2);
+                        tr.setLayoutParams(lp);
+
+
+                    } else {
+						/*lp = new LayoutParams(150, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+							tr.setId(resulttab.getChildCount());
+							tr.setLayoutParams(lp);
+							lp.setMargins(0, 20, 10, 0);*/
+
+                        lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                        tr.setId(resulttab.getChildCount());
+                        lp.setMargins(0, 20, 100, 0);
+                        tr.setLayoutParams(lp);
+                    }
+
+
+                    deltxt = new TextView(PickupUpdateActivity.this);
+                    deltxt.setLayoutParams(lp);
+                    deltxt.setText("Delete");
+
+                    wbilltxt = new TextView(PickupUpdateActivity.this);
+                    wbilltxt.setLayoutParams(lp);
+                    wbilltxt.setText(Taskwabill);
+
+
+                    paytxt = new TextView(PickupUpdateActivity.this);
+                    paytxt.setLayoutParams(lp);
+                    paytxt.setText(paytype);
+
+                    amounttxt = new TextView(PickupUpdateActivity.this);
+                    amounttxt.setLayoutParams(lp);
+                    amounttxt.setText(amount);
+
+                    servicetxt = new TextView(PickupUpdateActivity.this);
+                    servicetxt.setLayoutParams(lp);
+                    servicetxt.setText(serviceType);
+
+                    payidtxt = new TextView(PickupUpdateActivity.this);
+                    //	payidtxt.setLayoutParams(lp);
+                    payidtxt.setText(payIde);
+                    System.out.println("payid txt is" + payIde);
+
+                    serviceidtxt = new TextView(PickupUpdateActivity.this);
+                    //	serviceidtxt.setLayoutParams(lp);
+                    serviceidtxt.setText(serviceId);
+                    System.out.println("serviceid txt is" + serviceIde);
+
+
+                    // tag added for mps
+                    tagtxt = new TextView(PickupUpdateActivity.this);
+                    tagtxt.setLayoutParams(lp);
+                    //tagtxt.setText(String.valueOf(tagvalue));
+                    System.out.println("tagtxt on chck txt is" + mastrawbstrng);
+                    tagtxt.setText(TaskMasterwabill);
+
+											/*if(cbmps.isChecked()){
+												tagtxt.setText(mastrawbstrng);
+											}else{
+												tagtxt.setText("");
+											}*/
+
+                    System.out.println("value of mastrawbstrng tables" + mastrawbstrng);
+// condition added for MPS
+                    if (cbmps.isChecked() && masterawbtxt.getText().toString().equals("")) {
+
+                        //masterawbtxt.setText(Taskwabill);
+                        //	tagtxt.setText(Taskwabill);
+                        tr.addView(deltxt);
+                        tr.addView(wbilltxt);
+                        tr.addView(paytxt);
+                        tr.addView(amounttxt);
+                        tr.addView(servicetxt);
+                        tr.addView(tagtxt);
+
+
+                        System.out.println("value of wbilltxt in pickup update" + wbilltxt);
+                        System.out.println("value of paytxt in pickup update" + paytxt);
+                        System.out.println("value of amounttxt in pickup update" + amounttxt.getText());
+                        System.out.print(amount);
+                        System.out.println("value of servicetxt in pickup update" + servicetxt);
+
+                        System.out.println("value of tagtext in pickup update" + tagtxt.getText().toString());
+                        countN = resulttab.getChildCount() + 1;
+                        System.out.println("value of counttxt in " + countN);
+                        counttxt.setText(String.valueOf(countN));
+                        System.out.println("value of counttxt in pickup update" + counttxt.getText().toString());
+
+                        if (resulttab.getChildCount() == 0) {
+                            resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                        } else {
+
+                            String wb;
+                            for (int i = 0; i < resulttab.getChildCount(); i++) {
+
+                                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                                wb = wbill.getText().toString();
+
+
+                                if (!Taskwabill.equals(wb)) {
+                                    flag = true;
+
+                                } else if (Taskwabill.equals(wb)) {
+                                    flag = false;
+                                    System.out.println(flag);
+
+                                    break;
+
+                                }
+                            }
+                            if (flag) {
+                                resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                            } else {
+                                System.out.println("value of counttxt in else" + countN);
+                                counttxt.setText(String.valueOf(countN - 1));
+                                Toast.makeText(getApplicationContext(), "Duplicate WayBill not allowed,Please Scan again", Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                        //	masterawbtxt.setText(waybill);
+                    } else if (cbmps.isChecked() && !masterawbtxt.getText().toString().equals("")) {
+                        // Check_mawb();
+//check for mawb
+												/*if(masterawbtxt.getText().toString().equals(waybill)){
+													Toast.makeText(getApplicationContext(), "MasterAWB cannot be scanned",
+															Toast.LENGTH_LONG).show();
+													return ;
+												}else*/
+                        tr.addView(deltxt);
+                        tr.addView(wbilltxt);
+                        tr.addView(paytxt);
+                        tr.addView(amounttxt);
+                        tr.addView(servicetxt);
+                        tr.addView(tagtxt);
+
+
+                        System.out.println("value of wbilltxt in pickup update" + wbilltxt);
+                        System.out.println("value of paytxt in pickup update" + paytxt);
+                        System.out.println("value of amounttxt in pickup update" + amounttxt.getText());
+                        System.out.print(amount);
+                        System.out.println("value of servicetxt in pickup update" + servicetxt);
+
+                        System.out.println("value of tagtext in pickup update" + tagtxt.getText().toString());
+                        countN = resulttab.getChildCount() + 1;
+                        System.out.println("value of counttxt in " + countN);
+                        counttxt.setText(String.valueOf(countN));
+                        System.out.println("value of counttxt in pickup update" + counttxt.getText().toString());
+
+                        if (resulttab.getChildCount() == 0) {
+                            resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                        } else {
+
+                            String wb;
+                            for (int i = 0; i < resulttab.getChildCount(); i++) {
+
+                                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                                wb = wbill.getText().toString();
+                                System.out.println("value of wb in wb update" + wb);
+
+                                if (!Taskwabill.equals(wb)) {
+                                    flag = true;
+
+                                } else if (Taskwabill.equals(wb)) {
+                                    flag = false;
+                                    System.out.println(flag);
+
+                                    break;
+
+                                }
+                            }
+                            if (flag) {
+                                resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                            } else {
+                                System.out.println("value of counttxt in else" + countN);
+                                counttxt.setText(String.valueOf(countN - 1));
+                                Toast.makeText(getApplicationContext(), "Duplicate WayBill not allowed,Please Scan again", Toast.LENGTH_LONG).show();
+
+
+                            }
+
+                        }
+                    } else if (!cbmps.isChecked()) {
+                        System.out.println("mastr unc:" + tagtxt.getText().toString() + "waybill:+" + Taskwabill);
+
+												/*if(mastrawbstrng.equals(waybill)){
+													Toast.makeText(getApplicationContext(), "MasterAWB cannot be added",
+															Toast.LENGTH_LONG).show();
+													return ;
+												}else
+*/
+                        tr.addView(deltxt);
+                        tr.addView(wbilltxt);
+                        tr.addView(paytxt);
+                        tr.addView(amounttxt);
+                        tr.addView(servicetxt);
+                        tr.addView(tagtxt);
+
+
+                        System.out.println("value of wbilltxt in pickup update" + wbilltxt);
+                        System.out.println("value of paytxt in pickup update" + paytxt);
+                        System.out.println("value of amounttxt in pickup update" + amounttxt.getText());
+                        System.out.print(amount);
+                        System.out.println("value of servicetxt in pickup update" + servicetxt);
+
+                        System.out.println("value of tagtext in pickup update" + tagtxt.getText());
+                        countN = resulttab.getChildCount() + 1;
+                        System.out.println("value of counttxt in " + countN);
+                        counttxt.setText(String.valueOf(countN));
+                        System.out.println("value of counttxt in pickup update" + counttxt.getText().toString());
+
+                        if (resulttab.getChildCount() == 0) {
+                            resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                        } else {
+
+                            String wb;
+                            for (int i = 0; i < resulttab.getChildCount(); i++) {
+
+                                TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(1);
+                                wb = wbill.getText().toString();
+                                System.out.println("wbb s" + wb);
+                                System.out.println("wb:" + wb + "Taskwabillwaybill:+" + Taskwabill);
+                                if (!Taskwabill.equals(wb)) {
+                                    flag = true;
+
+                                } else if (Taskwabill.equals(wb)) {
+                                    flag = false;
+                                    System.out.println(flag);
+
+                                    break;
+
+                                }
+                            }
+                            System.out.println("value of flag in else" + flag);
+                            if (flag) {
+                                resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                            } else {
+                                System.out.println("value of counttxt in else" + countN);
+                                counttxt.setText(String.valueOf(countN - 1));
+                                Toast.makeText(getApplicationContext(), "Duplicate WayBill not allowed,Please Scan again", Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Please select Service and PayType", Toast.LENGTH_LONG).show();
+
+                    }
+
+                    tr.setOnClickListener(new OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            System.out.println("Rowid:" + rowid + ",v.getID:" + v.getId());
+                            TextView wbill = (TextView) ((TableRow) resulttab.getChildAt(v.getId())).getChildAt(1);
+
+                            String delwb = wbill.getText().toString();
+                            System.out.println("delwb:" + delwb);
+                            System.out.println("wayvill on del:" + delwb);
+                            if (rowid != v.getId()) {
+                                rowid = v.getId();
+                                Toast.makeText(getApplicationContext(), "Press again to delete the row", Toast.LENGTH_LONG).show();
+
+                            } else if (rowid == v.getId()) {
+
+                                resulttab.removeViewAt(v.getId());
+                                counttxt.setText(String.valueOf(resulttab.getChildCount()));
+                                System.out.println("value of counttxt in pickup update delete" + counttxt.getText().toString());
+                                waybill = delwb;
+
+                                System.out.println("value of delwb is:" + delwb);
+                                delwaybillpckp = WebService.SET_DELETE_WAYBILL_PICKUP(drivercode, pickupno, delwb);
+                                Toast.makeText(getApplicationContext(), "Row deleted successfully", Toast.LENGTH_LONG).show();
+                                rowid = -1;
+                                int tabcount = resulttab.getChildCount();
+                                for (int i = 0; i < tabcount; i++) {
+                                    tr = (TableRow) resulttab.getChildAt(i);
+                                    tr.setId(i);
+                                    counttxt.setText(String.valueOf(resulttab.getChildCount()));
+                                    System.out.println("value of counttxt in pickup update delete" + counttxt.getText().toString());
+                                }
+                            }
+
+                        }
+                    });
+                }
+                cc.close();
+                db.close();
+//&&Masterwabill==mastrawbstrng
+                System.out.println("Taskwabill" + Taskwabill + "TaskMasterwabill" + masterawbtxt.getText().toString() + "mas" + masterawbtxt.getText().toString());
+                if (Taskwabill == Scanrwabill || Taskwabill == waybillCam) {
+                    Pickpflag = true;
+                    Pb.setVisibility(View.INVISIBLE);
+                    cbmps.setEnabled(true);
+
+                }
+
+            }
+            //Pb.setVisibility(View.INVISIBLE);
+        }
+    }
+
     public class UserNotifyTrack extends AsyncTask<Void, Void, String> {
 
-        String Taskdialwabill="";
+        String Taskdialwabill = "";
+
         public UserNotifyTrack(String TakWaybill) {
             super();
             Taskdialwabill = TakWaybill;
-            System.out.println("Taskdialwabill"+Taskdialwabill);
+            System.out.println("Taskdialwabill" + Taskdialwabill);
 
 
         }
+
         //String response = "";
         public void onPreExecute() {
 
@@ -2265,7 +2318,7 @@ public class PickupUpdateActivity extends MasterActivity
                 //open localdatabase in a read mode
                 sqldb = db.getReadableDatabase();
                 // Cursor c2 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbill + "' AND AWBIdentifier= '" + FlagDeliveryMode + "' ", null);
-                System.out.println("resulttabledialog dialog:" + resulttabledialog.getChildCount()+"Taskdialwabill"+Taskdialwabill);
+                System.out.println("resulttabledialog dialog:" + resulttabledialog.getChildCount() + "Taskdialwabill" + Taskdialwabill);
              /*   if(resulttabledialog.getChildCount()>0) {
 					TextView wbillres = null;
 					for (int k = 0; k < resulttabledialog.getChildCount(); k++) {
@@ -2313,9 +2366,9 @@ public class PickupUpdateActivity extends MasterActivity
 
                         System.out.println("Taskdialwabill pick:" + Taskdialwabill + "wbarr" + wbillarr[j]);
                         if (stopdelarr[j] == 0 || (stopdelarr[j] == 1 && ApprvalStatus.equals("APPROVED") && Attemptstatus.equals("0"))) {
-                      //  if (wbillarr[j] != null && !laststats.equals("DELIVERED")) {
+                            //  if (wbillarr[j] != null && !laststats.equals("DELIVERED")) {
                             System.out.println("Taskdialwabill pick:" + Taskdialwabill + "wbarr" + wbillarr[j]);
-                            if(resulttabledialog.getChildCount()>0) {
+                            if (resulttabledialog.getChildCount() > 0) {
                                 TextView wbillres = null;
                                 for (int k = 0; k < resulttabledialog.getChildCount(); k++) {
                                     wbillres = (TextView) ((TableRow) resulttabledialog.getChildAt(k)).getChildAt(0);
@@ -2385,11 +2438,12 @@ public class PickupUpdateActivity extends MasterActivity
                 }
 
 
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
     }
+
     public class checkreferencewaybill extends AsyncTask<Void, Void, String> {
         //String response = "";
         String Taskwabill = "";
@@ -2413,7 +2467,7 @@ public class PickupUpdateActivity extends MasterActivity
                 cbmps.setEnabled(false);
                 cbmps.setChecked(true);
             }
-             if(cbReference.isChecked()){
+            if (cbReference.isChecked()) {
                 cbReference.setEnabled(false);
                 cbReference.setChecked(true);
             }
@@ -2436,17 +2490,17 @@ public class PickupUpdateActivity extends MasterActivity
                 Toast.makeText(PickupUpdateActivity.this, "Please Try again!",
                         Toast.LENGTH_LONG).show();
                 return;
-            } else if (!ErrMesageRef.isEmpty()|| !ErrMesageRef.equals("")) {
+            } else if (!ErrMesageRef.isEmpty() || !ErrMesageRef.equals("")) {
                 cbmps.setEnabled(true);
                 cbReference.setEnabled(true);
 
                 masterawbtxt.setText("");
-                Toast.makeText(getApplicationContext(),ErrMesageRef,
+                Toast.makeText(getApplicationContext(), ErrMesageRef,
                         Toast.LENGTH_LONG).show();
                 Pb.setVisibility(View.INVISIBLE);
                 return;
             }
-            if (ErrMesageRef == null || ErrMesageRef.isEmpty()||ErrMesageRef == "")
+            if (ErrMesageRef == null || ErrMesageRef.isEmpty() || ErrMesageRef == "")
             //	System.out.println("response : " + response.toString());
             {
 
@@ -2567,8 +2621,6 @@ public class PickupUpdateActivity extends MasterActivity
                         if (resulttab.getChildCount() == 0) {
                             resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                         } else {
-                            //	counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                            //	System.out.println("value of counttxt in pickup update"+counttxt.toString());
 
                             String wb;
                             for (int i = 0; i < resulttab.getChildCount(); i++) {
@@ -2629,8 +2681,6 @@ public class PickupUpdateActivity extends MasterActivity
                         if (resulttab.getChildCount() == 0) {
                             resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                         } else {
-                            //	counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                            //	System.out.println("value of counttxt in pickup update"+counttxt.toString());
 
                             String wb;
                             for (int i = 0; i < resulttab.getChildCount(); i++) {
@@ -2656,20 +2706,13 @@ public class PickupUpdateActivity extends MasterActivity
                                 System.out.println("value of counttxt in else" + countN);
                                 counttxt.setText(String.valueOf(countN - 1));
                                 Toast.makeText(getApplicationContext(), "Duplicate WayBill not allowed,Please Scan again", Toast.LENGTH_LONG).show();
-
-
                             }
 
                         }
                     } else if (!cbmps.isChecked()) {
                         System.out.println("mastr unc:" + tagtxt.getText().toString() + "waybill:+" + Taskwabill);
 
-												/*if(mastrawbstrng.equals(waybill)){
-													Toast.makeText(getApplicationContext(), "MasterAWB cannot be added",
-															Toast.LENGTH_LONG).show();
-													return ;
-												}else
-*/
+
                         tr.addView(deltxt);
                         tr.addView(wbilltxt);
                         tr.addView(paytxt);
@@ -2677,24 +2720,12 @@ public class PickupUpdateActivity extends MasterActivity
                         tr.addView(servicetxt);
                         tr.addView(tagtxt);
 
-
-                        System.out.println("value of wbilltxt in pickup update" + wbilltxt);
-                        System.out.println("value of paytxt in pickup update" + paytxt);
-                        System.out.println("value of amounttxt in pickup update" + amounttxt.getText());
-                        System.out.print(amount);
-                        System.out.println("value of servicetxt in pickup update" + servicetxt);
-
-                        System.out.println("value of tagtext in pickup update" + tagtxt.getText());
                         countN = resulttab.getChildCount() + 1;
-                        System.out.println("value of counttxt in " + countN);
                         counttxt.setText(String.valueOf(countN));
-                        System.out.println("value of counttxt in pickup update" + counttxt.getText().toString());
 
                         if (resulttab.getChildCount() == 0) {
                             resulttab.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
                         } else {
-                            //	counttxt.setText(String.valueOf(resulttab.getChildCount()));
-                            //	System.out.println("value of counttxt in pickup update"+counttxt.toString());
 
                             String wb;
                             for (int i = 0; i < resulttab.getChildCount(); i++) {
@@ -2771,7 +2802,7 @@ public class PickupUpdateActivity extends MasterActivity
                 db.close();
 //&&Masterwabill==mastrawbstrng
                 System.out.println("Taskwabill" + Taskwabill + "TaskMasterwabill" + masterawbtxt.getText().toString() + "mas" + masterawbtxt.getText().toString());
-                if (Taskwabill == Scanrwabill || Taskwabill==waybillCam) {
+                if (Taskwabill == Scanrwabill || Taskwabill == waybillCam) {
                     Pickpflag = true;
                     Pb.setVisibility(View.INVISIBLE);
                     cbmps.setEnabled(true);
@@ -2782,90 +2813,5 @@ public class PickupUpdateActivity extends MasterActivity
             }
             //Pb.setVisibility(View.INVISIBLE);
         }
-    }
-
-    private JSONObject checkreferencewaybill(String waybill, String Masterwabill) {
-
-
-        System.out.println("DRIVERCODE:" + drivercode);
-        System.out.println("WAYBILL cam:" + waybill);
-        JSONObject checkValidRefernceResp = null;
-
-        if (drivercode == null || drivercode.equals("") || waybill == null || waybill.equals("")) {
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    Toast.makeText(getApplicationContext(), "Try again! Required Values Blank",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-            return null;
-        }
-
-        flag = false;
-        serviceType = servicespinner.getSelectedItem().toString();
-        paytype = paytypespinner.getSelectedItem().toString();
-        amount = amountedt.getText().toString();
-        mastrawbstrng = masterawbtxt.getText().toString();
-        //serviceId=String.valueOf(serviceIdarr[servicespinner.getSelectedItemPosition()]);
-        //payId=String.valueOf(payIdarr[paytypespinner.getSelectedItemPosition()]);
-        System.out.println("value of service type in pickup update");
-        System.out.println(serviceType);
-        System.out.println("value of paytype in pickup update");
-        System.out.println(paytype);
-        System.out.println("value of amount in pickup update");
-        System.out.println(amount);
-        System.out.println("value of mastrawbstrng in pickup update" + mastrawbstrng);
-
-
-
-
-        try {
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-            date_time = sdf.format(new Date());
-            //if(chckvalidpickupwaybilresp_chkwbl == null) return null;
-            checkValidRefernceResp = WebService.Check_ValidPickupReference(drivercode, waybill, usercode = drivercode, Masterwabill, serviceIde, pickupno, payIde, amountedt.getText().toString(), date_time);
-            System.out.println("checkValidRefernceResp are:" + checkValidRefernceResp);
-
-
-            // error1= checkValidRefernceResp.getString("ErrMsg");
-
-
-            ErrMesageRef = checkValidRefernceResp.getString("ErrMsg");
-
-
-
-
-          /*  if (checkValidRefernceResp.ErrMsg == null || checkValidRefernceResp.ErrMsg == "") {
-
-                waybill1 = checkValidRefernceResp.WayBill;
-                rname1 = checkValidRefernceResp.RouteName;
-                cname1 = checkValidRefernceResp.ConsignName;
-                phone = checkValidRefernceResp.PhoneNo;
-                area1 = checkValidRefernceResp.Area;
-                company1 = checkValidRefernceResp.Company;
-                civilid1 = checkValidRefernceResp.CivilId;
-                serial1 = checkValidRefernceResp.Serial;
-                cardtype1 = checkValidRefernceResp.CardType;
-                deldate1 = checkValidRefernceResp.DelDate;
-                deltime1 = checkValidRefernceResp.DelTime;
-                amount1 = checkValidRefernceResp.Amount;
-                adress1 = checkValidRefernceResp.Address;
-                awbidetnfr1 = checkValidRefernceResp.AWBIdentifier;
-                ShiperName = checkValidRefernceResp.ShipperName;
-                attempt1 = checkValidRefernceResp.Attempt;
-                error1 = checkValidRefernceResp.ErrMsg;
-                laststa1 = checkValidRefernceResp.Last_Status;
-
-
-            }*/
-
-
-        } catch (Exception e) {
-        }
-
-        return checkValidRefernceResp;
     }
 }

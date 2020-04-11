@@ -394,7 +394,7 @@ public class  DeliveryActivity extends FragmentActivity implements
 
                     DeliveryActivity.WaybillFromScanner = event.getBarcodeData();
 
-                    if (Utils.checkValidWaybillForDelivery(event.getBarcodeData()) == true) {
+                    if (Utils.checkValidWaybill(event.getBarcodeData()) == true) {
 
                         System.out.println(" - WC Constant ID : ");
                         //		  System.out.println(R.id.WC_Frame);
