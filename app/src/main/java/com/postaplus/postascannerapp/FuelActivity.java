@@ -177,15 +177,7 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 			ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
 		}
 
-	   /*  ThrKdc = new Thread(){
-		    	@Override
-		    	 public void run(){
-		    		_kdcReader= new KDCReader(null, _activity, _activity, null, null, null, _activity, false);
-		    		_btDevice = _kdcReader.GetBluetoothDevice();
-					_kdcReader.EnableBluetoothWakeupNull(true);
-		    	}
-		    };
-		    ThrKdc.start();*/
+
 
 			KDCTaskExecutable.execute();
 			System.out.println("FuelActivity KDCTask Executed");
@@ -198,32 +190,9 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 			public void onClick(View v) {
 				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
 
-			//	Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 				odoimage.setImageResource(R.drawable.odo);
 				//imgcountarr[6]=1;
-			/*	uriSavedImage=Uri.fromFile(new File(imagefile1,  "Fuelodo.PNG"));
-				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, uriSavedImage);
-				startActivityForResult(intent, 0);*/
 
-			/*	String imgpath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Postaplus/Fuel&Odoimage";
-				//imagefile1.mkdirs();
-
-
-				File imagefile1 = new File(imgpath);
-				Uri imageFileUri = Uri.fromFile(new File(imagefile1,"Fuelodo.PNG")); // convert path to Uri
-
-				Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-				it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
-				startActivityForResult(it, 0);*/
-
-			/*	String fileName = imagefile1+"Fuelodo.PNG";
-				ContentValues values = new ContentValues();
-				values.put(MediaStore.EXTRA_OUTPUT, fileName);
-				uriSavedImage = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
-				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				intent.putExtra(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA, uriSavedImage);
-				startActivityForResult(intent, 0);*/
 
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				uriSavedImage = Uri.fromFile(getOutputMediaFile());
@@ -233,206 +202,165 @@ implements KDCConnectionListener,KDCDataReceivedListener,KDCBarcodeDataReceivedL
 
 			}
 		});
-		/* back.setOnClickListener(new OnClickListener() {
 
-		        @Override
-		        public void onClick(View v) {
-		        	v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
+		recclick.setOnClickListener(v -> {
+			v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
 
-		        	// moveTaskToBack(true);
-		        	FuelActivity.this.finish();
-		        	Intent int1 = new Intent(FuelActivity.this,HomeActivity.class);
-
-					int1.putExtra("route",rcode);
-					int1.putExtra("route1",rname);
-
-					startActivity(new Intent(int1));
-
-		        }
-		    });*/
-		recclick.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-
-				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-				recimage.setImageResource(R.drawable.recp);
-				//imgcountarr[6]=1;
-				uriSavedImage=Uri.fromFile(new File(imagefile1,  "FuelReciept.PNG"));
-				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, uriSavedImage);
-				startActivityForResult(intent, 0);
+			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+			recimage.setImageResource(R.drawable.recp);
+			uriSavedImage=Uri.fromFile(new File(imagefile1,  "FuelReciept.PNG"));
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+			startActivityForResult(intent, 0);
 
 
-			}
 		});
-		/*scan.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-
-				if (v.getId() == R.id.btnscan) {
-					// go to fullscreen scan
-					Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-					intent.putExtra("SCAN_MODE", "SCAN_MODE");
-					startActivityForResult(intent, SCANNER_REQUEST_CODE);
-				}
+		sub.setOnClickListener(v -> {
 
 
-			}
-		}); */
-		sub.setOnClickListener(new OnClickListener() {
+			v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
 
-			@Override
-			public void onClick(View v) {
+			if(null!=odoimage.getDrawable()&&odonumber.getText().length()!=0&&result.getText().length()!=0&&
+					null!=recimage.getDrawable()&&recnotxt.getText().length()!=0&&recamounttxt.getText().length()!=0)
+			{
+
+				odoread=odonumber.getText().toString();
+				recnumber=recnotxt.getText().toString();
+				recamount=recamounttxt.getText().toString();
+
+				//convert bitmap to bytearray
+			/*	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+				photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+				byte[] byteArray = byteArrayOutputStream.toByteArray();
+				*/
+				barcodevalue=result.getText().toString();
+				//call the webservice for saving the value
+
+			/*	ByteArrayOutputStream byteArrayOutputStream1 = new ByteArrayOutputStream();
+				photo1.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream1);
+				byte[] byteArray1 = byteArrayOutputStream1.toByteArray();*/
+
+				SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+				date_time=date1.format(new Date());
 
 
-				//tx.setText(num.getText().toString());
-				v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-
-				if(null!=odoimage.getDrawable()&&odonumber.getText().length()!=0&&result.getText().length()!=0&&
-						null!=recimage.getDrawable()&&recnotxt.getText().length()!=0&&recamounttxt.getText().length()!=0)
+			//	gps = new GPSTracker(FuelActivity.this);
+				gps = new GPSTracker(mContext,FuelActivity.this);
+				// check if GPS enabled
+				if(gps.canGetLocation())
 				{
 
-					odoread=odonumber.getText().toString();
-					recnumber=recnotxt.getText().toString();
-					recamount=recamounttxt.getText().toString();
+					latitude = gps.getLatitude();
+					longitude = gps.getLongitude();
+					lati=String.valueOf(latitude);
+					longti=String.valueOf(longitude);
 
-					//convert bitmap to bytearray
-				/*	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-					photo.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-					byte[] byteArray = byteArrayOutputStream.toByteArray();
-					*/
-					barcodevalue=result.getText().toString();
-					//call the webservice for saving the value
-
-				/*	ByteArrayOutputStream byteArrayOutputStream1 = new ByteArrayOutputStream();
-					photo1.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream1);
-					byte[] byteArray1 = byteArrayOutputStream1.toByteArray();*/
-
-					SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-					date_time=date1.format(new Date());
-
-
-				//	gps = new GPSTracker(FuelActivity.this);
-					gps = new GPSTracker(mContext,FuelActivity.this);
-					// check if GPS enabled
-					if(gps.canGetLocation())
-					{
-
-						latitude = gps.getLatitude();
-						longitude = gps.getLongitude();
-						lati=String.valueOf(latitude);
-						longti=String.valueOf(longitude);
-
-					}
-					else
-					{
-						// can't get location
-						// GPS or Network is not enabled
-						// Ask user to enable GPS/network in settings
-						gps.showSettingsAlert();
-					}
-					db=new DatabaseHandler(getBaseContext());
-					sqldb =db.getWritableDatabase();
-					ContentValues values = new ContentValues();
-					values.put("DATE_TIME", date_time);
-					values.put("DRIVERCODE",drivercode);
-					values.put("VehicleBarcode", barcodevalue);
-					values.put("Odometer_Value", odoread);
-					values.put("Odometer_picname","Fuelodo.PNG");
-					values.put("Receipt_pic",recnumber);
-					values.put("Reciept_no",recamount);
-					values.put("Reciept_Amount","FuelReciept.PNG");
-					values.put("Latitude", lati);
-					values.put("Longtitude", longti);
-					values.put("SyncStatus","0");
-
-					sqldb.insertOrThrow("Fueldatatable", null, values);
-
-						//status= WebService.insertfuelread(date_time,drivercode,barcodevalue,odoread,recnumber,recamount,lati,longti, MasterActivity.METHOD_NAME31);
-						status= webservice.WebService.SET_FUEL_TRACK(date_time,drivercode,barcodevalue,odoread,recnumber,recamount,lati,longti);
-						System.out.println("STATYS IS:"+status);
-
-					if(!errored)
-					{
-					//if(status)
-				//	{
-
-						sqldb.execSQL("UPDATE Fueldatatable SET SyncStatus=1 WHERE SyncStatus=0 AND DRIVERCODE='"+drivercode+"'" );
-						sqldb.execSQL("UPDATE Fueldatatable SET Fuelid='"+status+"' WHERE DRIVERCODE='"+drivercode+"'" );
-						sqldb.execSQL("UPDATE Fueldatatable SET ImageSyncstatus=0 WHERE DRIVERCODE='"+drivercode+"'" );
-
-						odoimage.setImageDrawable(null);
-						recimage.setImageDrawable(null);
-						odonumber.setText("");
-						result.setText("");
-						recnotxt.setText("");
-						recamounttxt.setText("");
-
-						Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_LONG).show();
-
-
-
-
-
-				//	}
-
-				//	else
-				//	{
-						//System.out.println("stage2");
-						//Set Error message
-					//	Toast.makeText(getApplicationContext(),"cannot saved, try again",
-							//	Toast.LENGTH_LONG).show();
-					//}
-					db.close();
-					}
-					else
-					{
-						Toast.makeText(getApplicationContext(),"Connection Error,Please try after some time",
-								Toast.LENGTH_LONG).show();
-					}
-					//db.close();
-
-				}
-				else if(null==odoimage.getDrawable())
-				{
-					Toast.makeText(getApplicationContext(),"Please take the pic of odometer",
-							Toast.LENGTH_LONG).show();
-				}
-				else if(odonumber.getText().length()==0)
-				{
-					Toast.makeText(getApplicationContext(),"Enter the odometer value",
-							Toast.LENGTH_LONG).show();
-				}
-				else if(result.getText().length()==0)
-				{
-					Toast.makeText(getApplicationContext(),"Please scan Barcode",
-							Toast.LENGTH_LONG).show();
-				}
-				else if(null==recimage.getDrawable())
-				{
-					Toast.makeText(getApplicationContext(),"Please take pic of receipt",
-							Toast.LENGTH_LONG).show();
-				}
-				else if(recnotxt.getText().length()==0)
-				{
-					Toast.makeText(getApplicationContext(),"Please enter receipt number",
-							Toast.LENGTH_LONG).show();
-				}
-				else if(recamounttxt.getText().length()==0)
-				{
-					Toast.makeText(getApplicationContext(),"Please enter amount",
-							Toast.LENGTH_LONG).show();
 				}
 				else
 				{
-					Toast.makeText(getApplicationContext(),"cannot proceed",
+					// can't get location
+					// GPS or Network is not enabled
+					// Ask user to enable GPS/network in settings
+					gps.showSettingsAlert();
+				}
+				db=new DatabaseHandler(getBaseContext());
+				sqldb =db.getWritableDatabase();
+				ContentValues values = new ContentValues();
+				values.put("DATE_TIME", date_time);
+				values.put("DRIVERCODE",drivercode);
+				values.put("VehicleBarcode", barcodevalue);
+				values.put("Odometer_Value", odoread);
+				values.put("Odometer_picname","Fuelodo.PNG");
+				values.put("Receipt_pic",recnumber);
+				values.put("Reciept_no",recamount);
+				values.put("Reciept_Amount","FuelReciept.PNG");
+				values.put("Latitude", lati);
+				values.put("Longtitude", longti);
+				values.put("SyncStatus","0");
+
+				sqldb.insertOrThrow("Fueldatatable", null, values);
+
+					//status= WebService.insertfuelread(date_time,drivercode,barcodevalue,odoread,recnumber,recamount,lati,longti, MasterActivity.METHOD_NAME31);
+					status= webservice.WebService.SET_FUEL_TRACK(date_time,drivercode,barcodevalue,odoread,recnumber,recamount,lati,longti);
+					System.out.println("STATYS IS:"+status);
+
+				if(!errored)
+				{
+				//if(status)
+			//	{
+
+					sqldb.execSQL("UPDATE Fueldatatable SET SyncStatus=1 WHERE SyncStatus=0 AND DRIVERCODE='"+drivercode+"'" );
+					sqldb.execSQL("UPDATE Fueldatatable SET Fuelid='"+status+"' WHERE DRIVERCODE='"+drivercode+"'" );
+					sqldb.execSQL("UPDATE Fueldatatable SET ImageSyncstatus=0 WHERE DRIVERCODE='"+drivercode+"'" );
+
+					odoimage.setImageDrawable(null);
+					recimage.setImageDrawable(null);
+					odonumber.setText("");
+					result.setText("");
+					recnotxt.setText("");
+					recamounttxt.setText("");
+
+					Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_LONG).show();
+
+
+
+
+
+			//	}
+
+			//	else
+			//	{
+					//System.out.println("stage2");
+					//Set Error message
+				//	Toast.makeText(getApplicationContext(),"cannot saved, try again",
+						//	Toast.LENGTH_LONG).show();
+				//}
+				db.close();
+				}
+				else
+				{
+					Toast.makeText(getApplicationContext(),"Connection Error,Please try after some time",
 							Toast.LENGTH_LONG).show();
 				}
+				//db.close();
 
 			}
+			else if(null==odoimage.getDrawable())
+			{
+				Toast.makeText(getApplicationContext(),"Please take the pic of odometer",
+						Toast.LENGTH_LONG).show();
+			}
+			else if(odonumber.getText().length()==0)
+			{
+				Toast.makeText(getApplicationContext(),"Enter the odometer value",
+						Toast.LENGTH_LONG).show();
+			}
+			else if(result.getText().length()==0)
+			{
+				Toast.makeText(getApplicationContext(),"Please scan Barcode",
+						Toast.LENGTH_LONG).show();
+			}
+			else if(null==recimage.getDrawable())
+			{
+				Toast.makeText(getApplicationContext(),"Please take pic of receipt",
+						Toast.LENGTH_LONG).show();
+			}
+			else if(recnotxt.getText().length()==0)
+			{
+				Toast.makeText(getApplicationContext(),"Please enter receipt number",
+						Toast.LENGTH_LONG).show();
+			}
+			else if(recamounttxt.getText().length()==0)
+			{
+				Toast.makeText(getApplicationContext(),"Please enter amount",
+						Toast.LENGTH_LONG).show();
+			}
+			else
+			{
+				Toast.makeText(getApplicationContext(),"cannot proceed",
+						Toast.LENGTH_LONG).show();
+			}
+
 		});
 
 

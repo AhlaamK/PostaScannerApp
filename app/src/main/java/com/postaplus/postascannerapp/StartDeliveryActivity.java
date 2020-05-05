@@ -59,7 +59,7 @@ import com.honeywell.aidc.BarcodeReadEvent;
 import com.honeywell.aidc.BarcodeReader;
 import com.honeywell.aidc.ScannerUnavailableException;
 import com.honeywell.aidc.TriggerStateChangeEvent;
-import android.provider.MediaStore;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -2116,72 +2116,48 @@ public class StartDeliveryActivity extends MasterActivity
     @Override
     public void onBarcodeEvent(final BarcodeReadEvent event) {
         // TODO Auto-generated method stub
-        _activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String barcodeData = event.getBarcodeData();
-                String timestamp = event.getTimestamp();
-                // update UI to reflect the data
-
-                System.out.println("barcodeData is:" + barcodeData);
-
-
-                if (event.getBarcodeData().contains("R")) {
-                    String rscan = event.getBarcodeData();
-                    String rscanSub = rscan.substring(1);
-                    System.out.println("pdata value in da aftersub is:" + rscanSub);
-                    barcodefrmScanner = rscanSub;
-                    barcodeIdentifier = "Y";
-                } else {
-                    barcodefrmScanner = event.getBarcodeData();
-                    barcodeIdentifier = "N";
-                }
-
+        _activity.runOnUiThread(() -> {
+            if (event.getBarcodeData().contains("R")) {
+                String rscan = event.getBarcodeData();
+                String rscanSub = rscan.substring(1);
+                rscan = rscan.replaceAll("\\*","");
+                rscanSub = rscanSub.replaceAll("\\*","");
+                barcodefrmScanner = rscanSub;
+                barcodeIdentifier = "Y";
+            } else {
+                barcodefrmScanner = event.getBarcodeData();
+                barcodeIdentifier = "N";
+            }
+            if (barcodefrmScanner != null) {
                 System.out.print("waybill barcode is" + barcodefrmScanner);
+                waybill = barcodefrmScanner;
+                if (Utils.checkValidWaybill(barcodefrmScanner)) {
+                    lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(0, 5, 70, 0);
 
-                if (barcodefrmScanner != null) {
+                    _activity.runOnUiThread(() -> {
+                        if (waybill != null) {
+                            wbill = waybill;
+                            wbilldata1 = waybill;
 
-                    System.out.print("waybill barcode is" + barcodefrmScanner);
-                    waybill = barcodefrmScanner;
+                            SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
+                            time_id = date11.format(new Date());
 
-
-                    if (Utils.checkValidWaybill(barcodefrmScanner)) {
-
-
-                        lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                        lp.setMargins(0, 5, 70, 0);
-
-                        _activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (waybill != null) {
-                                    //String contents = wbill;
-                                    wbill = waybill;
-                                    wbilldata1 = waybill;
-                                    System.out.println(" value for waybill in barcode : " + wbilldata1);
-
-                                    SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
-                                    time_id = date11.format(new Date());
-
-                                    if (delvryflag == true) {
-                                        //  System.out.println("delvryflag on bar: " + delvryflag);
-                                        new UserNotifyTrack(wbilldata1).execute();
-                                    } else {
-                                        new details(wbilldata1).execute();
-                                    }
-                                }
-                                // wbilldata1=contents;
-
+                            if (delvryflag == true) {
+                                new UserNotifyTrack(wbilldata1).execute();
+                            } else {
+                                new details(wbilldata1).execute();
                             }
-                        });
+                        }
 
-                    } else {
+                    });
 
-                        _activity.runOnUiThread(() -> Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show());
-                    }
                 } else {
+
                     _activity.runOnUiThread(() -> Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show());
                 }
+            } else {
+                _activity.runOnUiThread(() -> Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show());
             }
         });
     }
@@ -2345,25 +2321,20 @@ public class StartDeliveryActivity extends MasterActivity
             if (ccount > 0) {
                 sqldb.execSQL("UPDATE wbillimagesdata SET Drivercode='" + drivercode + "',Image_filename='" + list + "',TransferStatus=0 WHERE Waybill='" + wbillsub + "'");
             } else {
-
                 sqldb.execSQL("DELETE FROM wbillimagesdata WHERE Drivercode<>'" + drivercode + "'");
-
                 String sql = "INSERT OR REPLACE INTO wbillimagesdata (Drivercode, Waybill,Image_filename,TransferStatus) "
 
                         + "VALUES ('" + drivercode + "','"
                         + wbillsub + "','" + list + "',0)";
                 sqldb.execSQL(sql);
-
-
             }
+
             SimpleDateFormat date112 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
             date_time = date112.format(new Date());
 
             DBWAYBILLIST.add(wbillsub);
             DBWAYBILLIST = new ArrayList<String>(new LinkedHashSet<String>(DBWAYBILLIST));
             System.out.println("delvry stts 1" + wbillsub + "waynillist:" + waynillist);
-
-
         }
         if (isNetworkConnected()) {
             if (FlagDeliveryMode.equals("RTN")) {
@@ -2381,7 +2352,6 @@ public class StartDeliveryActivity extends MasterActivity
             Toast toast = Toast.makeText(getApplicationContext(), "You are in offline mode, Please sync once you connect to a network", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
-
         }
 
         for (int i = 0; i < tablecount; i++) {
@@ -2934,14 +2904,10 @@ public class StartDeliveryActivity extends MasterActivity
         public details(String TakWaybill) {
             super();
             Taskdetailswabill = TakWaybill;
-            System.out.println("Taskdetailswabill pre execute:" + Taskdetailswabill);
         }
 
         public void onPreExecute() {
             Pb.setVisibility(View.VISIBLE);
-            // super.onPreExecute();
-            // waynillist=new ArrayList<String>();
-            // waynillist.clear();
             tr = new TableRow(StartDeliveryActivity.this);
 
             if (Build.MODEL.contains("SM-N")) {
@@ -2950,52 +2916,15 @@ public class StartDeliveryActivity extends MasterActivity
                 lp.setMargins(15, 2, 95, 2);
                 tr.setLayoutParams(lp);
 
-
-
             } else {
                 lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-
                 tr.setLayoutParams(lp);
-                //lp.setMargins(0, 20, 5, 0);
                 lp.setMargins(0, 20, 70, 0);
-
             }
         }
 
         @Override
         protected String doInBackground(Void... params) {
-          /*  db = new DatabaseHandler(getBaseContext());
-            //open localdatabase in a read mode
-            sqldb = db.getReadableDatabase();
-            //select all values in the table and check count
-
-            Cursor c1 = sqldb.rawQuery("SELECT * FROM deliverydata WHERE Waybill='" + wbilldata1 + "'  ", null);
-            //AND AWBIdentifier = '"+ FlagDeliveryMode  +"'
-            flag = 0;
-            if (c1.getCount() > 0) {
-                c1.moveToFirst();
-                wbill = c1.getString(c1.getColumnIndex("Waybill"));
-                cons = c1.getString(c1.getColumnIndex("Consignee"));
-                phonedb = c1.getString(c1.getColumnIndex("Telephone"));
-                area = c1.getString(c1.getColumnIndex("Area"));
-                company = c1.getString(c1.getColumnIndex("Company"));
-                civilid = c1.getString(c1.getColumnIndex("CivilID"));
-                stopdeliver = c1.getInt(c1.getColumnIndex("StopDelivery"));
-                Log.e("StartDelivery","AWBIDENTIFIER : "+c1.getInt(c1.getColumnIndex("AWBIdentifier")));
-                Log.e("StartDelivery","Amount : " +c1.getString(c1.getColumnIndex("Amount")));
-
-            } else {
-                //c2.moveToFirst();\
-                //	System.out.println("Scanned Wbill not in delivery");
-
-                flag = 1;
-
-            }
-            c1.close();
-
-            db.close();*/
-            System.out.println("waybill data 1 in start delivery activity" + wbilldata1);
-            System.out.println("flag delivery mode in start delivery activity" + FlagDeliveryMode);
             return "";
         }
 
@@ -3054,72 +2983,39 @@ public class StartDeliveryActivity extends MasterActivity
 
                     System.out.println("approval status is:" + ApprvalStatus + "Stopdlv : " + stopdelarr[i] + " Attpmpt " + Attemptstatus);
 
-                    cbCOD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
-
-                                cbAtcltd.setEnabled(false);
-                                FlagcodAmt = true;
-
-                            } else {
-                                cbAtcltd.setEnabled(true);
-                                FlagcodAmt = false;
-                            }
+                    cbCOD.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                        if (isChecked) {
+                            cbAtcltd.setEnabled(false);
+                            FlagcodAmt = true;
+                        } else {
+                            cbAtcltd.setEnabled(true);
+                            FlagcodAmt = false;
+                        }
+                    });
+                    cbAtcltd.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                        if (isChecked) {
+                            cbCOD.setEnabled(false);
+                            FlagcodAmt = true;
+                        } else {
+                            cbCOD.setEnabled(true);
+                            FlagcodAmt = false;
                         }
                     });
 
-                    cbAtcltd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
-
-                                cbCOD.setEnabled(false);
-                                FlagcodAmt = true;
-
-                            } else {
-
-                                cbCOD.setEnabled(true);
-                                FlagcodAmt = false;
-                            }
-                        }
-                    });
-
-
-                  /*  if (isNetworkConnected()) {
-                        String CODResponse = WebService.CHECK_WAYBILL_COD_STATUS(wbillarr[i]);
-                        System.out.println("CODResponse" + CODResponse);
-                        CODamnt=CODResponse;
-                        System.out.println("CODamnt" + CODamnt);
-                       *//* if (CODResponse.equals("PAID")) {
-                            codAmnt[i] = "0.000";
-                        }*//*
-                    }
-
-*/
                     if (isNetworkConnected()) {
                         String CODResponse = WebService.CHECK_WAYBILL_COD_STATUS(wbillarr[i]);
                         System.out.println("CODResponse" + CODResponse);
                         CODamnt = CODResponse;
                         System.out.println("CODamnt" + CODamnt);
-                       /* if (CODResponse.equals("PAID")) {
-                            codAmnt[i] = "0.000";
-                        }*/
+
                     } else {
                         CODamnt = String.valueOf(codAmnt[i]);
                         System.out.println("codAmntss" + String.valueOf(codAmnt[i]));
                     }
-                    //System.out.println("i="+i+wbillarr[i]+" "+consr[i]+" "+arear[i]+" "+phoner[i]+" "+compnyr[i]+" "+civilidr[i]+" "+stopdelarr[i]);
                     if (ApprvalStatus == null) ApprvalStatus = "";
                     if (stopdelarr[i] == 0 || (stopdelarr[i] == 1 && ApprvalStatus.equals("APPROVED") && Attemptstatus.equals("0"))) {
                         Pb.setVisibility(View.VISIBLE);
                         tr = new TableRow(StartDeliveryActivity.this);
-
-						/*	if ((getResources().getConfiguration().screenLayout &
-							    Configuration.SCREENLAYOUT_SIZE_MASK) ==
-							        Configuration.SCREENLAYOUT_SIZE_NORMAL)
-						{
-							    // on a large screen device ...*/
 
                         if (Build.MODEL.contains("SM-N")) {
                             System.out.println("called smn postexecute");
@@ -3127,10 +3023,6 @@ public class StartDeliveryActivity extends MasterActivity
                             tr.setId((resulttab.getChildCount()));
                             lp.setMargins(15, 2, 95, 2);
                             tr.setLayoutParams(lp);
-
-
-                            //	wp = new LayoutParams(340,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-
                         } else {
                             lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                             tr.setId(resulttab.getChildCount());
@@ -3144,20 +3036,10 @@ public class StartDeliveryActivity extends MasterActivity
 
                         final TextView waybilltxt = new TextView(StartDeliveryActivity.this);
                         waybilltxt.setLayoutParams(lp);
-                        //waybilltxt.setText(wbillarr[i]);
                         waybilltxt.setText(Taskdetailswabill);
                         waybilltxt.setTextColor(Color.parseColor("#0000EE"));
                         waybilltxt.setPaintFlags(waybilltxt.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                         System.out.println("wbillarr[i] are:" + wbillarr[i] + "Taskdetailswabill are" + Taskdetailswabill);
-
-					/*	for (int j=0;j<wbillarr[i].length();j++) {
-							for (int k = j + 1; k < wbillarr[i].length(); k++) {
-								if (k != j && wbillarr[k] == wbillarr[j])
-								{
-									waybilltxt.setText(wbillarr[k]);
-								}
-							}
-						}*/
 
 
                         waybilltxt.setOnClickListener(new OnClickListener() {
@@ -3173,9 +3055,6 @@ public class StartDeliveryActivity extends MasterActivity
 
                                 int1.putExtra("wbillno", waybilltxt.getText().toString());
 
-                                //int1.putExtra("accno",acname);
-                                //int1.putExtra("routecode",route);
-                                //int1.putExtra("routename",routen);
 
                                 startActivity(new Intent(int1));
 
@@ -3203,7 +3082,6 @@ public class StartDeliveryActivity extends MasterActivity
                         codtxt.setLayoutParams(lp);
                         //  codtxt.setText(codAmnt[i]);
                         codtxt.setText(CODamnt);
-                        //	System.out.println(callphone.substring(3, 11));
 
 
                         phonetxt.setOnClickListener(new OnClickListener() {
@@ -3650,7 +3528,6 @@ public class StartDeliveryActivity extends MasterActivity
                 tr.setLayoutParams(lp);
 
 
-
             } else {
                 lp = new LayoutParams(150, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
@@ -3780,7 +3657,6 @@ public class StartDeliveryActivity extends MasterActivity
                             tr.setLayoutParams(lp);
 
 
-
                         } else {
                             lp = new LayoutParams(200, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                             tr.setId(resulttab.getChildCount());
@@ -3795,7 +3671,6 @@ public class StartDeliveryActivity extends MasterActivity
                         final TextView waybilltxt = new TextView(StartDeliveryActivity.this);
                         waybilltxt.setLayoutParams(lp);
                         waybilltxt.setText(wbillarr[i]);
-                        //waybilltxt.setText(Taskdetailswabill);
                         waybilltxt.setTextColor(Color.parseColor("#0000EE"));
                         waybilltxt.setPaintFlags(waybilltxt.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                         System.out.println("wbillarr[i] are:" + wbillarr[i]);

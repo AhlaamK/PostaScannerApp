@@ -176,33 +176,7 @@ public class PickupUpdateActivity extends MasterActivity
             int1.putExtra("route1", routen);
 
             startActivity(new Intent(int1));
-
             return true;
-           /* if(!isActivityActiveFlag)
-            {
-                Toast.makeText(getApplicationContext(), "Please wait for scanner to connect",
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
-            else{
-                *//*Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);*//*
-                if(_kdcReader!=null) _kdcReader.Disconnect();
-                if(ThrKdc!=null)ThrKdc.interrupt();
-               // KDCTaskExecutable.cancel(true);
-                PickupUpdateActivity.this.finish();
-                Intent int1 = new Intent(PickupUpdateActivity.this,PickupActivity.class);
-
-                int1.putExtra("route",route);
-                int1.putExtra("route1",routen);
-
-                startActivity(new Intent(int1));
-
-                return true;
-            }*/
-
         }
         return false;
     }
@@ -229,8 +203,12 @@ public class PickupUpdateActivity extends MasterActivity
         pickupremksspinner = (Spinner) findViewById(R.id.remarkspinner);
         counttxt = (TextView) findViewById(R.id.countText);
 
-        route = getIntent().getExtras().getString("routecode");
-        routen = getIntent().getExtras().getString("routename");
+        if (getIntent().getExtras() != null) {
+            route = getIntent().getExtras().getString("routecode");
+            routen = getIntent().getExtras().getString("routename");
+            pickupno = getIntent().getExtras().getString("pickno");
+
+        }
 
         back = (Button) findViewById(R.id.btnbck);
         //scan=(Button)findViewById(R.id.btnscan);
@@ -252,7 +230,6 @@ public class PickupUpdateActivity extends MasterActivity
         cbReference = (CheckBox) findViewById(R.id.cbReference);
         tagcounter = (LinearLayout) findViewById(R.id.tagcounter);
         tagcounter.setVisibility(View.GONE);
-        pickupno = getIntent().getExtras().getString("pickno");
         picknotxt.setText(pickupno);
         //decrease=(Button)findViewById(R.id.decrease);
         //increase=(Button)findViewById(R.id.increase);
@@ -339,7 +316,6 @@ public class PickupUpdateActivity extends MasterActivity
             c.moveToFirst();
             accountname = c.getString(c.getColumnIndex("Account_Name"));
         }
-        //amount=getIntent().getExtras().getString("accno");
         accnotxt.setText(accountname);
         c.close();
 
@@ -681,49 +657,24 @@ public class PickupUpdateActivity extends MasterActivity
             public void onClick(View v) {
 
                 v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
-                //	pd.show(PickupUpdateActivity.this, "Loading", "Wait while loading...");
-                //	pb.setVisibility(View.VISIBLE);
-				/*pickstts="YES";
-				if(processClick)
-				{
-					pickup.setEnabled(false);
-					pickup.setClickable(false);
-					pickup.setVisibility(View.GONE);
-					processClick=false;
-				}*/
-                //	final ProgressDialog pd = new ProgressDialog(PickupUpdateActivity.this);
+
 
                 if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
                     return;
                 }
 
-              /*  if(resulttab.getChildCount()==0){
-                    Toast.makeText(getApplicationContext(), "Please scan awbs to Pickup", Toast.LENGTH_SHORT).show();
-                    return;
-                }*/
 
                 tablecount = resulttab.getChildCount();
-                //wbilltabarr=new String[count];
-                //amounttabarr=new String[count];
-                //servicetabarr=new String[count];
-                //paytabarr=new String[count];
-                System.out.println("VALUES FROM  PICKUP " + tablecount + " " + drivercode + " " + pickupno);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
                 date_time = sdf.format(new Date());
                 gps = new GPSTracker(mContext, PickupUpdateActivity.this);
 
-                // check if GPS enabled
                 if (gps.canGetLocation()) {
 
                     latitude = gps.getLatitude();
                     longitude = gps.getLongitude();
 
-                    // \n is for new line
-                    //  Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
                 } else {
-                    // can't get location
-                    // GPS or Network is not enabled
-                    // Ask user to enable GPS/network in settings
                     gps.showSettingsAlert();
                 }
                 pickflag = 0;
@@ -740,12 +691,9 @@ public class PickupUpdateActivity extends MasterActivity
                     servicetxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(4);
                     tagtxt = (TextView) ((TableRow) resulttab.getChildAt(i)).getChildAt(5);
                     System.out.println("tagtxt befre add" + tagtxt);
-// tagval added to db tab
 
                     db = new DatabaseHandler(getBaseContext());
-                    //open localdatabase in a read mode
                     sqldb = db.getReadableDatabase();
-                    //select the payid from the paytypedetails table
                     Cursor c1 = sqldb.rawQuery("SELECT * FROM paytypedetails WHERE PayTYPE='" + paytxt.getText().toString() + "'", null);
                     if (c1.getCount() > 0) {
                         c1.moveToFirst();
@@ -803,17 +751,6 @@ public class PickupUpdateActivity extends MasterActivity
                     System.out.println("tag value is req:" + tagtxt.getText().toString());
                 }
 
-                //pb.setVisibility(View.VISIBLE);
-
-                //	mProgressDialog.show();
-
-
-                //pickupTask = new pickupTask().execute();
-                //new	pickupTask().execute();
-                //pd.show(PickupUpdateActivity.this, "Loading", "Wait while loading...").setProgress(20);
-                //	pd.setMessage("Loading Wait while loading..." );
-                //	pd.show();
-                System.out.println("called method webservice");
 
                 pickupTask = new AsyncTask() {
                     @Override
@@ -829,13 +766,9 @@ public class PickupUpdateActivity extends MasterActivity
 
                 System.out.println("pickuptask status is:" + pickupTask.getStatus());
                 if (pickupTask.getStatus() == AsyncTask.Status.PENDING) {
-                    //task=new ProgressBarShow();
-                    //	pd.setMessage("Wait while loading..." );
-                    //	pd.show();
                     if (pickstts.contentEquals("YES")) {
                         pickstts = "NO";
 
-                        //	pick_status= WebService.SET_PICKUPDETAILS(drivercode,setpkpdtRequest);
 
                         try {
                             pickupTask.execute().get();
@@ -850,16 +783,8 @@ public class PickupUpdateActivity extends MasterActivity
                 }
 
                 if (pickupTask.getStatus() == AsyncTask.Status.RUNNING) {
-                    //task=new ProgressBarShow();
-                    //pickupTask.execute();
-                    System.out.println("pickup status update on pickuptask running" + pick_status);
-                    //	pd.setMessage("Wait while loading..." );
-                    //	pd.show();
 
                 }
-
-
-                //	pd.dismiss();
 
 
                 System.out.println("pickup status update on pickup" + pick_status);
@@ -1018,153 +943,80 @@ public class PickupUpdateActivity extends MasterActivity
     @Override
     public void onBarcodeEvent(final BarcodeReadEvent event) {
 
-        Log.e("OnBarcodeSpinner", "Called");
+        _activity.runOnUiThread(() -> {
+            if (event != null) {
+                wbill = event.getBarcodeData();
+                wbill = wbill.replaceAll("\\*","");
+                if (cbReference.isChecked()) {
+                    _activity.runOnUiThread(() -> {
+                                if (event.getBarcodeData() != null) {
+                                    Scanrwabill = wbill;
+                                    if (delvryflag) {
+                                        new UserNotifyTrack(Scanrwabill).execute();
+                                    } else {
+                                        if (servicespinner.getSelectedItemPosition() == 0) {
+                                            Toast.makeText(getApplicationContext(), "Please Select Service Type", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        } else if (amountedt.getText().toString().contains("0.000") && !payIde.contains("NA")) {
+                                            Toast.makeText(getApplicationContext(), "Please enter Amount", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                        String mastbill = "";
+                                        if (cbmps.isChecked() && masterawbtxt.getText().toString().equals("")) {
+                                            masterawbtxt.setText(wbill);
+                                            mastbill = wbill;
+                                        } else if (cbmps.isChecked() && !masterawbtxt.getText().toString().equals("")) {
+                                            mastbill = masterawbtxt.getText().toString();
+                                        } else if (!cbmps.isChecked()) {
+                                            mastbill = "";
+                                        }
+                                        new checkreferencewaybill(wbill, mastbill).execute();
+                                    }
+                                }
+                            }
+                    );
+                } else if (!cbReference.isChecked()) {
+                    if (Utils.checkValidWaybill(event.getBarcodeData())) {
 
-        _activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (event != null) {
-                    wbill = event.getBarcodeData();
-                    if (cbReference.isChecked()) {
-                        _activity.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        if (event.getBarcodeData() != null) {
-                                                            //String contents = intent.getStringExtra("SCAN_RESULT");
-                                                            //tvScanResults.setText(contents);
-
-                                                            //	waybill=wbill;
-                                                            Scanrwabill = wbill;
-                                                            if (delvryflag == true) {
-                                                                new UserNotifyTrack(Scanrwabill).execute();
-                                                            } else {
-                                                                if (servicespinner.getSelectedItemPosition() == 0) {
-                                                                    Toast.makeText(getApplicationContext(), "Please Select Service Type", Toast.LENGTH_SHORT).show();
-                                                                    return;
-                                                                } else if (amountedt.getText().toString().contains("0.000") && !payIde.contains("NA")) {
-                                                                    Toast.makeText(getApplicationContext(), "Please enter Amount", Toast.LENGTH_SHORT).show();
-                                                                    return;
-                                                                }
-                                                                String mastbill = "";
-                                                                if (cbmps.isChecked() && masterawbtxt.getText().toString().equals("")) {
-                                                                    masterawbtxt.setText(wbill);
-                                                                    mastbill = wbill;
-
-
-                                                                } else if (cbmps.isChecked() && !masterawbtxt.getText().toString().equals("")) {
-                                                                    mastbill = masterawbtxt.getText().toString();
-                                                                } else if (!cbmps.isChecked()) {
-                                                                    mastbill = "";
-                                                                }
-                                                                new checkreferencewaybill(wbill, mastbill).execute();
-                                                            }
-                                                        }
-
-
-                                                    }
-
-
-                                                    // }
-
-
-                                                }
+                        // }
+                        _activity.runOnUiThread(() -> {
+                                    if (wbill != null) {
+                                        Scanrwabill = wbill;
+                                        if (delvryflag) {
+                                            new UserNotifyTrack(Scanrwabill).execute();
+                                        } else {
+                                            if (servicespinner.getSelectedItemPosition() == 0) {
+                                                Toast.makeText(getApplicationContext(), "Please Select Service Type", Toast.LENGTH_SHORT).show();
+                                                return;
+                                            } else if (amountedt.getText().toString().contains("0.000") && !payIde.contains("NA")) {
+                                                Toast.makeText(getApplicationContext(), "Please enter Amount", Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+                                            String mastbill = "";
+                                            if (cbmps.isChecked() && masterawbtxt.getText().toString().equals("")) {
+                                                masterawbtxt.setText(wbill);
+                                                mastbill = wbill;
+                                            } else if (cbmps.isChecked() && !masterawbtxt.getText().toString().equals("")) {
+                                                mastbill = masterawbtxt.getText().toString();
+                                            } else if (!cbmps.isChecked()) {
+                                                mastbill = "";
+                                            }
+                                            new checkpickpwaybill(wbill, mastbill).execute();
+                                        }
+                                    }
+                                }
                         );
 
-                    } else if (!cbReference.isChecked()) {
-                        // StartDeliveryActivity.WaybillFromScanner = ScannerData.GetData();
-
-                        if (Utils.checkValidWaybill(event.getBarcodeData()) == true) {
-
-                            System.out.println(" PickupUpdateactivity ID : ");
-                            // System.out.println(R.id.WC_Frame);
-                            System.out.println("value for pdata is : " + event.getBarcodeData());
-                            System.out.println(event);
-
-                            _activity.runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            if (wbill != null) {
-                                                                //String contents = intent.getStringExtra("SCAN_RESULT");
-                                                                //tvScanResults.setText(contents);
-
-                                                                //	waybill=wbill;
-                                                                Scanrwabill = wbill;
-                                                                if (delvryflag == true) {
-                                                                    new UserNotifyTrack(Scanrwabill).execute();
-                                                                } else {
-                                                                    if (servicespinner.getSelectedItemPosition() == 0) {
-                                                                        Toast.makeText(getApplicationContext(), "Please Select Service Type", Toast.LENGTH_SHORT).show();
-                                                                        return;
-                                                                    } else if (amountedt.getText().toString().contains("0.000") && !payIde.contains("NA")) {
-                                                                        Toast.makeText(getApplicationContext(), "Please enter Amount", Toast.LENGTH_SHORT).show();
-                                                                        return;
-                                                                    }
-                                                                    System.out.println(" PickupUpdateactivity barcode wbill : " + wbill);
-
-                                                                    System.out.println(" PickupUpdateactivity barcode wbill : " + wbill);
-                                                                    //	String Masterbill = masterawbtxt.getText().toString();
-                                                                    System.out.println(" masterawbtxt barcode wbill : " + masterawbtxt.getText().toString());
-                                                                    String mastbill = "";
-                                                                    if (cbmps.isChecked() && masterawbtxt.getText().toString().equals("")) {
-                                                                        masterawbtxt.setText(wbill);
-                                                                        mastbill = wbill;
-
-                                                                        // masterawbtxt.setText(wbill);
-                                                                        Log.e("blck1", "1");
-
-                                                                    } else if (cbmps.isChecked() && !masterawbtxt.getText().toString().equals("")) {
-
-                                                                        mastbill = masterawbtxt.getText().toString();
-
-                                                                        Log.e("blck2", "2");
-                                                                    } else if (!cbmps.isChecked()) {
-                                                                        mastbill = "";
-                                                                        Log.e("blck3", "3");
-                                                                    }
-
-                                                                    System.out.println("wbill on barcode:" + wbill + "mastbill on barcode:" + mastbill);
-
-
-                                                                    new checkpickpwaybill(wbill, mastbill).execute();
-
-
-                                                                }
-                                                            }
-
-
-                                                        }
-
-
-                                                        // }
-
-
-                                                    }
-                            );
-
-                        } else {
-
-                            _activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-
+                    } else {
+                        _activity.runOnUiThread(() -> Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show());
                     }
 
-                } else {
-                    _activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show();
-                        }
-                    });
                 }
 
+            } else {
+                _activity.runOnUiThread(() -> Toast.makeText(_activity, "Invalid Waybill", Toast.LENGTH_LONG).show());
             }
+
         });
 
 
@@ -1181,21 +1033,11 @@ public class PickupUpdateActivity extends MasterActivity
     }
 
     private CheckValidPickupWaybill checkwaybill(String waybill, String Masterwabill) {
-
-
-        System.out.println("DRIVERCODE:" + drivercode);
-        System.out.println("WAYBILL cam:" + waybill);
         CheckValidPickupWaybill chckvalidpickupwaybilresp_chkwbl = null;
 
         if (drivercode == null || drivercode.equals("") || waybill == null || waybill.equals("")) {
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    Toast.makeText(getApplicationContext(), "Try again! Required Values Blank",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
+            this.runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Try again! Required Values Blank",
+                    Toast.LENGTH_LONG).show());
             return null;
         }
 
@@ -1204,29 +1046,8 @@ public class PickupUpdateActivity extends MasterActivity
         paytype = paytypespinner.getSelectedItem().toString();
         amount = amountedt.getText().toString();
         mastrawbstrng = masterawbtxt.getText().toString();
-        //serviceId=String.valueOf(serviceIdarr[servicespinner.getSelectedItemPosition()]);
-        //payId=String.valueOf(payIdarr[paytypespinner.getSelectedItemPosition()]);
-        System.out.println("value of service type in pickup update");
-        System.out.println(serviceType);
-        System.out.println("value of paytype in pickup update");
-        System.out.println(paytype);
-        System.out.println("value of amount in pickup update");
-        System.out.println(amount);
-        System.out.println("value of mastrawbstrng in pickup update" + mastrawbstrng);
-
-
-        //	if(payIde.equals("-1") && serviceIde.equals(-1))
-        //&&paytypespinner.getSelectedItemPosition()!=0)
-
-
-        //	if ((servicespinner.getSelectedItemPosition() != 0 && Double.parseDouble(amount) == 0) || (servicespinner.getSelectedItemPosition() != 0 && paytypespinner.getSelectedItemPosition() != 0 && Double.parseDouble(amount) > 0.0)) {
         try {
-/*
-                if(tagmps==null){
-                    tagmps="";
-                }else{
-                    tagmps=mastrawbstrng;
-                }*/
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
             date_time = sdf.format(new Date());
             //if(chckvalidpickupwaybilresp_chkwbl == null) return null;
@@ -1461,7 +1282,6 @@ public class PickupUpdateActivity extends MasterActivity
         dialog.setContentView(R.layout.dialog);
         dialog.setTitle("Select your choice");
         dialog.setCanceledOnTouchOutside(false);
-        //  delvryflag=true;
 
         final Button Pickupaction = (Button) dialog.findViewById(R.id.pckupaction);
         final Button Deliveryaction = (Button) dialog.findViewById(R.id.deliveryaction);
@@ -1605,97 +1425,26 @@ public class PickupUpdateActivity extends MasterActivity
         dialog.show();
     }
 
-
-
-   /* @Override
-    public void onBackPressed() {
-        System.out.println("frag:"+getFragmentManager().getBackStackEntryCount());
-        super.onBackPressed();
-        barcodeReader.removeBarcodeListener(_activity);
-        PickupUpdateActivity.this.finish();
-
-    }*/
-
     private JSONObject checkreferencewaybill(String waybill, String Masterwabill) {
-
-
-        System.out.println("DRIVERCODE:" + drivercode);
-        System.out.println("WAYBILL cam:" + waybill);
         JSONObject checkValidRefernceResp = null;
-
         if (drivercode == null || drivercode.equals("") || waybill == null || waybill.equals("")) {
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    Toast.makeText(getApplicationContext(), "Try again! Required Values Blank",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
+            this.runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Try again! Required Values Blank",
+                    Toast.LENGTH_LONG).show());
             return null;
         }
-
         flag = false;
         serviceType = servicespinner.getSelectedItem().toString();
         paytype = paytypespinner.getSelectedItem().toString();
         amount = amountedt.getText().toString();
         mastrawbstrng = masterawbtxt.getText().toString();
-        //serviceId=String.valueOf(serviceIdarr[servicespinner.getSelectedItemPosition()]);
-        //payId=String.valueOf(payIdarr[paytypespinner.getSelectedItemPosition()]);
-        System.out.println("value of service type in pickup update");
-        System.out.println(serviceType);
-        System.out.println("value of paytype in pickup update");
-        System.out.println(paytype);
-        System.out.println("value of amount in pickup update");
-        System.out.println(amount);
-        System.out.println("value of mastrawbstrng in pickup update" + mastrawbstrng);
-
-
         try {
-
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
             date_time = sdf.format(new Date());
-            //if(chckvalidpickupwaybilresp_chkwbl == null) return null;
             checkValidRefernceResp = WebService.Check_ValidPickupReference(drivercode, waybill, usercode = drivercode, Masterwabill, serviceIde, pickupno, payIde, amountedt.getText().toString(), date_time);
             System.out.println("checkValidRefernceResp are:" + checkValidRefernceResp);
-
-
-            // error1= checkValidRefernceResp.getString("ErrMsg");
-
-
             ErrMesageRef = checkValidRefernceResp.getString("ErrMsg");
-
-
-
-
-          /*  if (checkValidRefernceResp.ErrMsg == null || checkValidRefernceResp.ErrMsg == "") {
-
-                waybill1 = checkValidRefernceResp.WayBill;
-                rname1 = checkValidRefernceResp.RouteName;
-                cname1 = checkValidRefernceResp.ConsignName;
-                phone = checkValidRefernceResp.PhoneNo;
-                area1 = checkValidRefernceResp.Area;
-                company1 = checkValidRefernceResp.Company;
-                civilid1 = checkValidRefernceResp.CivilId;
-                serial1 = checkValidRefernceResp.Serial;
-                cardtype1 = checkValidRefernceResp.CardType;
-                deldate1 = checkValidRefernceResp.DelDate;
-                deltime1 = checkValidRefernceResp.DelTime;
-                amount1 = checkValidRefernceResp.Amount;
-                adress1 = checkValidRefernceResp.Address;
-                awbidetnfr1 = checkValidRefernceResp.AWBIdentifier;
-                ShiperName = checkValidRefernceResp.ShipperName;
-                attempt1 = checkValidRefernceResp.Attempt;
-                error1 = checkValidRefernceResp.ErrMsg;
-                laststa1 = checkValidRefernceResp.Last_Status;
-
-
-            }*/
-
-
         } catch (Exception e) {
         }
-
         return checkValidRefernceResp;
     }
 
@@ -1737,7 +1486,6 @@ public class PickupUpdateActivity extends MasterActivity
             super();
             Taskwabill = TakWaybill;
             TaskMasterwabill = Mastrwabill;
-            System.out.println("TaskMasterwabill onchckp" + TaskMasterwabill + "maaswreng" + masterawbtxt.getText().toString());
 
         }
 
@@ -1820,16 +1568,12 @@ public class PickupUpdateActivity extends MasterActivity
                         //	lp = new LayoutParams(385,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                         lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                         tr.setId(resulttab.getChildCount());
-                        //lp.setMargins(0, 10, 30, 0);
                         lp.setMargins(55, 2, 95, 2);
                         tr.setLayoutParams(lp);
 
 
                     } else {
-						/*lp = new LayoutParams(150, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-							tr.setId(resulttab.getChildCount());
-							tr.setLayoutParams(lp);
-							lp.setMargins(0, 20, 10, 0);*/
+
 
                         lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                         tr.setId(resulttab.getChildCount());
@@ -2143,10 +1887,7 @@ public class PickupUpdateActivity extends MasterActivity
 
             if (Build.MODEL.contains("SM-N")) {
 
-				/*	lp = new LayoutParams(420,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-					tr.setLayoutParams(lp);
-					lp.setMargins(0, 10, 40, 0);*/
                 lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
                 lp.setMargins(18, 2, 95, 2);
                 trdialog.setLayoutParams(lp);
@@ -2431,7 +2172,6 @@ public class PickupUpdateActivity extends MasterActivity
 
 
                 } else {
-                    Log.e("cdcv", "12");
                     Toast.makeText(PickupUpdateActivity.this, "Not in your Runsheet!",
                             Toast.LENGTH_LONG).show();
                     return;
@@ -2529,16 +2269,12 @@ public class PickupUpdateActivity extends MasterActivity
                         //	lp = new LayoutParams(385,LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                         lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                         tr.setId(resulttab.getChildCount());
-                        //lp.setMargins(0, 10, 30, 0);
                         lp.setMargins(55, 2, 95, 2);
                         tr.setLayoutParams(lp);
 
 
                     } else {
-						/*lp = new LayoutParams(150, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-							tr.setId(resulttab.getChildCount());
-							tr.setLayoutParams(lp);
-							lp.setMargins(0, 20, 10, 0);*/
+
 
                         lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                         tr.setId(resulttab.getChildCount());

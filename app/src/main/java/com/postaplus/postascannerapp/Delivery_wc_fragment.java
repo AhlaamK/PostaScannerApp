@@ -185,42 +185,16 @@ public class Delivery_wc_fragment extends Fragment
 
 	private void checkwaybill()
 	{
-
-
-		System.out.println("DRIVERCODE:" +drivercode);
-		System.out.println("WAYBILL cam:" +waybill);
-		System.out.println("ROUTEID:" +route);
-
-//?why this added?
-		//chkvaldwblResponse=null;
-
 		if (drivercode == null || drivercode.equals("") || waybill == null || waybill.equals("")  || route == null || route.equals(""))
 		{
-			MYActivity.runOnUiThread(new Runnable(){
-				@Override
-				public void run(){
-
-					Toast.makeText(MYActivity,"Try again! Required Values Blank",
-							Toast.LENGTH_LONG).show();
-				}
-			});
+			MYActivity.runOnUiThread(() -> Toast.makeText(MYActivity,"Try again! Required Values Blank",
+					Toast.LENGTH_LONG).show());
 			return;
 		}
 
 		try{
 			chkvaldwblResponse= WebService.CHECK_VALIDWAYBILL(drivercode,waybill,route);
 			if(chkvaldwblResponse == null)return;
-				/*{
-				if(chkvaldwblResponse.ErrMsg != null||chkvaldwblResponse.ErrMsg != ""){
-					Toast.makeText(getActivity().getApplicationContext(), chkvaldwblResponse.ErrMsg, Toast.LENGTH_LONG).show();
-					return;
-				}
-
-			}
-*/
-			Log.e("DeliveryWC","CHKWAYBILL Waybill " + chkvaldwblResponse.WayBill);
-			Log.e("DeliveryWC","CHKWAYBILL Waybill " + chkvaldwblResponse.WAYBILLIdentifier);
-
 			if(chkvaldwblResponse.ErrMsg == null||chkvaldwblResponse.ErrMsg=="")
 			{
 
