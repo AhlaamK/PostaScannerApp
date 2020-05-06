@@ -242,6 +242,7 @@ public class PickupUpdateActivity extends MasterActivity
         _resources = getResources();
         Pickphldwayblarr = new ArrayList<>();
 
+        if(barcodeReader!=null)
         barcodeReader.addBarcodeListener(_activity);
 
         if (barcodeReader != null) {
@@ -428,23 +429,12 @@ public class PickupUpdateActivity extends MasterActivity
             public void onClick(View v) {
                 v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));
                 DonotInterruptKDCScan = false;
-                // moveTaskToBack(true);
-                //_activity.finishActivity(0);
-                //  barcodeReader.close();
 
+                if(barcodeReader!=null){
                 barcodeReader.removeBarcodeListener(_activity);
-                barcodeReader.release();
-               /* Intent int1 = new Intent(_activity, PickupActivity.class);
-                int1.putExtra("route", route);
-                int1.putExtra("route1", routen);
-                startActivity(new Intent(int1));*/
-                System.out.println("_Actv is:" + _activity);
-               /* SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_activity);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("HoneywellFlag", "0");
-                editor.commit();*/
+                barcodeReader.release();}
+
                 PickupUpdateActivity.this.finish();
-                // startActivity(new Intent(_activity, PickupActivity.class));
 
 
             }
@@ -466,14 +456,13 @@ public class PickupUpdateActivity extends MasterActivity
                     paytypespinner.setSelection(0);
                     amountedt.setText("0.000");
                     //PickupUpdateActivity.this.finish();
-                    barcodeReader.removeBarcodeListener(PickupUpdateActivity.this);
-                    barcodeReader.release();
+                    if(barcodeReader!=null) {
+                        barcodeReader.removeBarcodeListener(PickupUpdateActivity.this);
+                        barcodeReader.release();
+                    }
                     PickupUpdateActivity.this.finish();
 
-                    /*Intent int1 = new Intent(_activity, PickupActivity.class);
-                    int1.putExtra("route", route);
-                    int1.putExtra("route1", routen);
-                    startActivity(new Intent(int1));*/
+
 
                 } else {
                     Toast.makeText(getApplicationContext(), "No Waybills to delete", Toast.LENGTH_SHORT).show();

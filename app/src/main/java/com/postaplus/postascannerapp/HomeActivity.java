@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -559,6 +561,10 @@ public class HomeActivity extends MasterActivity implements BarcodeReader.Barcod
 
 			@Override
 			public void onClick(View v) {
+//				Intent int1 = new Intent(_activity,PickupUpdateActivity.class);
+//				int1.putExtra("pickno","test");
+//				startActivity(new Intent(int1));
+
 				try {
 					mPb.setVisibility(View.VISIBLE);
 					v.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.image_click));

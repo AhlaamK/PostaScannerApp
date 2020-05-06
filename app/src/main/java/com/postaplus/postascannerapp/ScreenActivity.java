@@ -305,6 +305,12 @@ public class ScreenActivity extends Activity {
             listPermissionsNeeded.add(Manifest.permission.READ_CONTACTS);
             //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},1);
             //ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        } if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
+            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},1);
+            //ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
 		/*if (ContextCompat.checkSelfPermission(this,

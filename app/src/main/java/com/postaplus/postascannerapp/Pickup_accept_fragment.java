@@ -294,9 +294,6 @@ public class Pickup_accept_fragment extends Fragment {
 
 								Intent int1 = new Intent(_activity,PickupUpdateActivity.class);
 								int1.putExtra("pickno",picktxt.getText().toString());
-							//	int1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							//	int1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							//	int1.putExtra("accnname",acnametxt.getText().toString());
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putString("HoneywellFlag", "1");

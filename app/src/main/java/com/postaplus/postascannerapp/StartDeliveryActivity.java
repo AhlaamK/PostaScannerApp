@@ -2126,6 +2126,7 @@ public class StartDeliveryActivity extends MasterActivity
                 barcodeIdentifier = "Y";
             } else {
                 barcodefrmScanner = event.getBarcodeData();
+                barcodefrmScanner = barcodefrmScanner.replaceAll("\\*","");
                 barcodeIdentifier = "N";
             }
             if (barcodefrmScanner != null) {
@@ -2143,7 +2144,7 @@ public class StartDeliveryActivity extends MasterActivity
                             SimpleDateFormat date11 = new SimpleDateFormat("HHmm");
                             time_id = date11.format(new Date());
 
-                            if (delvryflag == true) {
+                            if (delvryflag) {
                                 new UserNotifyTrack(wbilldata1).execute();
                             } else {
                                 new details(wbilldata1).execute();
@@ -3136,8 +3137,6 @@ public class StartDeliveryActivity extends MasterActivity
                                         wbill[i] = waybilltxt1.getText().toString();
 
 
-                                        //calststus = WebService.setcallstatus(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt, MasterActivity.METHOD_NAME39);
-                                        //  calststus = WebService.SET_AWB_EVENT(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt);
                                         if (isNetworkConnected()) {
                                             calststus = WebService.SET_AWB_EVENT(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt);
                                         } else {
@@ -3774,7 +3773,6 @@ public class StartDeliveryActivity extends MasterActivity
                                         wbill[i] = waybilltxt1.getText().toString();
 
 
-                                        //calststus = WebService.setcallstatus(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt, MasterActivity.METHOD_NAME39);
                                         calststus = WebService.SET_AWB_EVENT(wbill[i], "CU-CALL", drivercode, "CALL TO CUSTOMER @ " + phonetxt.getText().toString(), date_time, lat, longt);
 
                                         sqldb.execSQL("UPDATE deliverydata SET Callstatus=1 WHERE Waybill='" + wbill[i] + "'");

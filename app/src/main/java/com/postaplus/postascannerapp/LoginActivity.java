@@ -66,7 +66,6 @@ public class LoginActivity extends MasterActivity {
     String[] pickupno12, wbill12, paytype12, amount12, service12;
     String rname = "";
     String route, odovalue;
-    ImageView b;
     //TextView statusTV;
     EditText userNameET, passWordET;
     TextView versionDisp;
@@ -125,7 +124,6 @@ public class LoginActivity extends MasterActivity {
         passWordET.setText("TEST99");*/
 
         //Button to trigger web service invocation
-        b = (ImageView) findViewById(R.id.submit);
         clrbtn = (Button) findViewById(R.id.clrdatabtn);
         //Display progress bar until web service invocation completes
         webservicePG = (ProgressBar) findViewById(R.id.progressBar1);
@@ -171,10 +169,10 @@ public class LoginActivity extends MasterActivity {
         });
 
 
-        //Login Button Click Listener
-        b.setOnClickListener(v -> {
-            loginSubmitAction();
-        });
+
+    }
+    public void loginSubmitAction(View view){
+        loginSubmitAction();
 
     }
 
@@ -324,6 +322,7 @@ public class LoginActivity extends MasterActivity {
     public boolean onTouchEvent(MotionEvent event) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.
                 INPUT_METHOD_SERVICE);
+        if(getCurrentFocus()!=null)
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         return true;
     }
